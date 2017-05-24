@@ -22,9 +22,8 @@ public class AboutDialogFragment extends DialogFragment {
         assert context != null;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setIcon(android.R.drawable.ic_media_previous);
         builder.setTitle(R.string.app_name);
-        builder.setMessage(R.string.hello_blank_fragment);
+        builder.setMessage(R.string.dialog_about_message);
 
         return builder.create();
     }
