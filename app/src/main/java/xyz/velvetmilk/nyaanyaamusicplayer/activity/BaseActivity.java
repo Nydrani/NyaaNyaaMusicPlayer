@@ -1,5 +1,8 @@
 package xyz.velvetmilk.nyaanyaamusicplayer.activity;
 
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -15,6 +18,12 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     private void showAboutDialog() {
-        DialogFragment about = AboutDialogFragment.new
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        DialogFragment about = AboutDialogFragment.newInstance();
+
+        ft.addToBackStack(null);
+
+        about.show(ft, null);
     }
 }

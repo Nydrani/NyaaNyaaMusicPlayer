@@ -12,6 +12,10 @@ import xyz.velvetmilk.nyaanyaamusicplayer.R;
  */
 
 public class AboutDialogFragment extends DialogFragment {
+    public static AboutDialogFragment newInstance() {
+        return new AboutDialogFragment();
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle onSavedInstance) {
         final Context context = getActivity();
