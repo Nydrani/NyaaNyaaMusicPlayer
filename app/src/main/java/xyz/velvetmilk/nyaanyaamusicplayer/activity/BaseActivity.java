@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 
 import xyz.velvetmilk.nyaanyaamusicplayer.R;
@@ -49,29 +50,28 @@ public class BaseActivity extends AppCompatActivity {
                 ret = true;
                 break;
             case R.id.actionbar_settings:
-                Snackbar.make(findViewById(android.R.id.content), "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Toast.makeText(this, R.string.app_name, Toast.LENGTH_LONG);
                 ret = true;
                 break;
             case R.id.actionbar_about:
-                showAboutDialog();
+                DialogFragment about = AboutDialogFragment.newInstance();
+                setDialogFragment(about);
                 ret = true;
                 break;
             default:
-                super.onOptionsItemSelected(item);
+                ret = super.onOptionsItemSelected(item);
         }
 
         return ret;
     }
 
-    protected void showAboutDialog() {
+
+    protected void setDialogFragment(DialogFragment dialog) {
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        DialogFragment about = AboutDialogFragment.newInstance();
-
         ft.addToBackStack(null);
 
-        about.show(ft, null);
+        dialog.show(ft, null);
     }
 
     protected void setFragment(Fragment fragment) {
