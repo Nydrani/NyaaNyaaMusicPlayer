@@ -48,17 +48,8 @@ functionalTests:
   stage: test
   script:
     - echo y | ${ANDROID_HOME}/tools/bin/sdkmanager "emulator"
-    - file /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/tools/emulator
-    - file /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/emulator
-    - file /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/emulator64-x86
-    - ls /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/tools/
-    - ls /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/
-    - ls /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/
-    - ls /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/qemu/
-    - ls /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/qemu/linux-x86_64/
-    - ls /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/lib64/
-    - ls /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/lib64/qt/
-    - ls /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/lib64/qt/lib/
+    - rm /bin/sh
+    - ln -s /bin/bash /bin/sh
     - export ANDROID_HOME=${PWD}/android-sdk-linux
     - export PATH=$PATH:${ANDROID_HOME}/platform-tools
     - wget --quiet --output-document=android-wait-for-emulator https://raw.githubusercontent.com/travis-ci/travis-cookbooks/0f497eb71291b52a703143c5cd63a217c8766dc9/community-cookbooks/android-sdk/files/default/android-wait-for-emulator
