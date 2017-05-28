@@ -45,8 +45,10 @@ unitTests:
     - ./gradlew test
 
 functionalTests:
-  stage: test
+  stage: test2
   script:
+    - apt-get --quiet install --yes wget libqt5widgets5 file
+    - egrep -c '(vmx|svm)' /proc/cpuinfo
     - echo y | ${ANDROID_HOME}/tools/bin/sdkmanager "emulator"
     - rm /bin/sh
     - ln -s /bin/bash /bin/sh
