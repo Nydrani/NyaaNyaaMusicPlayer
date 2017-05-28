@@ -9,7 +9,7 @@ variables:
 
 before_script:
   - apt-get --quiet update --yes
-  - apt-get --quiet install --yes wget unzip lib32stdc++6 lib32z1
+  - apt-get --quiet install --yes wget unzip lib32stdc++6 lib32z1 bash
   - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS_REV}.zip
   - unzip -qq android-sdk.zip -d ${PWD}/android-sdk-linux
   - mkdir ${HOME}/.android
@@ -51,7 +51,7 @@ functionalTests:
     - chmod +x android-wait-for-emulator
     - echo y | ${ANDROID_HOME}/tools/bin/sdkmanager "system-images;android-${ANDROID_COMPILE_SDK};google_apis;x86_64"
     - echo no | ${ANDROID_HOME}/tools/bin/avdmanager -s create avd -n test -k "system-images;android-${ANDROID_COMPILE_SDK};google_apis;x86_64"
-    - ${ANDROID_HOME}/tools/emulator -avd test -no-window -no-audio &
+    - ${ANDROID_HOME}/tools/emulator64_x86 -avd test -no-window -no-audio &
     - ./android-wait-for-emulator
     - adb shell input keyevent 82
     - ./gradlew cAT
