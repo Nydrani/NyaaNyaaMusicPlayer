@@ -47,6 +47,9 @@ unitTests:
 functionalTests:
   stage: test
   script:
+    - uname -a
+    - file /bin/sh
+    - file /bin/bash
     - export ANDROID_HOME=${PWD}/android-sdk-linux
     - export PATH=$PATH:${ANDROID_HOME}/platform-tools
     - wget --quiet --output-document=android-wait-for-emulator https://raw.githubusercontent.com/travis-ci/travis-cookbooks/0f497eb71291b52a703143c5cd63a217c8766dc9/community-cookbooks/android-sdk/files/default/android-wait-for-emulator
