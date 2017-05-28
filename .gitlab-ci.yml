@@ -9,16 +9,13 @@ variables:
 
 before_script:
   - apt-get --quiet update --yes
-  - apt-get --quiet install --yes wget unzip lib32stdc++6 lib32z1 bash
+  - apt-get --quiet install --yes wget unzip lib32stdc++6 lib32z1 file
   - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS_REV}.zip
   - unzip -qq android-sdk.zip -d ${PWD}/android-sdk-linux
   - mkdir ${HOME}/.android
   - echo "count=0" > ${HOME}/.android/repositories.cfg
   - export ANDROID_HOME=${PWD}/android-sdk-linux
   - export PATH=$PATH:${ANDROID_HOME}/platform-tools
-  - echo "${SHELL}"
-  - export SHELL="/bin/bash"
-  - echo "${SHELL}"
   - echo y | ${ANDROID_HOME}/tools/bin/sdkmanager --update 
   - echo y | ${ANDROID_HOME}/tools/bin/sdkmanager "tools"
   - echo y | ${ANDROID_HOME}/tools/bin/sdkmanager "platform-tools"
@@ -50,11 +47,6 @@ unitTests:
 functionalTests:
   stage: test
   script:
-    - echo "${SHELL}"
-    - export SHELL="/bin/bash"
-    - echo "${SHELL}"
-    - echo "${ANDROID_HOME}"
-    - echo "${PATH}"
     - export ANDROID_HOME=${PWD}/android-sdk-linux
     - export PATH=$PATH:${ANDROID_HOME}/platform-tools
     - wget --quiet --output-document=android-wait-for-emulator https://raw.githubusercontent.com/travis-ci/travis-cookbooks/0f497eb71291b52a703143c5cd63a217c8766dc9/community-cookbooks/android-sdk/files/default/android-wait-for-emulator
