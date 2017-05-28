@@ -47,19 +47,25 @@ unitTests:
 functionalTests:
   stage: test
   script:
-    - file /bin/sh
-    - file /bin/dash
-    - rm /bin/sh
-    - ln -s /bin/bash /bin/sh
-    - file /bin/sh
-    - file /bin/dash
+    - file /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/tools/emulator
+    - file /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/emulator
+    - file /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/emulator64-x86
+    - ls /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/tools/
+    - ls /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/
+    - ls /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/
+    - ls /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/qemu/
+    - ls /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/qemu/linux-x86_64/
+    - ls /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/lib64/
+    - ls /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/lib64/qt/
+    - ls /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/lib64/qt/lib/
     - export ANDROID_HOME=${PWD}/android-sdk-linux
     - export PATH=$PATH:${ANDROID_HOME}/platform-tools
     - wget --quiet --output-document=android-wait-for-emulator https://raw.githubusercontent.com/travis-ci/travis-cookbooks/0f497eb71291b52a703143c5cd63a217c8766dc9/community-cookbooks/android-sdk/files/default/android-wait-for-emulator
     - chmod +x android-wait-for-emulator
     - echo y | ${ANDROID_HOME}/tools/bin/sdkmanager "system-images;android-${ANDROID_COMPILE_SDK};google_apis;x86_64"
     - echo no | ${ANDROID_HOME}/tools/bin/avdmanager -s create avd -n test -k "system-images;android-${ANDROID_COMPILE_SDK};google_apis;x86_64"
-    - ${ANDROID_HOME}/tools/emulator -avd test -no-window -no-audio &
+      #- ${ANDROID_HOME}/tools/emulator -avd test -no-window -no-audio &
+    - ${ANDROID_HOME}/emulator/emulator64-x86 -avd test -no-window -no-audio &
     - ./android-wait-for-emulator
     - adb shell input keyevent 82
     - ./gradlew cAT
