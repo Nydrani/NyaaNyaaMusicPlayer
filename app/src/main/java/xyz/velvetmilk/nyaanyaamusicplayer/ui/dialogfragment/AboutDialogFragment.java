@@ -5,6 +5,9 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
+
+import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
 import xyz.velvetmilk.nyaanyaamusicplayer.R;
 
 /**
@@ -12,12 +15,18 @@ import xyz.velvetmilk.nyaanyaamusicplayer.R;
  */
 
 public class AboutDialogFragment extends DialogFragment {
+    private static final String TAG = AboutDialogFragment.class.getSimpleName();
+
     public static AboutDialogFragment newInstance() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
+
         return new AboutDialogFragment();
     }
 
     @Override
     public Dialog onCreateDialog(Bundle onSavedInstance) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateDialog");
+
         final Context context = getActivity();
         assert context != null;
 

@@ -8,20 +8,25 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 
+import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
 import xyz.velvetmilk.nyaanyaamusicplayer.R;
 import xyz.velvetmilk.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
 import xyz.velvetmilk.nyaanyaamusicplayer.ui.fragment.MusicListFragment;
 
 public class BaseActivity extends AppCompatActivity {
+    private static final String TAG = BaseActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
 
@@ -30,6 +35,8 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateOptionsMenu");
+
         MenuInflater mi = getMenuInflater();
         mi.inflate(R.menu.main, menu);
         return true;
@@ -37,9 +44,8 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        if (BuildConfig.DEBUG) Log.d(TAG, "onOptionsItemSelected");
+
         int id = item.getItemId();
         boolean ret = false;
 
@@ -67,6 +73,8 @@ public class BaseActivity extends AppCompatActivity {
 
 
     protected void setDialogFragment(DialogFragment dialog) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setDialogFragment");
+
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.addToBackStack(null);
@@ -75,6 +83,8 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected void setFragment(Fragment fragment) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setFragment");
+
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(android.R.id.content, fragment);

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
 import xyz.velvetmilk.nyaanyaamusicplayer.R;
 import xyz.velvetmilk.nyaanyaamusicplayer.loader.MusicListLoader;
 import xyz.velvetmilk.nyaanyaamusicplayer.model.MusicPiece;
@@ -22,6 +24,7 @@ import xyz.velvetmilk.nyaanyaamusicplayer.model.MusicPiece;
  * Created by nydrani on 28/05/17.
  */
 public class MusicListFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<MusicPiece>> {
+    private static final String TAG = MusicListFragment.class.getSimpleName();
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -33,6 +36,8 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
 
 
     public static MusicListFragment newInstance(String param1, String param2) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
+
         MusicListFragment fragment = new MusicListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -43,6 +48,8 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
+
         super.onCreate(savedInstanceState);
 
         Activity activity = getActivity();
@@ -52,6 +59,8 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
+
         rootView = inflater.inflate(R.layout.list_base, container, false);
         TextView textView = (TextView)rootView.findViewById(R.id.list_base_name);
         textView.setText(savedInstanceState.getString(ARG_PARAM1));
@@ -63,12 +72,16 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onActivityCreated(final Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onActivityCreated");
+
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
     public Loader<List<MusicPiece>> onCreateLoader (final int id, final Bundle args) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateLoader");
+
         Activity activity = getActivity();
         MusicListLoader loader = new MusicListLoader(activity);
         return loader;
@@ -76,6 +89,8 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onLoadFinished(final Loader<List<MusicPiece>> loader, final List<MusicPiece> data) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onLoadFinished");
+
         if (data.isEmpty()) {
             adapter.clear();
             return;
@@ -86,6 +101,8 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onLoaderReset(final Loader<List<MusicPiece>> loader) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
+
         adapter.clear();
     }
 }

@@ -1,6 +1,9 @@
 package xyz.velvetmilk.nyaanyaamusicplayer.model;
 
 import android.text.TextUtils;
+import android.util.Log;
+
+import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
 
 /**
  * Created by nydrani on 27/05/17.

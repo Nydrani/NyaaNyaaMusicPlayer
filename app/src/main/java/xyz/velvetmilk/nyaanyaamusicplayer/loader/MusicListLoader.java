@@ -5,12 +5,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-import xyz.velvetmilk.nyaanyaamusicplayer.loader.CachedAsyncTaskLoader;
+import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
 import xyz.velvetmilk.nyaanyaamusicplayer.model.MusicPiece;
 
 /**
@@ -18,17 +19,23 @@ import xyz.velvetmilk.nyaanyaamusicplayer.model.MusicPiece;
  */
 
 public class MusicListLoader extends CachedAsyncTaskLoader<List<MusicPiece>> {
+    private static final String TAG = MusicListLoader.class.getSimpleName();
+
     protected ArrayList<MusicPiece> musicPieceList;
     protected Cursor cursor;
 
     public MusicListLoader(final Context context) {
         super(context);
 
+        if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
+
         musicPieceList = new ArrayList<MusicPiece>();
     }
 
     @Override
     public List<MusicPiece> loadInBackground() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "loadInBackground");
+
         cursor = getCursor();
 
         if (cursor != null) {
@@ -57,11 +64,15 @@ public class MusicListLoader extends CachedAsyncTaskLoader<List<MusicPiece>> {
     }
 
     protected Cursor getCursor() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getCursor");
+
         Context context = getContext();
         return makeMusicPieceCursor(context);
     }
 
     public static final Cursor makeMusicPieceCursor(final Context context) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "makeMusicPieceCursor");
+
         ContentResolver musicResolver = context.getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String[] projection = new String[6];
