@@ -1,38 +1,35 @@
 package xyz.velvetmilk.nyaanyaamusicplayer.model;
 
 import android.text.TextUtils;
-import android.util.Log;
-
-import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
 
 /**
  * Created by nydrani on 27/05/17.
  */
 
-public class MusicPiece {
-    private long pieceId;
-    private String pieceName;
+public class Music {
+    private long id;
+    private String name;
     private String artistName;
     private String albumName;
     private int duration;
     private String mimeType;
 
-    public MusicPiece(final long pieceId, final String pieceName, final String artistName,
-                      final String albumName, final int duration, final String mimeType) {
-        this.pieceId = pieceId;
-        this.pieceName = pieceName;
+    public Music(final long id, final String name, final String artistName,
+                 final String albumName, final int duration, final String mimeType) {
+        this.id = id;
+        this.name = name;
         this.artistName = artistName;
         this.albumName = albumName;
         this.duration = duration;
         this.mimeType = mimeType;
     }
 
-    public long getPieceId() {
-        return pieceId;
+    public long getId() {
+        return id;
     }
 
-    public String getPieceName() {
-        return pieceName;
+    public String getName() {
+        return name;
     }
 
     public String getArtistName() {
@@ -51,12 +48,12 @@ public class MusicPiece {
         return mimeType;
     }
 
-    public void setPieceId(final long pieceId) {
-        this.pieceId = pieceId;
+    public void setId(final long id) {
+        this.id = id;
     }
 
-    public void setPieceName(final String pieceName) {
-        this.pieceName = pieceName;
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public void setArtistName(final String artistName) {
@@ -77,7 +74,7 @@ public class MusicPiece {
 
     @Override
     public boolean equals(final Object obj) {
-        final MusicPiece other = (MusicPiece) obj;
+        final Music other = (Music) obj;
 
         if (this == obj) {
             return true;
@@ -88,10 +85,10 @@ public class MusicPiece {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        if (pieceId != other.getPieceId()) {
+        if (id != other.getId()) {
             return false;
         }
-        if (!TextUtils.equals(pieceName, other.getPieceName())) {
+        if (!TextUtils.equals(name, other.getName())) {
             return false;
         }
         if (!TextUtils.equals(artistName, other.getArtistName())) {
@@ -112,6 +109,6 @@ public class MusicPiece {
 
     @Override
     public String toString() {
-        return pieceName;
+        return name;
     }
 }

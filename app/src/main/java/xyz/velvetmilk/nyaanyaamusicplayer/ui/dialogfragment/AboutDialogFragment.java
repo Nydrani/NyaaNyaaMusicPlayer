@@ -24,7 +24,7 @@ public class AboutDialogFragment extends DialogFragment {
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle onSavedInstance) {
+    public Dialog onCreateDialog(final Bundle onSavedInstance) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateDialog");
 
         final Context context = getActivity();

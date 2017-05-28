@@ -11,40 +11,36 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.List;
 
 import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
 import xyz.velvetmilk.nyaanyaamusicplayer.R;
 import xyz.velvetmilk.nyaanyaamusicplayer.loader.MusicListLoader;
-import xyz.velvetmilk.nyaanyaamusicplayer.model.MusicPiece;
+import xyz.velvetmilk.nyaanyaamusicplayer.model.Music;
 
 /**
  * Created by nydrani on 28/05/17.
  */
-public class MusicListFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<MusicPiece>> {
+public class MusicListFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Music>> {
     private static final String TAG = MusicListFragment.class.getSimpleName();
-
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
     private View rootView;
     private ListView listView;
-    private ArrayAdapter<MusicPiece> adapter;
+    private ArrayAdapter<Music> adapter;
 
 
-
-    public static MusicListFragment newInstance(String param1, String param2) {
+    public static MusicListFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
 
         MusicListFragment fragment = new MusicListFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
+
+
+    //=========================================================================
+    // Fragment lifecycle
+    //=========================================================================
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -53,7 +49,7 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
         super.onCreate(savedInstanceState);
 
         Activity activity = getActivity();
-        adapter = new ArrayAdapter<MusicPiece>(activity, 0);
+        adapter = new ArrayAdapter<Music>(activity, android.R.layout.simple_list_item_1);
     }
 
     @Override
@@ -62,8 +58,6 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
 
         rootView = inflater.inflate(R.layout.list_base, container, false);
-        TextView textView = (TextView)rootView.findViewById(R.id.list_base_name);
-        textView.setText(savedInstanceState.getString(ARG_PARAM1));
         listView = (ListView)rootView.findViewById(R.id.list_base);
         listView.setAdapter(adapter);
 
@@ -79,7 +73,7 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     @Override
-    public Loader<List<MusicPiece>> onCreateLoader (final int id, final Bundle args) {
+    public Loader<List<Music>> onCreateLoader (final int id, final Bundle args) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateLoader");
 
         Activity activity = getActivity();
@@ -87,8 +81,13 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
         return loader;
     }
 
+
+    //=========================================================================
+    // LoaderManager.LoaderCallbacks
+    //=========================================================================
+
     @Override
-    public void onLoadFinished(final Loader<List<MusicPiece>> loader, final List<MusicPiece> data) {
+    public void onLoadFinished(final Loader<List<Music>> loader, final List<Music> data) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadFinished");
 
         if (data.isEmpty()) {
@@ -100,7 +99,7 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     @Override
-    public void onLoaderReset(final Loader<List<MusicPiece>> loader) {
+    public void onLoaderReset(final Loader<List<Music>> loader) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
         adapter.clear();

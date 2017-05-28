@@ -12,16 +12,16 @@ import java.util.List;
 
 
 import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
-import xyz.velvetmilk.nyaanyaamusicplayer.model.MusicPiece;
+import xyz.velvetmilk.nyaanyaamusicplayer.model.Music;
 
 /**
  * Created by nydrani on 27/05/17.
  */
 
-public class MusicListLoader extends CachedAsyncTaskLoader<List<MusicPiece>> {
+public class MusicListLoader extends CachedAsyncTaskLoader<List<Music>> {
     private static final String TAG = MusicListLoader.class.getSimpleName();
 
-    protected ArrayList<MusicPiece> musicPieceList;
+    protected List<Music> musicList;
     protected Cursor cursor;
 
     public MusicListLoader(final Context context) {
@@ -29,29 +29,34 @@ public class MusicListLoader extends CachedAsyncTaskLoader<List<MusicPiece>> {
 
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        musicPieceList = new ArrayList<MusicPiece>();
+        musicList = new ArrayList<Music>();
     }
 
+
+    //=========================================================================
+    // AsyncTaskLoader implementation
+    //=========================================================================
+
     @Override
-    public List<MusicPiece> loadInBackground() {
+    public List<Music> loadInBackground() {
         if (BuildConfig.DEBUG) Log.d(TAG, "loadInBackground");
 
         cursor = getCursor();
 
         if (cursor != null) {
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                final long pieceId = cursor.getLong(0);
-                final String pieceName = cursor.getString(1);
+                final long id = cursor.getLong(0);
+                final String name = cursor.getString(1);
                 final String artistName = cursor.getString(2);
                 final String albumName = cursor.getString(3);
                 final long duration = cursor.getLong(4);
                 final String mimeType = cursor.getString(5);
 
                 final int durationInSecs = (int) duration / 1000;
-                final MusicPiece musicPiece = new MusicPiece(pieceId, pieceName, artistName, albumName, durationInSecs,
+                final Music music = new Music(id, name, artistName, albumName, durationInSecs,
                         mimeType);
 
-                musicPieceList.add(musicPiece);
+                musicList.add(music);
             }
         }
 
@@ -60,18 +65,23 @@ public class MusicListLoader extends CachedAsyncTaskLoader<List<MusicPiece>> {
             cursor = null;
         }
 
-        return musicPieceList;
+        return musicList;
     }
+
+
+    //=========================================================================
+    // Helper functions
+    //=========================================================================
 
     protected Cursor getCursor() {
         if (BuildConfig.DEBUG) Log.d(TAG, "getCursor");
 
         Context context = getContext();
-        return makeMusicPieceCursor(context);
+        return makeMusicCursor(context);
     }
 
-    public static final Cursor makeMusicPieceCursor(final Context context) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "makeMusicPieceCursor");
+    public static final Cursor makeMusicCursor(final Context context) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "makeMusicCursor");
 
         ContentResolver musicResolver = context.getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
