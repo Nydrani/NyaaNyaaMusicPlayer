@@ -2,7 +2,7 @@ package xyz.velvetmilk.nyaanyaamusicplayer.loader;
 
 
 import android.content.Context;
-import android.support.v4.content.AsyncTaskLoader;
+import android.content.AsyncTaskLoader;
 
 /**
  * Created by nydrani on 27/05/17.
