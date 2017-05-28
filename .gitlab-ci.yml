@@ -47,6 +47,7 @@ unitTests:
 functionalTests:
   stage: test
   script:
+    - echo y | ${ANDROID_HOME}/tools/bin/sdkmanager "emulator"
     - file /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/tools/emulator
     - file /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/emulator
     - file /builds/Nydrani/NyaaNyaaMusicPlayer/android-sdk-linux/emulator/emulator64-x86
@@ -64,8 +65,7 @@ functionalTests:
     - chmod +x android-wait-for-emulator
     - echo y | ${ANDROID_HOME}/tools/bin/sdkmanager "system-images;android-${ANDROID_COMPILE_SDK};google_apis;x86_64"
     - echo no | ${ANDROID_HOME}/tools/bin/avdmanager -s create avd -n test -k "system-images;android-${ANDROID_COMPILE_SDK};google_apis;x86_64"
-      #- ${ANDROID_HOME}/tools/emulator -avd test -no-window -no-audio &
-    - ${ANDROID_HOME}/emulator/emulator64-x86 -avd test -no-window -no-audio &
+    - ${ANDROID_HOME}/tools/emulator -avd test -no-window -no-audio &
     - ./android-wait-for-emulator
     - adb shell input keyevent 82
     - ./gradlew cAT
