@@ -12,6 +12,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import xyz.velvetmilk.nyaanyaamusicplayer.R;
+import xyz.velvetmilk.nyaanyaamusicplayer.loader.MusicListLoader;
 
 /**
  * A simple {@link Fragment} subclass.

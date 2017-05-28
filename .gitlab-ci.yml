@@ -16,6 +16,9 @@ before_script:
   - echo "count=0" > ${HOME}/.android/repositories.cfg
   - export ANDROID_HOME=${PWD}/android-sdk-linux
   - export PATH=$PATH:${ANDROID_HOME}/platform-tools
+  - echo "${SHELL}"
+  - export SHELL="/bin/bash"
+  - echo "${SHELL}"
   - echo y | ${ANDROID_HOME}/tools/bin/sdkmanager --update 
   - echo y | ${ANDROID_HOME}/tools/bin/sdkmanager "tools"
   - echo y | ${ANDROID_HOME}/tools/bin/sdkmanager "platform-tools"
