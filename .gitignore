@@ -8,7 +8,6 @@ local.properties
 build
 captures
 gradle.properties
-gradle-app.setting
 
 # IntelliJ idea
 .idea

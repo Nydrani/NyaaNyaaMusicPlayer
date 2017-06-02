@@ -7,7 +7,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -53,8 +53,8 @@ public class BaseActivity extends AppCompatActivity {
     //=========================================================================
 
     @Override
-    public void onRequestPermissionsResult(final int resultCode, final String[] permissions,
-                                           final int[] grantResults) {
+    public void onRequestPermissionsResult(final int resultCode, @NonNull final String[] permissions,
+                                           @NonNull final int[] grantResults) {
         if (BuildConfig.DEBUG) Log.w(TAG, "onCreateOptionsMenu");
 
         switch (resultCode) {
@@ -142,7 +142,7 @@ public class BaseActivity extends AppCompatActivity {
 
         String[] permissions = new String[1];
         permissions[0] = Manifest.permission.READ_EXTERNAL_STORAGE;
-        List<String> permissionList = new ArrayList<String>();
+        List<String> permissionList = new ArrayList<>();
 
 
         for (String permission : permissions) {

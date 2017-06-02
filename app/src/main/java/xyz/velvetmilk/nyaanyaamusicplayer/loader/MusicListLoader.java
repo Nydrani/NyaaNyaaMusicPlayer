@@ -21,15 +21,15 @@ import xyz.velvetmilk.nyaanyaamusicplayer.model.Music;
 public class MusicListLoader extends CachedAsyncTaskLoader<List<Music>> {
     private static final String TAG = MusicListLoader.class.getSimpleName();
 
-    protected List<Music> musicList;
-    protected Cursor cursor;
+    private List<Music> musicList;
+    private Cursor cursor;
 
     public MusicListLoader(final Context context) {
         super(context);
 
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        musicList = new ArrayList<Music>();
+        musicList = new ArrayList<>();
     }
 
 
@@ -73,14 +73,14 @@ public class MusicListLoader extends CachedAsyncTaskLoader<List<Music>> {
     // Helper functions
     //=========================================================================
 
-    protected Cursor getCursor() {
+    private Cursor getCursor() {
         if (BuildConfig.DEBUG) Log.d(TAG, "getCursor");
 
         Context context = getContext();
         return makeMusicCursor(context);
     }
 
-    public static final Cursor makeMusicCursor(final Context context) {
+    private static Cursor makeMusicCursor(final Context context) {
         if (BuildConfig.DEBUG) Log.d(TAG, "makeMusicCursor");
 
         ContentResolver musicResolver = context.getContentResolver();

@@ -33,8 +33,7 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
     public static MusicListFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
 
-        MusicListFragment fragment = new MusicListFragment();
-        return fragment;
+        return new MusicListFragment();
     }
 
 
@@ -49,7 +48,7 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
         super.onCreate(savedInstanceState);
 
         Activity activity = getActivity();
-        adapter = new ArrayAdapter<Music>(activity, android.R.layout.simple_list_item_1);
+        adapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1);
     }
 
     @Override
@@ -77,8 +76,7 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateLoader");
 
         Activity activity = getActivity();
-        MusicListLoader loader = new MusicListLoader(activity);
-        return loader;
+        return new MusicListLoader(activity);
     }
 
 
