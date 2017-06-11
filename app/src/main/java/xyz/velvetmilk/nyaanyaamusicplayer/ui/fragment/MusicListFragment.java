@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Loader;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +14,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
 import xyz.velvetmilk.nyaanyaamusicplayer.R;
+import xyz.velvetmilk.nyaanyaamusicplayer.adapter.MusicAdapter;
 import xyz.velvetmilk.nyaanyaamusicplayer.loader.MusicListLoader;
 import xyz.velvetmilk.nyaanyaamusicplayer.model.Music;
 
@@ -26,8 +30,11 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
     private static final String TAG = MusicListFragment.class.getSimpleName();
 
     private View rootView;
-    private ListView listView;
-    private ArrayAdapter<Music> adapter;
+    private RecyclerView recyclerView;
+    private RecyclerView.LayoutManager layout;
+
+    private MusicAdapter adapter;
+    private List<Music> musicList;
 
 
     public static MusicListFragment newInstance() {
@@ -48,7 +55,9 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
         super.onCreate(savedInstanceState);
 
         Activity activity = getActivity();
-        adapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1);
+        musicList = new ArrayList<>();
+        adapter = new MusicAdapter(activity, musicList);
+        layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
     }
 
     @Override
@@ -57,8 +66,9 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
 
         rootView = inflater.inflate(R.layout.list_base, container, false);
-        listView = (ListView)rootView.findViewById(R.id.list_base);
-        listView.setAdapter(adapter);
+        recyclerView = (RecyclerView)rootView.findViewById(R.id.list_base);
+        recyclerView.setLayoutManager(layout);
+        recyclerView.setAdapter(adapter);
 
         return rootView;
     }
@@ -71,6 +81,11 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
         getLoaderManager().initLoader(0, null, this);
     }
 
+
+    //=========================================================================
+    // LoaderManager.LoaderCallbacks
+    //=========================================================================
+
     @Override
     public Loader<List<Music>> onCreateLoader (final int id, final Bundle args) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateLoader");
@@ -79,27 +94,17 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
         return new MusicListLoader(activity);
     }
 
-
-    //=========================================================================
-    // LoaderManager.LoaderCallbacks
-    //=========================================================================
-
     @Override
     public void onLoadFinished(final Loader<List<Music>> loader, final List<Music> data) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadFinished");
 
-        if (data.isEmpty()) {
-            adapter.clear();
-            return;
-        }
-
-        adapter.addAll(data);
+        adapter.swap(data);
     }
 
     @Override
     public void onLoaderReset(final Loader<List<Music>> loader) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
-        adapter.clear();
+        adapter.swap(null);
     }
 }
