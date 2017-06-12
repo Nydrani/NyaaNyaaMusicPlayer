@@ -5,8 +5,13 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -23,12 +28,18 @@ import java.util.List;
 
 import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
 import xyz.velvetmilk.nyaanyaamusicplayer.R;
+import xyz.velvetmilk.nyaanyaamusicplayer.service.MusicPlaybackService;
 import xyz.velvetmilk.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
 import xyz.velvetmilk.nyaanyaamusicplayer.ui.fragment.MusicListFragment;
+import xyz.velvetmilk.nyaanyaamusicplayer.util.MusicUtils;
 
 public class BaseActivity extends AppCompatActivity {
     private static final String TAG = BaseActivity.class.getSimpleName();
     private static final int PERMISSION_REQUEST_CODE = 0;
+
+    private MusicPlaybackService musicPlaybackService;
+    // flag for service binding
+    private boolean bound = false;
 
 
     //=========================================================================
@@ -37,16 +48,36 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
 
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
 
         if (hasPermissions()) {
-            setFragment(MusicListFragment.newInstance());
+            init();
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (BuildConfig.DEBUG) Log.d(TAG, "onStart");
+
+        Intent intent = new Intent(this, MusicPlaybackService.class);
+        bindService(intent, musicPlaybackServiceConnection, Context.BIND_AUTO_CREATE);
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (BuildConfig.DEBUG) Log.d(TAG, "onStop");
+
+        if (bound) {
+            unbindService(musicPlaybackServiceConnection);
+            bound = false;
+        }
+    }
 
     //=========================================================================
     // Activity request permissions callbacks
@@ -60,7 +91,7 @@ public class BaseActivity extends AppCompatActivity {
         switch (resultCode) {
             case PERMISSION_REQUEST_CODE:
                 if (checkPermissionGrantResults(grantResults)) {
-                    setFragment(MusicListFragment.newInstance());
+                    init();
                 } else {
                     finish();
                 }
@@ -101,19 +132,28 @@ public class BaseActivity extends AppCompatActivity {
                 return true;
 
             case R.id.actionbar_about:
-                DialogFragment about = AboutDialogFragment.newInstance();
-                setDialogFragment(about);
+                setDialogFragment(AboutDialogFragment.newInstance());
                 return true;
 
             default:
-                return super.onOptionsItemSelected(item);
+                if (BuildConfig.DEBUG) Log.d(TAG, "Unknown menu item");
+                break;
         }
+        return super.onOptionsItemSelected(item);
+
     }
 
 
     //=========================================================================
     // Helper functions
     //=========================================================================
+
+    // startup code
+    protected void init() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "init");
+
+        setFragment(MusicListFragment.newInstance());
+    }
 
     protected void setDialogFragment(DialogFragment dialog) {
         if (BuildConfig.DEBUG) Log.d(TAG, "setDialogFragment");
@@ -178,5 +218,29 @@ public class BaseActivity extends AppCompatActivity {
         }
         return true;
     }
+
+
+    //=========================================================================
+    // ServiceConnection implementation
+    //=========================================================================
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection musicPlaybackServiceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            MusicPlaybackService.MusicPlaybackBinder binder = (MusicPlaybackService.MusicPlaybackBinder) service;
+            musicPlaybackService = binder.getService();
+            MusicUtils.setMusicPlaybackService(musicPlaybackService);
+            bound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            bound = false;
+        }
+    };
+
 
 }
