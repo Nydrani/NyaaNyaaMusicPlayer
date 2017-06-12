@@ -17,13 +17,15 @@ public abstract class CachedAsyncTaskLoader<D> extends AsyncTaskLoader<D> {
 
     public CachedAsyncTaskLoader(Context context) {
         super(context);
+        if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
+
     }
 
     @Override
     protected void onStartLoading() {
+        super.onStartLoading();
         if (BuildConfig.DEBUG) Log.d(TAG, "onStartLoading");
 
-        super.onStartLoading();
         if (this.mData != null) {
             deliverResult(this.mData);
         }
@@ -44,17 +46,17 @@ public abstract class CachedAsyncTaskLoader<D> extends AsyncTaskLoader<D> {
 
     @Override
     protected void onStopLoading() {
+        super.onStopLoading();
         if (BuildConfig.DEBUG) Log.d(TAG, "onStopLoading");
 
-        super.onStopLoading();
         cancelLoad();
     }
 
     @Override
     protected void onReset() {
+        super.onReset();
         if (BuildConfig.DEBUG) Log.d(TAG, "onReset");
 
-        super.onReset();
         onStopLoading();
         this.mData = null;
     }

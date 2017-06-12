@@ -12,6 +12,8 @@ import xyz.velvetmilk.nyaanyaamusicplayer.R;
 
 /**
  * Created by nydrani on 23/05/17.
+ *
+ * Dialog that show the about fragment ezpz
  */
 
 public class AboutDialogFragment extends DialogFragment {
@@ -27,6 +29,7 @@ public class AboutDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle onSavedInstance) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateDialog");
 
+        // this should be called after onAttach but die if it doesnt
         final Context context = getActivity();
         assert context != null;
 

@@ -25,7 +25,6 @@ public class MusicListLoader extends CachedAsyncTaskLoader<List<Music>> {
 
     public MusicListLoader(Context context) {
         super(context);
-
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         musicList = new ArrayList<>();
@@ -42,27 +41,35 @@ public class MusicListLoader extends CachedAsyncTaskLoader<List<Music>> {
 
         Cursor cursor = getCursor();
 
-
-        if (cursor != null) {
-            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                final long id = cursor.getLong(0);
-                final String name = cursor.getString(1);
-                final String artistName = cursor.getString(2);
-                final String albumName = cursor.getString(3);
-                final long duration = cursor.getLong(4);
-                final String mimeType = cursor.getString(5);
-
-                final int durationInSecs = (int) duration / 1000;
-                final Music music = new Music(id, name, artistName, albumName, durationInSecs,
-                        mimeType);
-
-                musicList.add(music);
-            }
+        // can sometimes return null on bad problems
+        if (cursor == null) {
+            return musicList;
         }
 
-        if (cursor != null) {
-            cursor.close();
+        int idColumn = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
+        int titleColumn = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+        int artistColumn = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+        int albumColumn = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+        int durationColumn = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
+        int mimeTypeColumn = cursor.getColumnIndex(MediaStore.Audio.Media.MIME_TYPE);
+
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            final long id = cursor.getLong(idColumn);
+            final String name = cursor.getString(titleColumn);
+            final String artistName = cursor.getString(artistColumn);
+            final String albumName = cursor.getString(albumColumn);
+            final long duration = cursor.getLong(durationColumn);
+            final String mimeType = cursor.getString(mimeTypeColumn);
+
+            final int durationInSecs = (int) duration / 1000;
+            final Music music = new Music(id, name, artistName, albumName, durationInSecs,
+                    mimeType);
+
+            musicList.add(music);
         }
+
+        cursor.close();
+
 
         return musicList;
     }

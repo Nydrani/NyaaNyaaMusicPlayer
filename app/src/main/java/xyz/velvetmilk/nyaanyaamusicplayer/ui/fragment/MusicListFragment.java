@@ -46,9 +46,8 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
-
         super.onCreate(savedInstanceState);
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
 
         Activity activity = getActivity();
         List<Music> musicList = new ArrayList<>();
@@ -71,9 +70,9 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         if (BuildConfig.DEBUG) Log.d(TAG, "onActivityCreated");
 
-        super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(0, null, this);
     }
 
