@@ -1,12 +1,13 @@
 package xyz.velvetmilk.nyaanyaamusicplayer.adapter;
 
-import android.content.Context;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -22,7 +23,6 @@ import xyz.velvetmilk.nyaanyaamusicplayer.model.Music;
  *     2. No objectively good reasoning (no real google implementation yet)
  *     3. cbf doing benchmarks
  */
-
 public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHolder> {
     private static final String TAG = MusicAdapter.class.getSimpleName();
 
@@ -48,9 +48,8 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
     public MusicViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateViewHolder");
 
-        LayoutInflater li = (LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        // create a new view
-        View v = li.inflate(R.layout.list_layout_music, parent, false);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View v = inflater.inflate(R.layout.list_layout_music, parent, false);
 
         return new MusicViewHolder(v);
     }
@@ -111,6 +110,22 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
         public MusicViewHolder(View view) {
             super(view);
             if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
+
+            // onclick for each item
+            // @TODO fix this up soon lmao
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Snackbar.make(v, musicTitle.getText(), Snackbar.LENGTH_LONG)
+                            .setAction("Description", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Toast.makeText(v.getContext(), musicDescription.getText(), Toast.LENGTH_LONG)
+                                            .show();
+                                }
+                            }).show();
+                }
+            });
 
             musicTitle = (TextView) view.findViewById(R.id.music_name);
             musicDescription = (TextView) view.findViewById(R.id.music_description);
