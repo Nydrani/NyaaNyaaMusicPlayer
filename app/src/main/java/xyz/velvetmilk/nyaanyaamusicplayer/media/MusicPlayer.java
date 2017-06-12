@@ -1,5 +1,6 @@
 package xyz.velvetmilk.nyaanyaamusicplayer.media;
 
+import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer;
 import android.util.Log;
@@ -20,22 +21,31 @@ public class MusicPlayer implements
     private static final String TAG = MusicPlayer.class.getSimpleName();
     private MusicPlaybackService musicPlaybackService;
     private MediaPlayer mediaPlayer;
+    private AudioAttributes audioAttributes;
 
     public MusicPlayer(MusicPlaybackService service) {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         musicPlaybackService = service;
+        audioAttributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build();
+
         initMediaPlayer();
     }
+
+
     // ========================================================================
     // MediaPlayer functions
     // ========================================================================
 
     private void initMediaPlayer() {
         mediaPlayer = new MediaPlayer();
+
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setOnPreparedListener(this);
         mediaPlayer.setOnErrorListener(this);
+        mediaPlayer.setAudioAttributes(audioAttributes);
     }
     public void load(String source) {
         if (BuildConfig.DEBUG) Log.d(TAG, "load");
