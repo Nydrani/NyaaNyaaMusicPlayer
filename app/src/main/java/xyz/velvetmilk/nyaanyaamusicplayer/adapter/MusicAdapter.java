@@ -1,14 +1,11 @@
 package xyz.velvetmilk.nyaanyaamusicplayer.adapter;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -19,20 +16,27 @@ import xyz.velvetmilk.nyaanyaamusicplayer.model.Music;
 
 /**
  * Created by nydrani on 28/05/17.
+ *
+ * Currently not implementing a List rather than Cursor due to:
+ *     1. It will use UI thread to convert database response to List (which is bad)
+ *     2. No objectively good reasoning (no real google implementation yet)
+ *     3. cbf doing benchmarks
  */
 
 public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHolder> {
     private static final String TAG = MusicAdapter.class.getSimpleName();
 
-    private Context context;
     private List<Music> musicList;
 
 
-    public MusicAdapter(Context context, List<Music> musicList) {
+    public MusicAdapter(List<Music> musicList) {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        this.context = context;
         this.musicList = musicList;
+
+        // @TODO check if ids are stable
+        // ids are stable. at least i would hope (pls be stable MediaStore)
+        setHasStableIds(true);
     }
 
 
@@ -47,25 +51,26 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
         LayoutInflater li = (LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         // create a new view
         View v = li.inflate(R.layout.list_layout_music, parent, false);
-        MusicViewHolder vh = new MusicViewHolder(v);
-        return vh;
+
+        return new MusicViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(MusicViewHolder holder, int position) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onBindViewHolder");
 
-        // Cursor functions
-        /*
-        musicList.moveToPosition(position);
-        String name = musicList.getString(musicList.getColumnIndex(MediaStore.Audio.Media.TITLE));
-        String artist = musicList.getString(musicList.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-        */
         Music music = musicList.get(position);
 
         holder.musicTitle.setText(music.getName());
         holder.musicDescription.setText(music.getArtistName());
 
+    }
+
+    @Override
+    public long getItemId(int position) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getItemId");
+
+        return musicList.get(position).getId();
     }
 
     @Override
@@ -80,19 +85,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
     // Useful cursor functions
     // ========================================================================
 
-    /*
-    public Cursor swapCursor(Cursor cursor) {
-        if (musicList == cursor) {
-            return null;
-        }
-        Cursor oldCursor = musicList;
-        musicList = cursor;
-        if (cursor != null) {
-            this.notifyDataSetChanged();
-        }
-        return oldCursor;
-    }
-    */
     public void swap(List<Music> newList){
         if (BuildConfig.DEBUG) Log.d(TAG, "swap");
 

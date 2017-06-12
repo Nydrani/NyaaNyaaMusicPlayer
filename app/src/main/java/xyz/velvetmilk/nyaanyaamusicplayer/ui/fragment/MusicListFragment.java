@@ -11,8 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +28,9 @@ import xyz.velvetmilk.nyaanyaamusicplayer.model.Music;
 public class MusicListFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Music>> {
     private static final String TAG = MusicListFragment.class.getSimpleName();
 
-    private View rootView;
-    private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layout;
 
     private MusicAdapter adapter;
-    private List<Music> musicList;
 
 
     public static MusicListFragment newInstance() {
@@ -55,8 +51,8 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
         super.onCreate(savedInstanceState);
 
         Activity activity = getActivity();
-        musicList = new ArrayList<>();
-        adapter = new MusicAdapter(activity, musicList);
+        List<Music> musicList = new ArrayList<>();
+        adapter = new MusicAdapter(musicList);
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
     }
 
@@ -65,8 +61,8 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
                              final Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
 
-        rootView = inflater.inflate(R.layout.list_base, container, false);
-        recyclerView = (RecyclerView)rootView.findViewById(R.id.list_base);
+        View rootView = inflater.inflate(R.layout.list_base, container, false);
+        RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.list_base);
         recyclerView.setLayoutManager(layout);
         recyclerView.setAdapter(adapter);
 
@@ -91,6 +87,7 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateLoader");
 
         Activity activity = getActivity();
+
         return new MusicListLoader(activity);
     }
 
