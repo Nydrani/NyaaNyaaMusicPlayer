@@ -10,14 +10,17 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
         <activity
             android:name=".activity.BaseActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MUSIC_PLAYER" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.APP_MUSIC" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
@@ -27,7 +30,8 @@
             android:exported="true" />
 
         <service
-            android:name=".service.BaseService"
+            android:name=".service.MusicPlaybackService"
+            android:label="@string/app_name"
             android:enabled="true"
             android:exported="true" />
 
