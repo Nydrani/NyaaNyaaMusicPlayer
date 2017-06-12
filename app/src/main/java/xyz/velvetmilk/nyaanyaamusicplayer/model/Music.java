@@ -14,8 +14,8 @@ public class Music {
     private int duration;
     private String mimeType;
 
-    public Music(final long id, final String name, final String artistName,
-                 final String albumName, final int duration, final String mimeType) {
+    public Music(long id, String name, String artistName,
+                 String albumName, int duration, String mimeType) {
         this.id = id;
         this.name = name;
         this.artistName = artistName;
@@ -48,32 +48,32 @@ public class Music {
         return mimeType;
     }
 
-    public void setId(final long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public void setName(final String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setArtistName(final String artistName) {
+    public void setArtistName(String artistName) {
         this.artistName = artistName;
     }
 
-    public void setAlbumName(final String albumName) {
+    public void setAlbumName(String albumName) {
         this.albumName = albumName;
     }
 
-    public void setDuration(final int duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 
-    public void setMimeType(final String mimeType) {
+    public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
     }
 
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         final Music other = (Music) obj;
 
         if (this == obj) {

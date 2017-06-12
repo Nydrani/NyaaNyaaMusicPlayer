@@ -36,7 +36,7 @@ public class BaseActivity extends AppCompatActivity {
     //=========================================================================
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
 
         super.onCreate(savedInstanceState);
@@ -53,8 +53,8 @@ public class BaseActivity extends AppCompatActivity {
     //=========================================================================
 
     @Override
-    public void onRequestPermissionsResult(final int resultCode, @NonNull final String[] permissions,
-                                           @NonNull final int[] grantResults) {
+    public void onRequestPermissionsResult(int resultCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         if (BuildConfig.DEBUG) Log.w(TAG, "onCreateOptionsMenu");
 
         switch (resultCode) {
@@ -76,7 +76,7 @@ public class BaseActivity extends AppCompatActivity {
     //=========================================================================
 
     @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateOptionsMenu");
 
         MenuInflater mi = getMenuInflater();
@@ -85,7 +85,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onOptionsItemSelected");
 
         int id = item.getItemId();
@@ -93,12 +93,11 @@ public class BaseActivity extends AppCompatActivity {
         switch (id) {
             case R.id.actionbar_homelink:
                 Snackbar.make(findViewById(android.R.id.content), "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                        .show();
                 return true;
 
             case R.id.actionbar_settings:
-                Toast toast = Toast.makeText(this, R.string.app_name, Toast.LENGTH_LONG);
-                toast.show();
+                Toast.makeText(this, R.string.app_name, Toast.LENGTH_LONG).show();
                 return true;
 
             case R.id.actionbar_about:
@@ -116,7 +115,7 @@ public class BaseActivity extends AppCompatActivity {
     // Helper functions
     //=========================================================================
 
-    protected void setDialogFragment(final DialogFragment dialog) {
+    protected void setDialogFragment(DialogFragment dialog) {
         if (BuildConfig.DEBUG) Log.d(TAG, "setDialogFragment");
 
         FragmentManager fm = getFragmentManager();
@@ -126,7 +125,7 @@ public class BaseActivity extends AppCompatActivity {
         dialog.show(ft, null);
     }
 
-    protected void setFragment(final Fragment fragment) {
+    protected void setFragment(Fragment fragment) {
         if (BuildConfig.DEBUG) Log.d(TAG, "setFragment");
 
         FragmentManager fm = getFragmentManager();
@@ -135,10 +134,15 @@ public class BaseActivity extends AppCompatActivity {
         ft.commit();
     }
 
+    /**
+     * Checks if app has permissions and asks for permissions when it does not.
+     */
     private boolean hasPermissions() {
         if (BuildConfig.DEBUG) Log.d(TAG, "hasPermissions");
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
+        }
 
         String[] permissions = new String[1];
         permissions[0] = Manifest.permission.READ_EXTERNAL_STORAGE;
@@ -161,7 +165,10 @@ public class BaseActivity extends AppCompatActivity {
         return neededPermissions.length == 0;
     }
 
-    private boolean checkPermissionGrantResults(final int[] grantResults) {
+    /**
+     * Checks if the grant results from permission request succeeds
+     */
+    private boolean checkPermissionGrantResults(int[] grantResults) {
         if (BuildConfig.DEBUG) Log.d(TAG, "checkPermissionGrantResults");
 
         for (int result : grantResults) {

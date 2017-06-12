@@ -45,7 +45,7 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
     //=========================================================================
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
 
         super.onCreate(savedInstanceState);
@@ -57,8 +57,8 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-                             final Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
 
         View rootView = inflater.inflate(R.layout.list_base, container, false);
@@ -70,7 +70,7 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     @Override
-    public void onActivityCreated(final Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onActivityCreated");
 
         super.onActivityCreated(savedInstanceState);
@@ -83,7 +83,7 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
     //=========================================================================
 
     @Override
-    public Loader<List<Music>> onCreateLoader (final int id, final Bundle args) {
+    public Loader<List<Music>> onCreateLoader(int id, Bundle args) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateLoader");
 
         Activity activity = getActivity();
@@ -92,14 +92,14 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     @Override
-    public void onLoadFinished(final Loader<List<Music>> loader, final List<Music> data) {
+    public void onLoadFinished(Loader<List<Music>> loader, List<Music> data) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadFinished");
 
         adapter.swap(data);
     }
 
     @Override
-    public void onLoaderReset(final Loader<List<Music>> loader) {
+    public void onLoaderReset(Loader<List<Music>> loader) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
         adapter.swap(null);

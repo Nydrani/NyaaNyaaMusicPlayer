@@ -22,9 +22,8 @@ public class MusicListLoader extends CachedAsyncTaskLoader<List<Music>> {
     private static final String TAG = MusicListLoader.class.getSimpleName();
 
     private List<Music> musicList;
-    private Cursor cursor;
 
-    public MusicListLoader(final Context context) {
+    public MusicListLoader(Context context) {
         super(context);
 
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
@@ -41,7 +40,8 @@ public class MusicListLoader extends CachedAsyncTaskLoader<List<Music>> {
     public List<Music> loadInBackground() {
         if (BuildConfig.DEBUG) Log.d(TAG, "loadInBackground");
 
-        cursor = getCursor();
+        Cursor cursor = getCursor();
+
 
         if (cursor != null) {
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
@@ -62,7 +62,6 @@ public class MusicListLoader extends CachedAsyncTaskLoader<List<Music>> {
 
         if (cursor != null) {
             cursor.close();
-            cursor = null;
         }
 
         return musicList;
@@ -80,7 +79,7 @@ public class MusicListLoader extends CachedAsyncTaskLoader<List<Music>> {
         return makeMusicCursor(context);
     }
 
-    private static Cursor makeMusicCursor(final Context context) {
+    private static Cursor makeMusicCursor(Context context) {
         if (BuildConfig.DEBUG) Log.d(TAG, "makeMusicCursor");
 
         ContentResolver musicResolver = context.getContentResolver();
