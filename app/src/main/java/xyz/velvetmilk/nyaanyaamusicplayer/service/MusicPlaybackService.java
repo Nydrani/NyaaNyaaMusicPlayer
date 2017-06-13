@@ -2,8 +2,11 @@ package xyz.velvetmilk.nyaanyaamusicplayer.service;
 
 import android.app.Service;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.AudioManager;
+import android.media.session.MediaSession;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
@@ -20,15 +23,22 @@ public class MusicPlaybackService extends Service {
     private IBinder binder;
     private Random rng;
     private MusicPlayer musicPlayer;
-
+    private AudioManager audioManager;
+    private MediaSession mediaSession;
+    private MediaSession.Callback mediaSessionCallback;
 
     @Override
     public void onCreate() {
+        super.onCreate();
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
 
         binder = new MusicPlaybackBinder();
         rng = new Random();
-        musicPlayer = new MusicPlayer(this);
+
+        setupMediaSession();
+
+        audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        musicPlayer = new MusicPlayer(audioManager, mediaSession);
     }
 
     @Override
@@ -41,12 +51,20 @@ public class MusicPlaybackService extends Service {
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
         if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
 
+        // release managers
+        audioManager.abandonAudioFocus(musicPlayer);
+        mediaSession.release();
+
+        // release music player
         if (musicPlayer != null) {
             musicPlayer.reset();
             musicPlayer.release();
         }
+
+
     }
 
 
@@ -113,6 +131,7 @@ public class MusicPlaybackService extends Service {
     // ========================================================================
     // MusicPlaybackService helper functions
     // ========================================================================
+
     private Cursor makeMusicLocationCursor(long songId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "makeMusicLocationCursor");
 
@@ -127,6 +146,46 @@ public class MusicPlaybackService extends Service {
         return musicResolver.query(musicUri, projection, selection, selectionArgs, sortOrder);
     }
 
+    private void setupMediaSession() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setupMediaSession");
+
+        mediaSession = new MediaSession(this, TAG);
+        mediaSessionCallback = new MediaSession.Callback() {
+            private final String TAG = MusicPlaybackService.class.getSimpleName();
+
+            @Override
+            public void onPlay() {
+                if (BuildConfig.DEBUG) Log.d(TAG, "onPlay");
+
+                musicPlayer.start();
+            }
+
+            @Override
+            public void onPause() {
+                if (BuildConfig.DEBUG) Log.d(TAG, "onPause");
+
+                musicPlayer.pause();
+            }
+
+
+            @Override
+            public void onStop() {
+                if (BuildConfig.DEBUG) Log.d(TAG, "onStop");
+
+                musicPlayer.stop();
+            }
+
+            @Override
+            public boolean onMediaButtonEvent(Intent mediaButtonIntent) {
+                if (BuildConfig.DEBUG) Log.d(TAG, "onMediaButtonEvent");
+                return false;
+            }
+        };
+
+        mediaSession.setCallback(mediaSessionCallback);
+    }
+
+
     // ========================================================================
     // Internal binder for service
     // ========================================================================
@@ -137,7 +196,10 @@ public class MusicPlaybackService extends Service {
      */
     // @TODO fix copy pasta from android docs
     public class MusicPlaybackBinder extends Binder {
+        private final String TAG = MusicPlaybackService.class.getSimpleName();
+
         public MusicPlaybackService getService() {
+            if (BuildConfig.DEBUG) Log.d(TAG, "getService");
 
             // Return this instance of MusicPlaybackService so clients can call public methods
             return MusicPlaybackService.this;
