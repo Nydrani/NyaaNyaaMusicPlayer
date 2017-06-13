@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -52,6 +53,7 @@ public class BaseActivity extends AppCompatActivity {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
 
         setContentView(R.layout.activity_base);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         if (hasPermissions()) {
             init();
@@ -228,8 +230,8 @@ public class BaseActivity extends AppCompatActivity {
     private ServiceConnection musicPlaybackServiceConnection = new ServiceConnection() {
 
         @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            // We've bound to MusicPlaybackService, cast the IBinder and get MusicPlaybackService instance
             MusicPlaybackService.MusicPlaybackBinder binder = (MusicPlaybackService.MusicPlaybackBinder) service;
             musicPlaybackService = binder.getService();
             MusicUtils.setMusicPlaybackService(musicPlaybackService);
