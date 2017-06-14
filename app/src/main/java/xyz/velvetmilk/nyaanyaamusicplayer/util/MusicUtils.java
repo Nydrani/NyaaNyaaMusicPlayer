@@ -16,7 +16,6 @@ public class MusicUtils {
 
     public MusicUtils() {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
-
     }
 
     public static void setMusicPlaybackService(MusicPlaybackService service) {
