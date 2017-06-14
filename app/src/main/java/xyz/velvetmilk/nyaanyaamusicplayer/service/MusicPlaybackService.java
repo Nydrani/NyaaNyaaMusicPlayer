@@ -1,5 +1,6 @@
 package xyz.velvetmilk.nyaanyaamusicplayer.service;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -12,11 +13,13 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import java.util.Random;
 
 import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
 import xyz.velvetmilk.nyaanyaamusicplayer.media.MusicPlayer;
+import xyz.velvetmilk.nyaanyaamusicplayer.receiver.MediaButtonIntentReceiver;
 
 public class MusicPlaybackService extends Service {
     private static final String TAG = MusicPlaybackService.class.getSimpleName();
@@ -50,6 +53,15 @@ public class MusicPlaybackService extends Service {
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onStartCommand");
+
+        handleCommand(intent);
+
+        return START_STICKY;
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
@@ -63,8 +75,6 @@ public class MusicPlaybackService extends Service {
             musicPlayer.reset();
             musicPlayer.release();
         }
-
-
     }
 
 
@@ -113,6 +123,12 @@ public class MusicPlaybackService extends Service {
         if (BuildConfig.DEBUG) Log.d(TAG, "start");
 
         musicPlayer.start();
+    }
+
+    public void pause() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "pause");
+
+        musicPlayer.pause();
     }
 
     public void stop() {
@@ -167,7 +183,6 @@ public class MusicPlaybackService extends Service {
                 musicPlayer.pause();
             }
 
-
             @Override
             public void onStop() {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onStop");
@@ -177,12 +192,57 @@ public class MusicPlaybackService extends Service {
 
             @Override
             public boolean onMediaButtonEvent(Intent mediaButtonIntent) {
+                boolean ret = super.onMediaButtonEvent(mediaButtonIntent);
                 if (BuildConfig.DEBUG) Log.d(TAG, "onMediaButtonEvent");
-                return false;
+
+                return ret;
             }
         };
 
         mediaSession.setCallback(mediaSessionCallback);
+        PendingIntent pi = PendingIntent.getBroadcast(this, 0,
+                new Intent(this, MediaButtonIntentReceiver.class),
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        mediaSession.setMediaButtonReceiver(pi);
+        mediaSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS
+                | MediaSession.FLAG_HANDLES_MEDIA_BUTTONS);
+    }
+
+    private void handleCommand(Intent intent) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "handleIntent");
+
+        if (intent == null) {
+            return;
+        }
+
+        int keyCode = intent.getIntExtra("KEYCODE", 0);
+
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_MEDIA_PLAY:
+                if (BuildConfig.DEBUG) Log.d(TAG, KeyEvent.keyCodeToString(keyCode));
+                start();
+                break;
+            case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                if (BuildConfig.DEBUG) Log.d(TAG, KeyEvent.keyCodeToString(keyCode));
+                break;
+            case KeyEvent.KEYCODE_MEDIA_PAUSE:
+                if (BuildConfig.DEBUG) Log.d(TAG, KeyEvent.keyCodeToString(keyCode));
+                pause();
+                break;
+            case KeyEvent.KEYCODE_MEDIA_STOP:
+                if (BuildConfig.DEBUG) Log.d(TAG, KeyEvent.keyCodeToString(keyCode));
+                stop();
+                break;
+            case KeyEvent.KEYCODE_MEDIA_NEXT:
+                if (BuildConfig.DEBUG) Log.d(TAG, KeyEvent.keyCodeToString(keyCode));
+                break;
+            case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                if (BuildConfig.DEBUG) Log.d(TAG, KeyEvent.keyCodeToString(keyCode));
+                break;
+            default:
+                if (BuildConfig.DEBUG) Log.d(TAG, "Unknown keycode provided: " + KeyEvent.keyCodeToString(keyCode));
+                break;
+        }
     }
 
 
