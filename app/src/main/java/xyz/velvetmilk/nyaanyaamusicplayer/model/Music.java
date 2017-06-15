@@ -25,6 +25,7 @@ public class Music {
         this.mimeType = mimeType;
     }
 
+
     public long getId() {
         return id;
     }
@@ -75,8 +76,6 @@ public class Music {
 
     @Override
     public boolean equals(Object obj) {
-        final Music other = (Music) obj;
-
         if (this == obj) {
             return true;
         }
@@ -86,22 +85,25 @@ public class Music {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        if (id != other.getId()) {
+
+        final Music other = (Music)obj;
+
+        if (id != other.id) {
             return false;
         }
-        if (!TextUtils.equals(name, other.getName())) {
+        if (!TextUtils.equals(name, other.name)) {
             return false;
         }
-        if (!TextUtils.equals(artistName, other.getArtistName())) {
+        if (!TextUtils.equals(artistName, other.artistName)) {
             return false;
         }
-        if (!TextUtils.equals(albumName, other.getAlbumName())) {
+        if (!TextUtils.equals(albumName, other.albumName)) {
             return false;
         }
-        if (duration != other.getDuration()) {
+        if (duration != other.duration) {
             return false;
         }
-        if (!TextUtils.equals(mimeType, other.getMimeType())) {
+        if (!TextUtils.equals(mimeType, other.mimeType)) {
             return false;
         }
 
