@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 /**
  * Created by nydrani on 27/05/17.
+ * Class for holding music information
  */
 
 public class Music {
@@ -104,6 +105,7 @@ public class Music {
             return false;
         }
 
+        // return true at the end if every field is the same but not same object
         return true;
     }
 

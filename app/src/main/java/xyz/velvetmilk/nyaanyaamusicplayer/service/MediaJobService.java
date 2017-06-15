@@ -9,6 +9,7 @@ import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
 
 /**
  * Created by nydrani on 14/06/17.
+ * Job service for media playback service startup
  */
 
 public class MediaJobService extends JobService {

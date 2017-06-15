@@ -9,10 +9,10 @@ import android.util.Log;
 import java.io.IOException;
 
 import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
-import xyz.velvetmilk.nyaanyaamusicplayer.service.MusicPlaybackService;
 
 /**
  * Created by nydrani on 12/06/17.
+ * Custom music player wrapper around MediaPlayer
  */
 
 public class MusicPlayer implements
@@ -69,6 +69,7 @@ public class MusicPlayer implements
     public void start() {
         if (BuildConfig.DEBUG) Log.d(TAG, "start");
 
+        mediaSession.setActive(true);
         try {
             mediaPlayer.start();
         } catch (IllegalStateException e) {
@@ -89,16 +90,19 @@ public class MusicPlayer implements
     public void stop() {
         if (BuildConfig.DEBUG) Log.d(TAG, "stop");
 
+        mediaSession.setActive(false);
         try {
             mediaPlayer.stop();
         } catch (IllegalStateException e) {
             if (BuildConfig.DEBUG) Log.d(TAG, "Called stop in illegal state");
         }
+
     }
 
     public void reset() {
         if (BuildConfig.DEBUG) Log.d(TAG, "reset");
 
+        mediaSession.setActive(false);
         mediaPlayer.reset();
     }
 
@@ -108,6 +112,11 @@ public class MusicPlayer implements
         mediaPlayer.release();
     }
 
+    public int getCurrentPosition() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentPosition");
+
+        return mediaPlayer.getCurrentPosition();
+    }
 
     // ========================================================================
     // MediaPlayer listener overrides
