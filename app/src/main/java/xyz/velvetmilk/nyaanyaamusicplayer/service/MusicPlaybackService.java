@@ -18,8 +18,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.KeyEvent;
 
-import java.util.Random;
-
 import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
 import xyz.velvetmilk.nyaanyaamusicplayer.media.MusicPlayer;
 import xyz.velvetmilk.nyaanyaamusicplayer.receiver.MediaButtonIntentReceiver;
@@ -27,13 +25,12 @@ import xyz.velvetmilk.nyaanyaamusicplayer.receiver.MediaButtonIntentReceiver;
 public class MusicPlaybackService extends Service {
     private static final String TAG = MusicPlaybackService.class.getSimpleName();
     private IBinder binder;
-    private Random rng;
     private MusicPlayer musicPlayer;
     private AudioManager audioManager;
     private MediaSession mediaSession;
     private MediaController mediaController;
 
-    private long songId;
+    private long musicId;
 
     @Override
     public void onCreate() {
@@ -41,8 +38,7 @@ public class MusicPlaybackService extends Service {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
 
         binder = new MusicPlaybackBinder();
-        rng = new Random();
-        songId = 0;
+        musicId = 0;
 
         setupMediaSession();
         mediaController = mediaSession.getController();
@@ -89,22 +85,18 @@ public class MusicPlaybackService extends Service {
     // Exposed functions for clients
     // ========================================================================
 
-    // @TODO test function
-    public int getRandomNumber() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "getRandomNumber");
 
-        return rng.nextInt(100);
-    }
-
-
-    public void load(long songId) {
+    public void load(long musicId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "load");
 
+        // make sure to reset before any loading
+        musicPlayer.reset();
+
         // store song id
-        this.songId = songId;
+        this.musicId = musicId;
 
         // find the location from the MediaStore
-        Cursor cursor = makeMusicLocationCursor(songId);
+        Cursor cursor = makeMusicLocationCursor(musicId);
 
         if (cursor == null) {
             return;
@@ -163,25 +155,19 @@ public class MusicPlaybackService extends Service {
         musicPlayer.stop();
     }
 
-    public void reset() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "reset");
-
-        musicPlayer.reset();
-    }
-
 
     // ========================================================================
     // MusicPlaybackService helper functions
     // ========================================================================
 
-    private Cursor makeMusicLocationCursor(long songId) {
+    private Cursor makeMusicLocationCursor(long musicId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "makeMusicLocationCursor");
 
         ContentResolver musicResolver = getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String[] projection = { MediaStore.Audio.Media.DATA };
         String selection = MediaStore.Audio.Media._ID + "=?";
-        String[] selectionArgs = { String.valueOf(songId) };
+        String[] selectionArgs = { String.valueOf(musicId) };
         String sortOrder = MediaStore.Audio.Media.DEFAULT_SORT_ORDER;
 
 
@@ -250,7 +236,7 @@ public class MusicPlaybackService extends Service {
                         PlaybackState.ACTION_STOP;
         PlaybackState newState = new PlaybackState.Builder()
                 .setActions(playBackStateActions)
-                .setActiveQueueItemId(songId)
+                .setActiveQueueItemId(musicId)
                 .setState(PlaybackState.STATE_STOPPED, 0, 1.0f)
                 .build();
         mediaSession.setPlaybackState(newState);
@@ -275,7 +261,7 @@ public class MusicPlaybackService extends Service {
 
         PlaybackState.Builder stateBuilder = new PlaybackState.Builder()
                 .setActions(playBackStateActions)
-                .setActiveQueueItemId(songId);
+                .setActiveQueueItemId(musicId);
 
         switch (state) {
             case "PLAY":

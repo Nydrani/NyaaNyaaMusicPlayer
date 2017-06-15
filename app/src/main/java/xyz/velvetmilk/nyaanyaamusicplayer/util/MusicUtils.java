@@ -7,6 +7,7 @@ import xyz.velvetmilk.nyaanyaamusicplayer.service.MusicPlaybackService;
 
 /**
  * Created by nydrani on 12/06/17.
+ * Music service utilities
  */
 
 public class MusicUtils {
@@ -31,7 +32,7 @@ public class MusicUtils {
             return;
         }
 
-        musicPlaybackService.reset();
+        //musicPlaybackService.reset();
         musicPlaybackService.load(songId);
         //musicPlaybackService.start();
     }
