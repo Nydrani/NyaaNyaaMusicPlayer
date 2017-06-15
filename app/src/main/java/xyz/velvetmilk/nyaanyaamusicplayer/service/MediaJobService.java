@@ -19,18 +19,26 @@ public class MediaJobService extends JobService {
     public boolean onStartJob(JobParameters params) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onStartJob");
 
-        int keyCode = params.getExtras().getInt("KEYCODE");
-
         Intent musicPlaybackService = new Intent(getApplicationContext(), MusicPlaybackService.class);
+
+        // transfer extra into the intent
+        int keyCode = params.getExtras().getInt("KEYCODE");
         musicPlaybackService.putExtra("KEYCODE", keyCode);
 
+        // start service and finish the job
         getApplicationContext().startService(musicPlaybackService);
+        jobFinished(params, false);
+
         return true;
     }
 
     @Override
     public boolean onStopJob(JobParameters params) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onStopJob");
+
+        // forcefully kill service if somehow the jobFinished had not been called
+        Intent musicPlaybackService = new Intent(getApplicationContext(), MusicPlaybackService.class);
+        getApplicationContext().stopService(musicPlaybackService);
 
         return true;
     }
