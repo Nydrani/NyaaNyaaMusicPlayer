@@ -7,11 +7,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.AudioManager;
+import android.media.session.MediaController;
 import android.media.session.MediaSession;
+import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.KeyEvent;
 
@@ -28,7 +31,9 @@ public class MusicPlaybackService extends Service {
     private MusicPlayer musicPlayer;
     private AudioManager audioManager;
     private MediaSession mediaSession;
-    private MediaSession.Callback mediaSessionCallback;
+    private MediaController mediaController;
+
+    private long songId;
 
     @Override
     public void onCreate() {
@@ -37,8 +42,10 @@ public class MusicPlaybackService extends Service {
 
         binder = new MusicPlaybackBinder();
         rng = new Random();
+        songId = 0;
 
         setupMediaSession();
+        mediaController = mediaSession.getController();
 
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
         musicPlayer = new MusicPlayer(audioManager, mediaSession);
@@ -93,6 +100,9 @@ public class MusicPlaybackService extends Service {
     public void load(long songId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "load");
 
+        // store song id
+        this.songId = songId;
+
         // find the location from the MediaStore
         Cursor cursor = makeMusicLocationCursor(songId);
 
@@ -131,6 +141,22 @@ public class MusicPlaybackService extends Service {
         musicPlayer.pause();
     }
 
+    public void togglePlayPause() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "togglePlayPause");
+
+        // getPlaybackState can return null. Early exit if so
+        PlaybackState playbackState = mediaController.getPlaybackState();
+        if (playbackState == null) {
+            return;
+        }
+
+        if (playbackState.getState() == PlaybackState.STATE_PLAYING) {
+            pause();
+        } else if (playbackState.getState() == PlaybackState.STATE_PAUSED) {
+            start();
+        }
+    }
+
     public void stop() {
         if (BuildConfig.DEBUG) Log.d(TAG, "stop");
 
@@ -166,13 +192,15 @@ public class MusicPlaybackService extends Service {
         if (BuildConfig.DEBUG) Log.d(TAG, "setupMediaSession");
 
         mediaSession = new MediaSession(this, TAG);
-        mediaSessionCallback = new MediaSession.Callback() {
+
+        MediaSession.Callback mediaSessionCallback = new MediaSession.Callback() {
             private final String TAG = MusicPlaybackService.class.getSimpleName();
 
             @Override
             public void onPlay() {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onPlay");
 
+                updateMediaSession("PLAY");
                 musicPlayer.start();
             }
 
@@ -180,6 +208,7 @@ public class MusicPlaybackService extends Service {
             public void onPause() {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onPause");
 
+                updateMediaSession("PAUSE");
                 musicPlayer.pause();
             }
 
@@ -187,14 +216,20 @@ public class MusicPlaybackService extends Service {
             public void onStop() {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onStop");
 
+                updateMediaSession("STOP");
                 musicPlayer.stop();
             }
 
             @Override
-            public boolean onMediaButtonEvent(Intent mediaButtonIntent) {
+            public boolean onMediaButtonEvent(@NonNull Intent mediaButtonIntent) {
                 boolean ret = super.onMediaButtonEvent(mediaButtonIntent);
                 if (BuildConfig.DEBUG) Log.d(TAG, "onMediaButtonEvent");
 
+                final KeyEvent event = mediaButtonIntent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+
+                if (BuildConfig.DEBUG) Log.d(TAG, event.toString());
+
+                if (BuildConfig.DEBUG) Log.d(TAG, String.valueOf(ret));
                 return ret;
             }
         };
@@ -206,11 +241,76 @@ public class MusicPlaybackService extends Service {
         mediaSession.setMediaButtonReceiver(pi);
         mediaSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS
                 | MediaSession.FLAG_HANDLES_MEDIA_BUTTONS);
+
+        long playBackStateActions =
+                PlaybackState.ACTION_PLAY |
+                        PlaybackState.ACTION_PLAY_PAUSE |
+                        PlaybackState.ACTION_PLAY_FROM_MEDIA_ID |
+                        PlaybackState.ACTION_PAUSE |
+                        PlaybackState.ACTION_STOP;
+        PlaybackState newState = new PlaybackState.Builder()
+                .setActions(playBackStateActions)
+                .setActiveQueueItemId(songId)
+                .setState(PlaybackState.STATE_STOPPED, 0, 1.0f)
+                .build();
+        mediaSession.setPlaybackState(newState);
+    }
+
+    public void updateMediaSession(String state) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updateMediaSession");
+
+        // @TODO debugging
+        if (BuildConfig.DEBUG) Log.d(TAG, "State before: " );
+        PlaybackState playbackState = mediaController.getPlaybackState();
+        if (playbackState != null) {
+            if (BuildConfig.DEBUG) Log.d(TAG, String.valueOf(playbackState.getState()));
+        }
+
+        long playBackStateActions =
+                PlaybackState.ACTION_PLAY |
+                PlaybackState.ACTION_PLAY_PAUSE |
+                PlaybackState.ACTION_PLAY_FROM_MEDIA_ID |
+                PlaybackState.ACTION_PAUSE |
+                PlaybackState.ACTION_STOP;
+
+        PlaybackState.Builder stateBuilder = new PlaybackState.Builder()
+                .setActions(playBackStateActions)
+                .setActiveQueueItemId(songId);
+
+        switch (state) {
+            case "PLAY":
+                stateBuilder.setState(PlaybackState.STATE_PLAYING, musicPlayer.getCurrentPosition(),
+                        1.0f);
+                break;
+            case "PAUSE":
+                stateBuilder.setState(PlaybackState.STATE_PAUSED, musicPlayer.getCurrentPosition(),
+                    1.0f);
+                break;
+            case "STOP":
+                stateBuilder.setState(PlaybackState.STATE_STOPPED, musicPlayer.getCurrentPosition(),
+                    1.0f);
+                break;
+            default:
+                if (BuildConfig.DEBUG) Log.d(TAG, "Unknown state received");
+                break;
+        }
+
+        // @TODO debugging
+        PlaybackState newState = stateBuilder.build();
+        mediaSession.setPlaybackState(newState);
+
+        if (BuildConfig.DEBUG) Log.d(TAG, "State after: " );
+        playbackState = mediaController.getPlaybackState();
+        if (playbackState != null) {
+            if (BuildConfig.DEBUG) Log.d(TAG, String.valueOf(playbackState.getState()));
+        }
     }
 
     private void handleCommand(Intent intent) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "handleIntent");
+        if (BuildConfig.DEBUG) Log.d(TAG, "handleCommand");
 
+        // @TODO find out when intent can be null
+        // intent can be null (not sure when)
         if (intent == null) {
             return;
         }
@@ -224,6 +324,7 @@ public class MusicPlaybackService extends Service {
                 break;
             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                 if (BuildConfig.DEBUG) Log.d(TAG, KeyEvent.keyCodeToString(keyCode));
+                togglePlayPause();
                 break;
             case KeyEvent.KEYCODE_MEDIA_PAUSE:
                 if (BuildConfig.DEBUG) Log.d(TAG, KeyEvent.keyCodeToString(keyCode));
