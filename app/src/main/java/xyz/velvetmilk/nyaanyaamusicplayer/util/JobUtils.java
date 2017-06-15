@@ -12,10 +12,12 @@ import xyz.velvetmilk.nyaanyaamusicplayer.service.MediaJobService;
 
 /**
  * Created by nydrani on 14/06/17.
+ * Utilities for scheduling jobs
  */
 
 public class JobUtils {
     private static final String TAG = JobUtils.class.getSimpleName();
+
 
     public JobUtils() {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
@@ -30,6 +32,8 @@ public class JobUtils {
         PersistableBundle infoBundle = new PersistableBundle();
         infoBundle.putInt("KEYCODE", keyCode);
         JobInfo jobInfo = new JobInfo.Builder(0, mediaJobServiceComponent)
+                .setMinimumLatency(0)
+                .setOverrideDeadline(5000)
                 .setExtras(infoBundle)
                 .build();
 
