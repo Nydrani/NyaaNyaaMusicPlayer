@@ -11,12 +11,14 @@ import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
 import android.net.Uri;
-import android.os.Binder;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.KeyEvent;
+
+import java.lang.ref.WeakReference;
 
 import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
 import xyz.velvetmilk.nyaanyaamusicplayer.media.MusicPlayer;
@@ -31,12 +33,16 @@ public class MusicPlaybackService extends Service {
     private MediaController mediaController;
 
 
+    // ========================================================================
+    // Service lifecycle overrides
+    // ========================================================================
+
     @Override
     public void onCreate() {
-        super.onCreate();
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
+        super.onCreate();
 
-        binder = new MusicPlaybackBinder();
+        binder = new NyaaNyaaMusicServiceStub(this);
 
         setupMediaSession();
         mediaController = mediaSession.getController();
@@ -68,13 +74,13 @@ public class MusicPlaybackService extends Service {
 
         stopSelf();
 
-        return true;
+        return super.onUnbind(intent);
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
+        super.onDestroy();
 
         // release managers
         audioManager.abandonAudioFocus(musicPlayer);
@@ -91,7 +97,6 @@ public class MusicPlaybackService extends Service {
     // ========================================================================
     // Exposed functions for clients
     // ========================================================================
-
 
     public void load(long musicId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "load");
@@ -213,14 +218,18 @@ public class MusicPlaybackService extends Service {
 
             @Override
             public boolean onMediaButtonEvent(@NonNull Intent mediaButtonIntent) {
-                boolean ret = super.onMediaButtonEvent(mediaButtonIntent);
                 if (BuildConfig.DEBUG) Log.d(TAG, "onMediaButtonEvent");
 
                 final KeyEvent event = mediaButtonIntent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-                if (BuildConfig.DEBUG) Log.d(TAG, event.toString());
 
-                if (BuildConfig.DEBUG) Log.d(TAG, String.valueOf(ret));
-                return ret;
+                // event should never be null --> but do sanity check just in case
+                if (event != null) {
+                    if (BuildConfig.DEBUG) Log.d(TAG, event.toString());
+                } else {
+                    if (BuildConfig.DEBUG) Log.d(TAG, "no KeyEvent found");
+                }
+
+                return super.onMediaButtonEvent(mediaButtonIntent);
             }
         };
 
@@ -275,22 +284,46 @@ public class MusicPlaybackService extends Service {
 
 
     // ========================================================================
-    // Internal binder for service
+    // AIDL music playback service implementation for binder
     // ========================================================================
 
-    /**
-     * Class used for the client Binder. Because we know this service always
-     * runs in the same process as its clients, we don't need to deal with IPC.
-     */
-    // @TODO fix copy pasta from android docs
-    public class MusicPlaybackBinder extends Binder {
-        private final String TAG = MusicPlaybackService.class.getSimpleName();
+    private static class NyaaNyaaMusicServiceStub extends INyaaNyaaMusicService.Stub {
+        private static final String TAG = NyaaNyaaMusicServiceStub.class.getSimpleName();
 
-        public MusicPlaybackService getService() {
-            if (BuildConfig.DEBUG) Log.d(TAG, "getService");
+        private final WeakReference<MusicPlaybackService> musicPlaybackService;
 
-            // Return this instance of MusicPlaybackService so clients can call public methods
-            return MusicPlaybackService.this;
+        private NyaaNyaaMusicServiceStub(MusicPlaybackService service) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
+
+            musicPlaybackService = new WeakReference<>(service);
+        }
+
+        @Override
+        public void load(long musicId) throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "load");
+
+            musicPlaybackService.get().load(musicId);
+        }
+
+        @Override
+        public void start() throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "start");
+
+            musicPlaybackService.get().start();
+        }
+
+        @Override
+        public void pause() throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "pause");
+
+            musicPlaybackService.get().pause();
+        }
+
+        @Override
+        public void stop() throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "stop");
+
+            musicPlaybackService.get().stop();
         }
     }
 }
