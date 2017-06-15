@@ -145,23 +145,6 @@ public class MusicPlaybackService extends Service {
         musicPlayer.pause();
     }
 
-    public void togglePlayPause() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "togglePlayPause");
-
-        // getPlaybackState can return null. Early exit if so
-        PlaybackState playbackState = mediaController.getPlaybackState();
-        if (playbackState == null) {
-            if (BuildConfig.DEBUG) Log.w(TAG, "PlaybackState not found");
-            return;
-        }
-
-        if (playbackState.getState() == PlaybackState.STATE_PLAYING) {
-            pause();
-        } else if (playbackState.getState() == PlaybackState.STATE_PAUSED) {
-            start();
-        }
-    }
-
     public void stop() {
         if (BuildConfig.DEBUG) Log.d(TAG, "stop");
 
@@ -279,6 +262,23 @@ public class MusicPlaybackService extends Service {
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown keycode provided: " + KeyEvent.keyCodeToString(keyCode));
                 break;
+        }
+    }
+
+    private void togglePlayPause() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "togglePlayPause");
+
+        // getPlaybackState can return null. Early exit if so
+        PlaybackState playbackState = mediaController.getPlaybackState();
+        if (playbackState == null) {
+            if (BuildConfig.DEBUG) Log.w(TAG, "PlaybackState not found");
+            return;
+        }
+
+        if (playbackState.getState() == PlaybackState.STATE_PLAYING) {
+            pause();
+        } else if (playbackState.getState() == PlaybackState.STATE_PAUSED) {
+            start();
         }
     }
 
