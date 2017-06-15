@@ -18,10 +18,10 @@ import xyz.velvetmilk.nyaanyaamusicplayer.service.MediaJobService;
 public class JobUtils {
     private static final String TAG = JobUtils.class.getSimpleName();
 
-
     public JobUtils() {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
     }
+
 
     public static void scheduleMediaJob(Context context, int keyCode) {
         if (BuildConfig.DEBUG) Log.d(TAG, "scheduleMediaJob");

@@ -70,7 +70,6 @@ public class MusicListLoader extends CachedAsyncTaskLoader<List<Music>> {
 
         cursor.close();
 
-
         return musicList;
     }
 

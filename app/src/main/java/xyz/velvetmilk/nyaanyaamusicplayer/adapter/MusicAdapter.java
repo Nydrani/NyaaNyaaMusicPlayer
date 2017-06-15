@@ -29,7 +29,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHol
 
     private List<Music> musicList;
 
-
     public MusicAdapter(List<Music> musicList) {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 

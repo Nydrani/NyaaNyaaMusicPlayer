@@ -18,18 +18,18 @@ public abstract class CachedAsyncTaskLoader<D> extends AsyncTaskLoader<D> {
     public CachedAsyncTaskLoader(Context context) {
         super(context);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
-
     }
+
 
     @Override
     protected void onStartLoading() {
-        super.onStartLoading();
         if (BuildConfig.DEBUG) Log.d(TAG, "onStartLoading");
+        super.onStartLoading();
 
-        if (this.mData != null) {
-            deliverResult(this.mData);
+        if (mData != null) {
+            deliverResult(mData);
         }
-        if (takeContentChanged() || this.mData == null) {
+        if (takeContentChanged() || mData == null) {
             forceLoad();
         }
     }
@@ -38,7 +38,7 @@ public abstract class CachedAsyncTaskLoader<D> extends AsyncTaskLoader<D> {
     public void deliverResult(D data) {
         if (BuildConfig.DEBUG) Log.d(TAG, "deliverResult");
 
-        this.mData = data;
+        mData = data;
         if (isStarted()) {
             super.deliverResult(data);
         }
@@ -46,18 +46,18 @@ public abstract class CachedAsyncTaskLoader<D> extends AsyncTaskLoader<D> {
 
     @Override
     protected void onStopLoading() {
-        super.onStopLoading();
         if (BuildConfig.DEBUG) Log.d(TAG, "onStopLoading");
+        super.onStopLoading();
 
         cancelLoad();
     }
 
     @Override
     protected void onReset() {
-        super.onReset();
         if (BuildConfig.DEBUG) Log.d(TAG, "onReset");
+        super.onReset();
 
         onStopLoading();
-        this.mData = null;
+        mData = null;
     }
 }

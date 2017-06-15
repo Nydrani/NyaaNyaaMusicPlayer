@@ -12,6 +12,7 @@ import xyz.velvetmilk.nyaanyaamusicplayer.util.JobUtils;
 public class MediaButtonIntentReceiver extends BroadcastReceiver {
     private static final String TAG = MediaButtonIntentReceiver.class.getSimpleName();
 
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onReceive");

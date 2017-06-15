@@ -30,7 +30,6 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
     private static final String TAG = MusicListFragment.class.getSimpleName();
 
     private RecyclerView.LayoutManager layout;
-
     private MusicAdapter adapter;
 
 
@@ -47,8 +46,8 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
+        super.onCreate(savedInstanceState);
 
         Activity activity = getActivity();
         List<Music> musicList = new ArrayList<>();
@@ -71,8 +70,8 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
         if (BuildConfig.DEBUG) Log.d(TAG, "onActivityCreated");
+        super.onActivityCreated(savedInstanceState);
 
         getLoaderManager().initLoader(0, null, this);
     }

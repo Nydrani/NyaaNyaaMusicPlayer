@@ -15,6 +15,7 @@ import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
 public class MediaJobService extends JobService {
     private static final String TAG = MediaJobService.class.getSimpleName();
 
+
     @Override
     public boolean onStartJob(JobParameters params) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onStartJob");
