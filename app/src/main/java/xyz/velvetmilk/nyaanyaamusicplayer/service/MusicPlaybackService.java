@@ -37,9 +37,9 @@ public class MusicPlaybackService extends Service {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
 
         binder = new MusicPlaybackBinder();
-        mediaController = mediaSession.getController();
 
         setupMediaSession();
+        mediaController = mediaSession.getController();
 
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
         musicPlayer = new MusicPlayer(audioManager, mediaSession);
