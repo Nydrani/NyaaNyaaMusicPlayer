@@ -63,6 +63,15 @@ public class MusicPlaybackService extends Service {
     }
 
     @Override
+    public boolean onUnbind(Intent intent) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onUnbind");
+
+        stopSelf();
+
+        return true;
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
