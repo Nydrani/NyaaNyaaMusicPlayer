@@ -26,6 +26,11 @@ before_script:
   - echo y | ${ANDROID_HOME}/tools/bin/sdkmanager "extras;google;m2repository"
   - chmod +x ./gradlew
 
+job:
+  artifacts:
+    when: on_success
+    expire_in: 1 mo
+
 stages:
   - build
   - test
