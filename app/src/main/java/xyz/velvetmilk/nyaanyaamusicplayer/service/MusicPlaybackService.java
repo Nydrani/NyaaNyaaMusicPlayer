@@ -116,10 +116,10 @@ public class MusicPlaybackService extends Service {
 
         // more than 1 item of this id --> debug me
         if (cursor.getCount() != 1) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "found more than 1 item");
+            if (BuildConfig.DEBUG) Log.w(TAG, "Found more than 1 item");
             int dataColumn = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                if (BuildConfig.DEBUG) Log.d(TAG, "item: " + cursor.getString(dataColumn));
+                if (BuildConfig.DEBUG) Log.w(TAG, "Item: " + cursor.getString(dataColumn));
             }
 
             cursor.close();
@@ -151,7 +151,7 @@ public class MusicPlaybackService extends Service {
         // getPlaybackState can return null. Early exit if so
         PlaybackState playbackState = mediaController.getPlaybackState();
         if (playbackState == null) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "unknown playbackstate");
+            if (BuildConfig.DEBUG) Log.w(TAG, "PlaybackState not found");
             return;
         }
 
@@ -226,7 +226,7 @@ public class MusicPlaybackService extends Service {
                 if (event != null) {
                     if (BuildConfig.DEBUG) Log.d(TAG, event.toString());
                 } else {
-                    if (BuildConfig.DEBUG) Log.d(TAG, "no KeyEvent found");
+                    if (BuildConfig.DEBUG) Log.w(TAG, "KeyEvent not found");
                 }
 
                 return super.onMediaButtonEvent(mediaButtonIntent);
@@ -277,7 +277,7 @@ public class MusicPlaybackService extends Service {
                 if (BuildConfig.DEBUG) Log.d(TAG, KeyEvent.keyCodeToString(keyCode));
                 break;
             default:
-                if (BuildConfig.DEBUG) Log.d(TAG, "Unknown keycode provided: " + KeyEvent.keyCodeToString(keyCode));
+                if (BuildConfig.DEBUG) Log.w(TAG, "Unknown keycode provided: " + KeyEvent.keyCodeToString(keyCode));
                 break;
         }
     }

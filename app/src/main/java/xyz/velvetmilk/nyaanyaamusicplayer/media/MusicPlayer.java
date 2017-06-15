@@ -60,9 +60,9 @@ public class MusicPlayer implements
             mediaPlayer.setDataSource(source);
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "Unable to load data source: " + source);
+            if (BuildConfig.DEBUG) Log.e(TAG, "Unable to load data source: " + source);
         } catch (IllegalStateException e) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "Called prepareAsync in illegal state");
+            if (BuildConfig.DEBUG) Log.e(TAG, "Called prepareAsync in illegal state");
         }
     }
 
@@ -74,7 +74,7 @@ public class MusicPlayer implements
         try {
             mediaPlayer.start();
         } catch (IllegalStateException e) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "Called start in illegal state");
+            if (BuildConfig.DEBUG) Log.e(TAG, "Called start in illegal state");
         }
     }
 
@@ -85,7 +85,7 @@ public class MusicPlayer implements
         try {
             mediaPlayer.pause();
         } catch (IllegalStateException e) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "Called pause in illegal state");
+            if (BuildConfig.DEBUG) Log.e(TAG, "Called pause in illegal state");
         }
     }
 
@@ -97,7 +97,7 @@ public class MusicPlayer implements
         try {
             mediaPlayer.stop();
         } catch (IllegalStateException e) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "Called stop in illegal state");
+            if (BuildConfig.DEBUG) Log.e(TAG, "Called stop in illegal state");
         }
     }
 
@@ -286,7 +286,7 @@ public class MusicPlayer implements
                         1.0f);
                 break;
             default:
-                if (BuildConfig.DEBUG) Log.d(TAG, "Unknown state received");
+                if (BuildConfig.DEBUG) Log.w(TAG, "Unknown state received");
                 return;
         }
 

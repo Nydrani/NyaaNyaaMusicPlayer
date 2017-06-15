@@ -27,11 +27,15 @@ public class MusicUtils {
 
 
     public static boolean bindToService(Context context) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "bindToService");
+
         Intent intent = new Intent(context, MusicPlaybackService.class);
         return context.bindService(intent, musicServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     public static void unbindFromService(Context context) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "unbindFromService");
+
         context.unbindService(musicServiceConnection);
     }
 
@@ -45,7 +49,7 @@ public class MusicUtils {
         try {
             musicService.load(songId);
         } catch (RemoteException e) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "Music service reference lost");
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
         }
     }
 
@@ -59,7 +63,7 @@ public class MusicUtils {
         try {
             musicService.stop();
         } catch (RemoteException e) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "Music service reference lost");
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
         }
     }
 

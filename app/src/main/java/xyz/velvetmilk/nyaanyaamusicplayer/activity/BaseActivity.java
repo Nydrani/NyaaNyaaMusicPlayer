@@ -80,7 +80,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int resultCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        if (BuildConfig.DEBUG) Log.w(TAG, "onCreateOptionsMenu");
+        if (BuildConfig.DEBUG) Log.d(TAG, "onRequestPermissionsResult");
 
         switch (resultCode) {
             case PERMISSION_REQUEST_CODE:
@@ -91,7 +91,7 @@ public class BaseActivity extends AppCompatActivity {
                 }
                 break;
             default:
-                if (BuildConfig.DEBUG) Log.w(TAG, "onCreateOptionsMenu: Unhandled result code");
+                if (BuildConfig.DEBUG) Log.w(TAG, "Unhandled result code");
                 break;
         }
     }
@@ -131,7 +131,7 @@ public class BaseActivity extends AppCompatActivity {
                 return true;
 
             default:
-                if (BuildConfig.DEBUG) Log.d(TAG, "Unknown menu item");
+                if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item");
                 break;
         }
         return super.onOptionsItemSelected(item);
