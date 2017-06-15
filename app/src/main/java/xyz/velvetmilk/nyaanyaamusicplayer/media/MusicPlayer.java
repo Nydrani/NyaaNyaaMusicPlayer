@@ -101,7 +101,6 @@ public class MusicPlayer implements
         } catch (IllegalStateException e) {
             if (BuildConfig.DEBUG) Log.d(TAG, "Called stop in illegal state");
         }
-
     }
 
     public void reset() {
@@ -118,6 +117,8 @@ public class MusicPlayer implements
     }
 
     public void setMusicId(long musicId) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setMusicId");
+
         this.musicId = musicId;
     }
 
@@ -231,6 +232,8 @@ public class MusicPlayer implements
     }
 
     private void initMediaSession() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "initMediaSession");
+
         long playBackStateActions =
                 PlaybackState.ACTION_PLAY |
                         PlaybackState.ACTION_PLAY_PAUSE |
