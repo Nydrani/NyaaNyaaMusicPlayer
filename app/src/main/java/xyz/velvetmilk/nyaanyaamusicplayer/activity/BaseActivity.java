@@ -62,6 +62,18 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onPause");
+        super.onPause();
+    }
+
+    @Override
     protected void onStop() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onStop");
         super.onStop();
@@ -70,6 +82,12 @@ public class BaseActivity extends AppCompatActivity {
             MusicUtils.unbindFromService(this);
             bound = false;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
+        super.onDestroy();
     }
 
 
@@ -81,6 +99,12 @@ public class BaseActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int resultCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onRequestPermissionsResult");
+
+        // don't parse if there was empty permissions + grant results due to multiple requests
+        if (permissions.length == 0 && grantResults.length == 0) {
+            return;
+        }
+
 
         switch (resultCode) {
             case PERMISSION_REQUEST_CODE:
@@ -180,10 +204,10 @@ public class BaseActivity extends AppCompatActivity {
         }
 
         String[] permissions = new String[1];
-        permissions[0] = Manifest.permission.READ_EXTERNAL_STORAGE;
         List<String> permissionList = new ArrayList<>();
 
-
+        permissions[0] = Manifest.permission.READ_EXTERNAL_STORAGE;
+        
         for (String permission : permissions) {
             if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
                 permissionList.add(permission);
@@ -211,6 +235,7 @@ public class BaseActivity extends AppCompatActivity {
                 return false;
             }
         }
+
         return true;
     }
 }
