@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+apply from: "$rootDir/versioning.gradle"
+
 android {
     compileSdkVersion 25
     buildToolsVersion '26.0.0'
@@ -7,8 +9,8 @@ android {
         applicationId "xyz.velvetmilk.nyaanyaamusicplayer"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode this.getVersionCode()
+        versionName this.getVersionName()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
