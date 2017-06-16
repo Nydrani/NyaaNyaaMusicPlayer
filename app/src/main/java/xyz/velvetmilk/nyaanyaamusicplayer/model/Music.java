@@ -1,6 +1,6 @@
 package xyz.velvetmilk.nyaanyaamusicplayer.model;
 
-import android.text.TextUtils;
+import java.util.Objects;
 
 /**
  * Created by nydrani on 27/05/17.
@@ -91,19 +91,19 @@ public class Music {
         if (id != other.id) {
             return false;
         }
-        if (!TextUtils.equals(name, other.name)) {
+        if (!Objects.equals(name, other.name)) {
             return false;
         }
-        if (!TextUtils.equals(artistName, other.artistName)) {
+        if (!Objects.equals(artistName, other.artistName)) {
             return false;
         }
-        if (!TextUtils.equals(albumName, other.albumName)) {
+        if (!Objects.equals(albumName, other.albumName)) {
             return false;
         }
         if (duration != other.duration) {
             return false;
         }
-        if (!TextUtils.equals(mimeType, other.mimeType)) {
+        if (!Objects.equals(mimeType, other.mimeType)) {
             return false;
         }
 
