@@ -9,7 +9,7 @@ variables:
 
 before_script:
   - apt-get --quiet update --yes
-  - apt-get --quiet install --yes wget unzip lib32stdc++6 lib32z1 file
+  - apt-get --quiet install --yes wget unzip lib32stdc++6 lib32z1 file git
   - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS_REV}.zip
   - unzip -qq android-sdk.zip -d ${PWD}/android-sdk-linux
   - mkdir ${HOME}/.android
