@@ -1,5 +1,6 @@
 package xyz.velvetmilk.nyaanyaamusicplayer.service;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
@@ -13,6 +14,7 @@ import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -28,9 +30,15 @@ public class MusicPlaybackService extends Service {
     private static final String TAG = MusicPlaybackService.class.getSimpleName();
     private IBinder binder;
     private MusicPlayer musicPlayer;
+    private AlarmManager alarmManager;
+    private PendingIntent shutdownPendingIntent;
     private AudioManager audioManager;
     private MediaSession mediaSession;
     private MediaController mediaController;
+
+    // 5 minutes allowed to be inactive before death
+    private static final int DELAY_TIME = 5 * 60 * 1000;
+    private static final String ACTION_SHUTDOWN = "SHUTDOWN";
 
 
     // ========================================================================
@@ -43,6 +51,7 @@ public class MusicPlaybackService extends Service {
         super.onCreate();
 
         binder = new NyaaNyaaMusicServiceStub(this);
+        setupAlarms();
 
         setupMediaSession();
         mediaController = mediaSession.getController();
@@ -55,13 +64,33 @@ public class MusicPlaybackService extends Service {
     public IBinder onBind(Intent intent) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onBind");
 
-        // @TODO Return the communication channel to the service.
         return binder;
+    }
+
+    @Override
+    public void onRebind(Intent intent) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onRebind");
+
+        cancelDelayedShutdown();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onStartCommand");
+
+        // @TODO find out when intent can be null
+        // intent can be null (not sure when)
+        if (intent == null) {
+            return START_STICKY;
+        }
+
+        final String action = intent.getAction();
+        if (ACTION_SHUTDOWN.equals(action)) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "ACTION_SHUTDOWN called");
+
+            stopSelf();
+            return START_NOT_STICKY;
+        }
 
         handleCommand(intent);
 
@@ -72,7 +101,7 @@ public class MusicPlaybackService extends Service {
     public boolean onUnbind(Intent intent) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onUnbind");
 
-        stopSelf();
+        scheduleDelayedShutdown();
 
         return super.onUnbind(intent);
     }
@@ -81,6 +110,9 @@ public class MusicPlaybackService extends Service {
     public void onDestroy() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
         super.onDestroy();
+
+        // make sure to cancel alarmmanager since it still runs in the background
+        cancelDelayedShutdown();
 
         // release managers
         audioManager.abandonAudioFocus(musicPlayer);
@@ -228,11 +260,6 @@ public class MusicPlaybackService extends Service {
     private void handleCommand(Intent intent) {
         if (BuildConfig.DEBUG) Log.d(TAG, "handleCommand");
 
-        // @TODO find out when intent can be null
-        // intent can be null (not sure when)
-        if (intent == null) {
-            return;
-        }
 
         int keyCode = intent.getIntExtra("KEYCODE", 0);
 
@@ -280,6 +307,30 @@ public class MusicPlaybackService extends Service {
         } else if (playbackState.getState() == PlaybackState.STATE_PAUSED) {
             start();
         }
+    }
+
+    private void scheduleDelayedShutdown() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "scheduleDelayedShutdown");
+
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + DELAY_TIME, shutdownPendingIntent);
+    }
+
+    private void cancelDelayedShutdown() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "cancelDelayedShutdown");
+
+        alarmManager.cancel(shutdownPendingIntent);
+    }
+
+    private void setupAlarms() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setupAlarms");
+
+        alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+
+        Intent intent = new Intent(this, MusicPlaybackService.class);
+        intent.setAction(ACTION_SHUTDOWN);
+
+        shutdownPendingIntent = PendingIntent.getService(this, 0, intent, 0);
     }
 
 
