@@ -32,7 +32,6 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
     private RecyclerView.LayoutManager layout;
     private MusicAdapter adapter;
 
-
     public static MusicListFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
 

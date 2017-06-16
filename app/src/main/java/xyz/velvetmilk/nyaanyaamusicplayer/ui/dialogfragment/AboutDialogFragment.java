@@ -19,7 +19,6 @@ import xyz.velvetmilk.nyaanyaamusicplayer.R;
 public class AboutDialogFragment extends DialogFragment {
     private static final String TAG = AboutDialogFragment.class.getSimpleName();
 
-
     public static AboutDialogFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
 
