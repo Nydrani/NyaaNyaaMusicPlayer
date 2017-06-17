@@ -48,7 +48,6 @@ public class MusicPlaybackService extends Service {
     @Override
     public void onCreate() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
-        super.onCreate();
 
         binder = new NyaaNyaaMusicServiceStub(this);
         setupAlarms();
@@ -103,13 +102,12 @@ public class MusicPlaybackService extends Service {
 
         scheduleDelayedShutdown();
 
-        return super.onUnbind(intent);
+        return true;
     }
 
     @Override
     public void onDestroy() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
-        super.onDestroy();
 
         // make sure to cancel alarmmanager since it still runs in the background
         cancelDelayedShutdown();
