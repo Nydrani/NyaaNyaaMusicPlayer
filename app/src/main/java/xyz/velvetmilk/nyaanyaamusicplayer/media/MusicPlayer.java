@@ -1,5 +1,6 @@
 package xyz.velvetmilk.nyaanyaamusicplayer.media;
 
+import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -24,6 +25,7 @@ public class MusicPlayer implements
         AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = MusicPlayer.class.getSimpleName();
 
+    private Context context;
     private MediaPlayer mediaPlayer;
     private AudioAttributes audioAttributes;
     private AudioManager audioManager;
@@ -32,11 +34,14 @@ public class MusicPlayer implements
 
     private long musicId;
 
-    public MusicPlayer(AudioManager audioManager, MediaSession mediaSession) {
+    public MusicPlayer(Context context, MediaSession mediaSession) {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        this.audioManager = audioManager;
+        this.context = context;
         this.mediaSession = mediaSession;
+
+        audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+
         audioAttributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA)
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build();
@@ -104,6 +109,7 @@ public class MusicPlayer implements
     public void reset() {
         if (BuildConfig.DEBUG) Log.d(TAG, "reset");
 
+        audioManager.abandonAudioFocus(this);
         mediaSession.setActive(false);
         mediaPlayer.reset();
     }

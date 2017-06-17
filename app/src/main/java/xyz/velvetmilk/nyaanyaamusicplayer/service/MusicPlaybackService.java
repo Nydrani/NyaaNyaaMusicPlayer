@@ -7,7 +7,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.media.AudioManager;
 import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
@@ -32,7 +31,6 @@ public class MusicPlaybackService extends Service {
     private MusicPlayer musicPlayer;
     private AlarmManager alarmManager;
     private PendingIntent shutdownPendingIntent;
-    private AudioManager audioManager;
     private MediaSession mediaSession;
     private MediaController mediaController;
 
@@ -55,8 +53,7 @@ public class MusicPlaybackService extends Service {
         setupMediaSession();
         mediaController = mediaSession.getController();
 
-        audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-        musicPlayer = new MusicPlayer(audioManager, mediaSession);
+        musicPlayer = new MusicPlayer(this, mediaSession);
     }
 
     @Override
@@ -113,7 +110,6 @@ public class MusicPlaybackService extends Service {
         cancelDelayedShutdown();
 
         // release managers
-        audioManager.abandonAudioFocus(musicPlayer);
         mediaSession.release();
 
         // release music player
