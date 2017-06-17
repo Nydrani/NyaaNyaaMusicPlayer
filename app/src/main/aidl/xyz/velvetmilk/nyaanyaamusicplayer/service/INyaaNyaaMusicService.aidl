@@ -2,8 +2,9 @@
 package xyz.velvetmilk.nyaanyaamusicplayer.service;
 
 interface INyaaNyaaMusicService {
-    void load(long musicId);
+    boolean load(long musicId);
     void start();
     void pause();
     void stop();
+    void reset();
 }

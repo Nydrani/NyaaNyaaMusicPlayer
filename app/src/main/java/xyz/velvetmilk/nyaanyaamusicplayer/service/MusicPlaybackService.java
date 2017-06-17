@@ -65,7 +65,7 @@ public class MusicPlaybackService extends Service implements
         mediaController = mediaSession.getController();
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
-        musicPlayer = new MusicPlayer(this, mediaSession);
+        musicPlayer = new MusicPlayer(mediaSession);
     }
 
     @Override
@@ -143,11 +143,8 @@ public class MusicPlaybackService extends Service implements
     // Exposed functions for clients
     // ========================================================================
 
-    public void load(long musicId) {
+    public boolean load(long musicId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "load");
-
-        // make sure to reset before any loading
-        musicPlayer.reset();
 
         // store song id
         musicPlayer.setMusicId(musicId);
@@ -156,7 +153,7 @@ public class MusicPlaybackService extends Service implements
         Cursor cursor = makeMusicLocationCursor(musicId);
 
         if (cursor == null) {
-            return;
+            return false;
         }
 
         // more than 1 item of this id --> debug me
@@ -168,14 +165,15 @@ public class MusicPlaybackService extends Service implements
             }
 
             cursor.close();
-            return;
+            return false;
         }
 
         // success
         cursor.moveToFirst();
         String loc = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
-        musicPlayer.load(loc);
         cursor.close();
+
+        return musicPlayer.load(loc);
     }
 
     public void start() {
@@ -206,6 +204,14 @@ public class MusicPlaybackService extends Service implements
         stopForeground(true);
         audioManager.abandonAudioFocus(this);
         musicPlayer.stop();
+    }
+
+    public void reset() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "reset");
+
+        stopForeground(true);
+        audioManager.abandonAudioFocus(this);
+        musicPlayer.reset();
     }
 
     public void setVolume(float leftVolume, float rightVolume) {
@@ -441,10 +447,10 @@ public class MusicPlaybackService extends Service implements
         }
 
         @Override
-        public void load(long musicId) throws RemoteException {
+        public boolean load(long musicId) throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "load");
 
-            musicPlaybackService.get().load(musicId);
+            return musicPlaybackService.get().load(musicId);
         }
 
         @Override
@@ -466,6 +472,13 @@ public class MusicPlaybackService extends Service implements
             if (BuildConfig.DEBUG) Log.d(TAG, "stop");
 
             musicPlaybackService.get().stop();
+        }
+
+        @Override
+        public void reset() throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "reset");
+
+            musicPlaybackService.get().reset();
         }
     }
 }

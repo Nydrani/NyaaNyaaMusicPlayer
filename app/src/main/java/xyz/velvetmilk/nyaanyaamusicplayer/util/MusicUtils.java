@@ -50,6 +50,7 @@ public class MusicUtils {
         if (BuildConfig.DEBUG) Log.d(TAG, "stopService");
 
         Intent intent = new Intent(context, MusicPlaybackService.class);
+        intent.setAction(MusicPlaybackService.ACTION_SHUTDOWN);
         return context.stopService(intent);
     }
 
@@ -62,7 +63,10 @@ public class MusicUtils {
         }
 
         try {
-            musicService.load(songId);
+            musicService.reset();
+            if (musicService.load(songId)) {
+                musicService.start();
+            }
         } catch (RemoteException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
         }

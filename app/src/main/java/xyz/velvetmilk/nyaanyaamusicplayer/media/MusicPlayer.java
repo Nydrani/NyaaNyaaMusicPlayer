@@ -10,7 +10,6 @@ import android.util.Log;
 import java.io.IOException;
 
 import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
-import xyz.velvetmilk.nyaanyaamusicplayer.service.MusicPlaybackService;
 
 /**
  * Created by nydrani on 12/06/17.
@@ -19,11 +18,9 @@ import xyz.velvetmilk.nyaanyaamusicplayer.service.MusicPlaybackService;
 
 public class MusicPlayer implements
         MediaPlayer.OnCompletionListener,
-        MediaPlayer.OnErrorListener,
-        MediaPlayer.OnPreparedListener {
+        MediaPlayer.OnErrorListener {
     private static final String TAG = MusicPlayer.class.getSimpleName();
 
-    private MusicPlaybackService service;
     private MediaPlayer mediaPlayer;
     private AudioAttributes audioAttributes;
     private MediaSession mediaSession;
@@ -31,10 +28,9 @@ public class MusicPlayer implements
 
     private long musicId;
 
-    public MusicPlayer(MusicPlaybackService service, MediaSession mediaSession) {
+    public MusicPlayer(MediaSession mediaSession) {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        this.service = service;
         this.mediaSession = mediaSession;
 
         audioAttributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA)
@@ -53,17 +49,21 @@ public class MusicPlayer implements
     // Exposed MediaPlayer functions
     // ========================================================================
 
-    public void load(String source) {
+    public boolean load(String source) {
         if (BuildConfig.DEBUG) Log.d(TAG, "load");
 
         try {
             mediaPlayer.setDataSource(source);
-            mediaPlayer.prepareAsync();
+            mediaPlayer.prepare();
         } catch (IOException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Unable to load data source: " + source);
+            return false;
         } catch (IllegalStateException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Called prepareAsync in illegal state");
+            return false;
         }
+
+        return true;
     }
 
     public void start() {
@@ -152,19 +152,6 @@ public class MusicPlayer implements
     }
 
     @Override
-    public void onPrepared(MediaPlayer mp) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onPrepared");
-
-        mediaSession.setActive(true);
-        updateMediaSession("PLAY");
-
-        // @TODO find a better way to do onPrepared
-        //   --> Set up in service somehow
-        service.startForeground(1, service.musicNotification);
-        mp.start();
-    }
-
-    @Override
     public void onCompletion(MediaPlayer mp) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCompletion");
 
@@ -183,7 +170,6 @@ public class MusicPlayer implements
         mediaPlayer = new MediaPlayer();
 
         mediaPlayer.setOnCompletionListener(this);
-        mediaPlayer.setOnPreparedListener(this);
         mediaPlayer.setOnErrorListener(this);
         mediaPlayer.setAudioAttributes(audioAttributes);
     }
