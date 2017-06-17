@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.AudioManager;
 import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
@@ -25,7 +26,8 @@ import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
 import xyz.velvetmilk.nyaanyaamusicplayer.media.MusicPlayer;
 import xyz.velvetmilk.nyaanyaamusicplayer.receiver.MediaButtonIntentReceiver;
 
-public class MusicPlaybackService extends Service {
+public class MusicPlaybackService extends Service implements
+        AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = MusicPlaybackService.class.getSimpleName();
     private IBinder binder;
     private MusicPlayer musicPlayer;
@@ -33,6 +35,7 @@ public class MusicPlaybackService extends Service {
     private PendingIntent shutdownPendingIntent;
     private MediaSession mediaSession;
     private MediaController mediaController;
+    private AudioManager audioManager;
 
     // 5 minutes allowed to be inactive before death
     private static final int DELAY_TIME = 5 * 60 * 1000;
@@ -52,6 +55,7 @@ public class MusicPlaybackService extends Service {
 
         setupMediaSession();
         mediaController = mediaSession.getController();
+        audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
         musicPlayer = new MusicPlayer(this, mediaSession);
     }
@@ -106,11 +110,14 @@ public class MusicPlaybackService extends Service {
     public void onDestroy() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
 
-        // make sure to cancel alarmmanager since it still runs in the background
+        // make sure to cancel lingering AlarmManager tasks
         cancelDelayedShutdown();
 
-        // release managers
+        // release media session
         mediaSession.release();
+
+        // abandon audio since we no longer need
+        audioManager.abandonAudioFocus(this);
 
         // release music player
         if (musicPlayer != null) {
@@ -162,6 +169,13 @@ public class MusicPlaybackService extends Service {
     public void start() {
         if (BuildConfig.DEBUG) Log.d(TAG, "start");
 
+        int status = audioManager.requestAudioFocus(this,
+                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+
+        if (status == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
+            return;
+        }
+
         musicPlayer.start();
     }
 
@@ -174,7 +188,14 @@ public class MusicPlaybackService extends Service {
     public void stop() {
         if (BuildConfig.DEBUG) Log.d(TAG, "stop");
 
+        audioManager.abandonAudioFocus(this);
         musicPlayer.stop();
+    }
+
+    public void setVolume(float leftVolume, float rightVolume) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setVolume");
+
+        musicPlayer.setVolume(leftVolume, rightVolume);
     }
 
 
@@ -325,6 +346,52 @@ public class MusicPlaybackService extends Service {
         intent.setAction(ACTION_SHUTDOWN);
 
         shutdownPendingIntent = PendingIntent.getService(this, 0, intent, 0);
+    }
+
+
+    // ========================================================================
+    // AudioManager listener overrides
+    // ========================================================================
+
+    @Override
+    public void onAudioFocusChange(int change) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onAudioFocusChange");
+
+        switch (change) {
+            case AudioManager.AUDIOFOCUS_GAIN:
+                if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_GAIN");
+
+                setVolume(1.0f, 1.0f);
+                start();
+                break;
+            case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
+                if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_GAIN_TRANSIENT");
+                break;
+            case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE:
+                if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE");
+                break;
+            case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK:
+                if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK");
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS:
+                if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_LOSS");
+
+                stop();
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_LOSS_TRANSIENT");
+                
+                pause();
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
+
+                setVolume(0.2f, 0.2f);
+                break;
+            default:
+                if (BuildConfig.DEBUG) Log.wtf(TAG, "VERY BAD HAPPENED");
+                break;
+        }
     }
 
 

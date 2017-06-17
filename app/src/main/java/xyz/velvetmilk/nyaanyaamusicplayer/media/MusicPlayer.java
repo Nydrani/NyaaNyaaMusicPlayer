@@ -1,12 +1,9 @@
 package xyz.velvetmilk.nyaanyaamusicplayer.media;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.session.MediaController;
 import android.media.session.MediaSession;
@@ -28,8 +25,7 @@ import xyz.velvetmilk.nyaanyaamusicplayer.service.MusicPlaybackService;
 public class MusicPlayer implements
         MediaPlayer.OnCompletionListener,
         MediaPlayer.OnErrorListener,
-        MediaPlayer.OnPreparedListener,
-        AudioManager.OnAudioFocusChangeListener {
+        MediaPlayer.OnPreparedListener {
     private static final String TAG = MusicPlayer.class.getSimpleName();
 
     private MusicPlaybackService service;
@@ -37,9 +33,6 @@ public class MusicPlayer implements
     private AudioAttributes audioAttributes;
     private MediaSession mediaSession;
     private MediaController mediaController;
-
-    private AudioManager audioManager;
-    private NotificationManager notificationManager;
 
     private Notification notification;
 
@@ -50,9 +43,6 @@ public class MusicPlayer implements
 
         this.service = service;
         this.mediaSession = mediaSession;
-
-        audioManager = (AudioManager)service.getSystemService(Context.AUDIO_SERVICE);
-        notificationManager = (NotificationManager)service.getSystemService(Context.NOTIFICATION_SERVICE);
 
         audioAttributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA)
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
@@ -126,7 +116,6 @@ public class MusicPlayer implements
         if (BuildConfig.DEBUG) Log.d(TAG, "reset");
 
         service.stopForeground(true);
-        audioManager.abandonAudioFocus(this);
         mediaSession.setActive(false);
         mediaPlayer.reset();
     }
@@ -136,6 +125,12 @@ public class MusicPlayer implements
 
         service.stopForeground(true);
         mediaPlayer.release();
+    }
+
+    public void setVolume(float leftVolume, float rightVolume) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setVolume");
+
+       mediaPlayer.setVolume(leftVolume, rightVolume);
     }
 
     public void setMusicId(long musicId) {
@@ -154,7 +149,6 @@ public class MusicPlayer implements
         if (BuildConfig.DEBUG) Log.d(TAG, "onError");
 
         service.stopForeground(true);
-        audioManager.abandonAudioFocus(this);
         updateMediaSession("ERROR");
         mediaSession.setActive(false);
 
@@ -175,14 +169,6 @@ public class MusicPlayer implements
     public void onPrepared(MediaPlayer mp) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onPrepared");
 
-        int status = audioManager.requestAudioFocus(this,
-                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-
-        if (status == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
-            mp.stop();
-            return;
-        }
-
         mediaSession.setActive(true);
         updateMediaSession("PLAY");
         service.startForeground(1, notification);
@@ -194,51 +180,8 @@ public class MusicPlayer implements
         if (BuildConfig.DEBUG) Log.d(TAG, "onCompletion");
 
         service.stopForeground(true);
-        audioManager.abandonAudioFocus(this);
         updateMediaSession("STOP");
         mediaSession.setActive(false);
-    }
-
-
-    // ========================================================================
-    // AudioManager listener overrides
-    // ========================================================================
-
-    @Override
-    public void onAudioFocusChange(int change) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onAudioFocusChange");
-
-        switch (change) {
-            case AudioManager.AUDIOFOCUS_GAIN:
-                if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_GAIN");
-                mediaPlayer.setVolume(1.0f, 1.0f);
-                start();
-                break;
-            case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
-                if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_GAIN_TRANSIENT");
-                break;
-            case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE:
-                if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE");
-                break;
-            case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK:
-                if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK");
-                break;
-            case AudioManager.AUDIOFOCUS_LOSS:
-                if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_LOSS");
-                stop();
-                break;
-            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_LOSS_TRANSIENT");
-                pause();
-                break;
-            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
-                mediaPlayer.setVolume(0.2f, 0.2f);
-                break;
-            default:
-                if (BuildConfig.DEBUG) Log.wtf(TAG, "VERY BAD HAPPENED");
-                break;
-        }
     }
 
 
