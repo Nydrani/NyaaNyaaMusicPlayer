@@ -1,8 +1,5 @@
 package xyz.velvetmilk.nyaanyaamusicplayer.media;
 
-import android.app.Notification;
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.session.MediaController;
@@ -13,8 +10,6 @@ import android.util.Log;
 import java.io.IOException;
 
 import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
-import xyz.velvetmilk.nyaanyaamusicplayer.R;
-import xyz.velvetmilk.nyaanyaamusicplayer.activity.BaseActivity;
 import xyz.velvetmilk.nyaanyaamusicplayer.service.MusicPlaybackService;
 
 /**
@@ -34,8 +29,6 @@ public class MusicPlayer implements
     private MediaSession mediaSession;
     private MediaController mediaController;
 
-    private Notification notification;
-
     private long musicId;
 
     public MusicPlayer(MusicPlaybackService service, MediaSession mediaSession) {
@@ -53,7 +46,6 @@ public class MusicPlayer implements
 
         initMediaPlayer();
         initMediaSession();
-        initNotification();
     }
 
 
@@ -77,7 +69,6 @@ public class MusicPlayer implements
     public void start() {
         if (BuildConfig.DEBUG) Log.d(TAG, "start");
 
-        service.startForeground(1, notification);
         mediaSession.setActive(true);
         updateMediaSession("PLAY");
         try {
@@ -90,7 +81,6 @@ public class MusicPlayer implements
     public void pause() {
         if (BuildConfig.DEBUG) Log.d(TAG, "pause");
 
-        service.stopForeground(true);
         updateMediaSession("PAUSE");
         try {
             mediaPlayer.pause();
@@ -102,7 +92,6 @@ public class MusicPlayer implements
     public void stop() {
         if (BuildConfig.DEBUG) Log.d(TAG, "stop");
 
-        service.stopForeground(true);
         updateMediaSession("STOP");
         mediaSession.setActive(false);
         try {
@@ -115,7 +104,6 @@ public class MusicPlayer implements
     public void reset() {
         if (BuildConfig.DEBUG) Log.d(TAG, "reset");
 
-        service.stopForeground(true);
         mediaSession.setActive(false);
         mediaPlayer.reset();
     }
@@ -123,7 +111,6 @@ public class MusicPlayer implements
     public void release() {
         if (BuildConfig.DEBUG) Log.d(TAG, "release");
 
-        service.stopForeground(true);
         mediaPlayer.release();
     }
 
@@ -148,7 +135,6 @@ public class MusicPlayer implements
     public boolean onError(MediaPlayer mp, int what, int extra) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onError");
 
-        service.stopForeground(true);
         updateMediaSession("ERROR");
         mediaSession.setActive(false);
 
@@ -171,7 +157,10 @@ public class MusicPlayer implements
 
         mediaSession.setActive(true);
         updateMediaSession("PLAY");
-        service.startForeground(1, notification);
+
+        // @TODO find a better way to do onPrepared
+        //   --> Set up in service somehow
+        service.startForeground(1, service.musicNotification);
         mp.start();
     }
 
@@ -179,7 +168,6 @@ public class MusicPlayer implements
     public void onCompletion(MediaPlayer mp) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCompletion");
 
-        service.stopForeground(true);
         updateMediaSession("STOP");
         mediaSession.setActive(false);
     }
@@ -215,20 +203,6 @@ public class MusicPlayer implements
                 .setState(PlaybackState.STATE_NONE, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 1.0f)
                 .build();
         mediaSession.setPlaybackState(newState);
-    }
-
-    private void initNotification() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "initNotification");
-
-        Intent activityIntent = new Intent(service, BaseActivity.class);
-        PendingIntent activityPendingIntent = PendingIntent.getActivity(service, 0, activityIntent, 0);
-
-        notification = new Notification.Builder(service)
-                .setContentTitle(service.getText(R.string.service_musicplayback_notification_title))
-                .setContentText(service.getText(R.string.service_musicplayback_notification_message))
-                .setSmallIcon(android.R.drawable.star_on)
-                .setContentIntent(activityPendingIntent)
-                .build();
     }
 
     private void updateMediaSession(String state) {

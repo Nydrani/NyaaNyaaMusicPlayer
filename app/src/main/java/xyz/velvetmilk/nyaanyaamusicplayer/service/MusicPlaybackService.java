@@ -1,6 +1,7 @@
 package xyz.velvetmilk.nyaanyaamusicplayer.service;
 
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
@@ -23,6 +24,8 @@ import android.view.KeyEvent;
 import java.lang.ref.WeakReference;
 
 import xyz.velvetmilk.nyaanyaamusicplayer.BuildConfig;
+import xyz.velvetmilk.nyaanyaamusicplayer.R;
+import xyz.velvetmilk.nyaanyaamusicplayer.activity.BaseActivity;
 import xyz.velvetmilk.nyaanyaamusicplayer.media.MusicPlayer;
 import xyz.velvetmilk.nyaanyaamusicplayer.receiver.MediaButtonIntentReceiver;
 
@@ -37,9 +40,13 @@ public class MusicPlaybackService extends Service implements
     private MediaController mediaController;
     private AudioManager audioManager;
 
+    public Notification musicNotification;
+
     // 5 minutes allowed to be inactive before death
     private static final int DELAY_TIME = 5 * 60 * 1000;
     public static final String ACTION_SHUTDOWN = "SHUTDOWN";
+    private static final int MUSIC_NOTIFICATION_ID = 1;
+
 
 
     // ========================================================================
@@ -54,6 +61,7 @@ public class MusicPlaybackService extends Service implements
         setupAlarms();
 
         setupMediaSession();
+        setupNotification();
         mediaController = mediaSession.getController();
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
@@ -112,6 +120,10 @@ public class MusicPlaybackService extends Service implements
 
         // make sure to cancel lingering AlarmManager tasks
         cancelDelayedShutdown();
+
+        // stop running as foreground service
+        stopForeground(true);
+
 
         // release media session
         mediaSession.release();
@@ -176,18 +188,22 @@ public class MusicPlaybackService extends Service implements
             return;
         }
 
+        startForeground(MUSIC_NOTIFICATION_ID, musicNotification);
+
         musicPlayer.start();
     }
 
     public void pause() {
         if (BuildConfig.DEBUG) Log.d(TAG, "pause");
 
+        stopForeground(true);
         musicPlayer.pause();
     }
 
     public void stop() {
         if (BuildConfig.DEBUG) Log.d(TAG, "stop");
 
+        stopForeground(true);
         audioManager.abandonAudioFocus(this);
         musicPlayer.stop();
     }
@@ -229,21 +245,21 @@ public class MusicPlaybackService extends Service implements
             public void onPlay() {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onPlay");
 
-                musicPlayer.start();
+                start();
             }
 
             @Override
             public void onPause() {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onPause");
 
-                musicPlayer.pause();
+                pause();
             }
 
             @Override
             public void onStop() {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onStop");
 
-                musicPlayer.stop();
+                stop();
             }
 
             @Override
@@ -270,6 +286,20 @@ public class MusicPlaybackService extends Service implements
         mediaSession.setMediaButtonReceiver(pi);
         mediaSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS
                 | MediaSession.FLAG_HANDLES_MEDIA_BUTTONS);
+    }
+
+    private void setupNotification() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setupNotification");
+
+        Intent activityIntent = new Intent(this, BaseActivity.class);
+        PendingIntent activityPendingIntent = PendingIntent.getActivity(this, 0, activityIntent, 0);
+
+        musicNotification = new Notification.Builder(this)
+                .setContentTitle(getText(R.string.service_musicplayback_notification_title))
+                .setContentText(getText(R.string.service_musicplayback_notification_message))
+                .setSmallIcon(android.R.drawable.star_on)
+                .setContentIntent(activityPendingIntent)
+                .build();
     }
 
     private void handleCommand(Intent intent) {
@@ -380,7 +410,7 @@ public class MusicPlaybackService extends Service implements
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                 if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_LOSS_TRANSIENT");
-                
+
                 pause();
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
