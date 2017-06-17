@@ -65,7 +65,7 @@ public class MusicPlaybackService extends Service implements
         mediaController = mediaSession.getController();
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
-        musicPlayer = new MusicPlayer(mediaSession);
+        musicPlayer = new MusicPlayer();
     }
 
     @Override
@@ -186,6 +186,12 @@ public class MusicPlaybackService extends Service implements
             return;
         }
 
+        // @TODO extra functionality
+        //   1. update the media session to play, pause, stop etc status
+        //   2. enable listening to play/pause buttons from quick settings/hardware buttons
+        //   3. dont get killed by OS
+        updateMediaSession("PLAY");
+        mediaSession.setActive(true);
         startForeground(MUSIC_NOTIFICATION_ID, musicNotification);
 
         musicPlayer.start();
@@ -194,23 +200,31 @@ public class MusicPlaybackService extends Service implements
     public void pause() {
         if (BuildConfig.DEBUG) Log.d(TAG, "pause");
 
+        updateMediaSession("PAUSE");
         stopForeground(true);
+
         musicPlayer.pause();
     }
 
     public void stop() {
         if (BuildConfig.DEBUG) Log.d(TAG, "stop");
 
+        updateMediaSession("STOP");
+        mediaSession.setActive(false);
         stopForeground(true);
         audioManager.abandonAudioFocus(this);
+
         musicPlayer.stop();
     }
 
     public void reset() {
         if (BuildConfig.DEBUG) Log.d(TAG, "reset");
 
+        updateMediaSession("RESET");
+        mediaSession.setActive(false);
         stopForeground(true);
         audioManager.abandonAudioFocus(this);
+
         musicPlayer.reset();
     }
 
@@ -292,6 +306,29 @@ public class MusicPlaybackService extends Service implements
         mediaSession.setMediaButtonReceiver(pi);
         mediaSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS
                 | MediaSession.FLAG_HANDLES_MEDIA_BUTTONS);
+
+        long playBackStateActions =
+                PlaybackState.ACTION_PLAY |
+                        PlaybackState.ACTION_PLAY_PAUSE |
+                        PlaybackState.ACTION_PLAY_FROM_MEDIA_ID |
+                        PlaybackState.ACTION_PAUSE |
+                        PlaybackState.ACTION_STOP;
+        PlaybackState newState = new PlaybackState.Builder()
+                .setActions(playBackStateActions)
+                .setState(PlaybackState.STATE_NONE, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 1.0f)
+                .build();
+        mediaSession.setPlaybackState(newState);
+    }
+
+    private void setupAlarms() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setupAlarms");
+
+        alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+
+        Intent intent = new Intent(this, MusicPlaybackService.class);
+        intent.setAction(ACTION_SHUTDOWN);
+
+        shutdownPendingIntent = PendingIntent.getService(this, 0, intent, 0);
     }
 
     private void setupNotification() {
@@ -311,8 +348,7 @@ public class MusicPlaybackService extends Service implements
     private void handleCommand(Intent intent) {
         if (BuildConfig.DEBUG) Log.d(TAG, "handleCommand");
 
-
-        int keyCode = intent.getIntExtra("KEYCODE", 0);
+        final int keyCode = intent.getIntExtra("KEYCODE", 0);
 
         switch (keyCode) {
             case KeyEvent.KEYCODE_MEDIA_PLAY:
@@ -373,15 +409,65 @@ public class MusicPlaybackService extends Service implements
         alarmManager.cancel(shutdownPendingIntent);
     }
 
-    private void setupAlarms() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "setupAlarms");
+    private void updateMediaSession(String state) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updateMediaSession");
 
-        alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        // @TODO debugging
+        PlaybackState playbackState = mediaController.getPlaybackState();
+        if (playbackState == null) {
+            if (BuildConfig.DEBUG) Log.w(TAG, "No playstate found");
+        } else {
+            if (BuildConfig.DEBUG) Log.d(TAG, "State before: " + String.valueOf(playbackState.getState()));
+        }
 
-        Intent intent = new Intent(this, MusicPlaybackService.class);
-        intent.setAction(ACTION_SHUTDOWN);
 
-        shutdownPendingIntent = PendingIntent.getService(this, 0, intent, 0);
+        long playBackStateActions =
+                PlaybackState.ACTION_PLAY |
+                        PlaybackState.ACTION_PLAY_PAUSE |
+                        PlaybackState.ACTION_PLAY_FROM_MEDIA_ID |
+                        PlaybackState.ACTION_PAUSE |
+                        PlaybackState.ACTION_STOP;
+
+        PlaybackState.Builder stateBuilder = new PlaybackState.Builder()
+                .setActions(playBackStateActions)
+                .setActiveQueueItemId(musicPlayer.musicId);
+
+        switch (state) {
+            case "PLAY":
+                stateBuilder.setState(PlaybackState.STATE_PLAYING, musicPlayer.getCurrentPosition(),
+                        1.0f);
+                break;
+            case "PAUSE":
+                stateBuilder.setState(PlaybackState.STATE_PAUSED, musicPlayer.getCurrentPosition(),
+                        1.0f);
+                break;
+            case "STOP":
+                stateBuilder.setState(PlaybackState.STATE_STOPPED, musicPlayer.getCurrentPosition(),
+                        1.0f);
+                break;
+            case "RESET":
+                stateBuilder.setState(PlaybackState.STATE_NONE, PlaybackState.PLAYBACK_POSITION_UNKNOWN,
+                        1.0f);
+                break;
+            case "ERROR":
+                stateBuilder.setState(PlaybackState.STATE_ERROR, PlaybackState.PLAYBACK_POSITION_UNKNOWN,
+                        1.0f);
+                break;
+            default:
+                if (BuildConfig.DEBUG) Log.w(TAG, "Unknown state received: " + state);
+                return;
+        }
+
+        // @TODO debugging
+        PlaybackState newState = stateBuilder.build();
+        mediaSession.setPlaybackState(newState);
+
+        playbackState = mediaController.getPlaybackState();
+        if (playbackState == null) {
+            if (BuildConfig.DEBUG) Log.w(TAG, "No playstate found");
+        } else {
+            if (BuildConfig.DEBUG) Log.d(TAG, "State after: " + String.valueOf(playbackState.getState()));
+        }
     }
 
 

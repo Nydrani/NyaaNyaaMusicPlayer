@@ -2,9 +2,6 @@ package xyz.velvetmilk.nyaanyaamusicplayer.media;
 
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
-import android.media.session.MediaController;
-import android.media.session.MediaSession;
-import android.media.session.PlaybackState;
 import android.util.Log;
 
 import java.io.IOException;
@@ -22,26 +19,15 @@ public class MusicPlayer implements
     private static final String TAG = MusicPlayer.class.getSimpleName();
 
     private MediaPlayer mediaPlayer;
-    private AudioAttributes audioAttributes;
-    private MediaSession mediaSession;
-    private MediaController mediaController;
 
-    private long musicId;
+    public long musicId;
 
-    public MusicPlayer(MediaSession mediaSession) {
+    public MusicPlayer() {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
-
-        this.mediaSession = mediaSession;
-
-        audioAttributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA)
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build();
-        mediaController = mediaSession.getController();
 
         musicId = 0;
 
         initMediaPlayer();
-        initMediaSession();
     }
 
 
@@ -69,8 +55,6 @@ public class MusicPlayer implements
     public void start() {
         if (BuildConfig.DEBUG) Log.d(TAG, "start");
 
-        mediaSession.setActive(true);
-        updateMediaSession("PLAY");
         try {
             mediaPlayer.start();
         } catch (IllegalStateException e) {
@@ -81,7 +65,6 @@ public class MusicPlayer implements
     public void pause() {
         if (BuildConfig.DEBUG) Log.d(TAG, "pause");
 
-        updateMediaSession("PAUSE");
         try {
             mediaPlayer.pause();
         } catch (IllegalStateException e) {
@@ -92,8 +75,6 @@ public class MusicPlayer implements
     public void stop() {
         if (BuildConfig.DEBUG) Log.d(TAG, "stop");
 
-        updateMediaSession("STOP");
-        mediaSession.setActive(false);
         try {
             mediaPlayer.stop();
         } catch (IllegalStateException e) {
@@ -104,7 +85,6 @@ public class MusicPlayer implements
     public void reset() {
         if (BuildConfig.DEBUG) Log.d(TAG, "reset");
 
-        mediaSession.setActive(false);
         mediaPlayer.reset();
     }
 
@@ -126,6 +106,12 @@ public class MusicPlayer implements
         this.musicId = musicId;
     }
 
+    public int getCurrentPosition() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentPosition");
+
+        return mediaPlayer.getCurrentPosition();
+    }
+
 
     // ========================================================================
     // MediaPlayer listener overrides
@@ -134,9 +120,6 @@ public class MusicPlayer implements
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onError");
-
-        updateMediaSession("ERROR");
-        mediaSession.setActive(false);
 
         switch (what) {
             case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
@@ -154,9 +137,6 @@ public class MusicPlayer implements
     @Override
     public void onCompletion(MediaPlayer mp) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCompletion");
-
-        updateMediaSession("STOP");
-        mediaSession.setActive(false);
     }
 
 
@@ -169,79 +149,13 @@ public class MusicPlayer implements
 
         mediaPlayer = new MediaPlayer();
 
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build();
+
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setOnErrorListener(this);
         mediaPlayer.setAudioAttributes(audioAttributes);
-    }
-
-    private void initMediaSession() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "initMediaSession");
-
-        long playBackStateActions =
-                PlaybackState.ACTION_PLAY |
-                        PlaybackState.ACTION_PLAY_PAUSE |
-                        PlaybackState.ACTION_PLAY_FROM_MEDIA_ID |
-                        PlaybackState.ACTION_PAUSE |
-                        PlaybackState.ACTION_STOP;
-        PlaybackState newState = new PlaybackState.Builder()
-                .setActions(playBackStateActions)
-                .setActiveQueueItemId(musicId)
-                .setState(PlaybackState.STATE_NONE, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 1.0f)
-                .build();
-        mediaSession.setPlaybackState(newState);
-    }
-
-    private void updateMediaSession(String state) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "updateMediaSession");
-
-        // @TODO debugging
-        if (BuildConfig.DEBUG) Log.d(TAG, "State before: " );
-        PlaybackState playbackState = mediaController.getPlaybackState();
-        if (playbackState != null) {
-            if (BuildConfig.DEBUG) Log.d(TAG, String.valueOf(playbackState.getState()));
-        }
-
-        long playBackStateActions =
-                PlaybackState.ACTION_PLAY |
-                        PlaybackState.ACTION_PLAY_PAUSE |
-                        PlaybackState.ACTION_PLAY_FROM_MEDIA_ID |
-                        PlaybackState.ACTION_PAUSE |
-                        PlaybackState.ACTION_STOP;
-
-        PlaybackState.Builder stateBuilder = new PlaybackState.Builder()
-                .setActions(playBackStateActions)
-                .setActiveQueueItemId(musicId);
-
-        switch (state) {
-            case "PLAY":
-                stateBuilder.setState(PlaybackState.STATE_PLAYING, mediaPlayer.getCurrentPosition(),
-                        1.0f);
-                break;
-            case "PAUSE":
-                stateBuilder.setState(PlaybackState.STATE_PAUSED, mediaPlayer.getCurrentPosition(),
-                        1.0f);
-                break;
-            case "STOP":
-                stateBuilder.setState(PlaybackState.STATE_STOPPED, mediaPlayer.getCurrentPosition(),
-                        1.0f);
-                break;
-            case "ERROR":
-                stateBuilder.setState(PlaybackState.STATE_ERROR, PlaybackState.PLAYBACK_POSITION_UNKNOWN,
-                        1.0f);
-                break;
-            default:
-                if (BuildConfig.DEBUG) Log.w(TAG, "Unknown state received");
-                return;
-        }
-
-        // @TODO debugging
-        PlaybackState newState = stateBuilder.build();
-        mediaSession.setPlaybackState(newState);
-
-        if (BuildConfig.DEBUG) Log.d(TAG, "State after: " );
-        playbackState = mediaController.getPlaybackState();
-        if (playbackState != null) {
-            if (BuildConfig.DEBUG) Log.d(TAG, String.valueOf(playbackState.getState()));
-        }
     }
 }
