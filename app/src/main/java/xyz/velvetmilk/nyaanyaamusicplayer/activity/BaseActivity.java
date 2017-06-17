@@ -59,6 +59,8 @@ public class BaseActivity extends AppCompatActivity {
         if (BuildConfig.DEBUG) Log.d(TAG, "onStart");
         super.onStart();
 
+        ComponentName name = MusicUtils.startService(this);
+        if (BuildConfig.DEBUG) Log.d(TAG, name.toString());
         bound = MusicUtils.bindToService(this);
     }
 
@@ -171,9 +173,6 @@ public class BaseActivity extends AppCompatActivity {
     // startup code
     protected void init() {
         if (BuildConfig.DEBUG) Log.d(TAG, "init");
-
-        ComponentName name = MusicUtils.startService(this);
-        if (BuildConfig.DEBUG) Log.d(TAG, name.toString());
 
         setFragment(MusicListFragment.newInstance());
     }
