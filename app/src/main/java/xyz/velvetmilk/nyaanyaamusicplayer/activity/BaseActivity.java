@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ComponentName;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Build;
@@ -170,6 +171,9 @@ public class BaseActivity extends AppCompatActivity {
     // startup code
     protected void init() {
         if (BuildConfig.DEBUG) Log.d(TAG, "init");
+
+        ComponentName name = MusicUtils.startService(this);
+        if (BuildConfig.DEBUG) Log.d(TAG, name.toString());
 
         setFragment(MusicListFragment.newInstance());
     }

@@ -26,6 +26,13 @@ public class MusicUtils {
     }
 
 
+    public static ComponentName startService(Context context) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "startService");
+
+        Intent intent = new Intent(context, MusicPlaybackService.class);
+        return context.startService(intent);
+    }
+
     public static boolean bindToService(Context context) {
         if (BuildConfig.DEBUG) Log.d(TAG, "bindToService");
 
@@ -38,6 +45,14 @@ public class MusicUtils {
 
         context.unbindService(musicServiceConnection);
     }
+
+    public static boolean stopService(Context context) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "stopService");
+
+        Intent intent = new Intent(context, MusicPlaybackService.class);
+        return context.stopService(intent);
+    }
+
 
     public static void play(long songId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "play");
