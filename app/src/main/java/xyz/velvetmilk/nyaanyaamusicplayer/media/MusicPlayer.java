@@ -277,25 +277,14 @@ public class MusicPlayer implements
     private void initNotification() {
         if (BuildConfig.DEBUG) Log.d(TAG, "initNotification");
 
-
         Intent activityIntent = new Intent(service, BaseActivity.class);
         PendingIntent activityPendingIntent = PendingIntent.getActivity(service, 0, activityIntent, 0);
-
-        Intent serviceIntent = new Intent(service, MusicPlaybackService.class);
-        serviceIntent.setAction(MusicPlaybackService.ACTION_SHUTDOWN);
-        PendingIntent servicePendingIntent = PendingIntent.getService(service, 0, serviceIntent, 0);
-
-        Notification.Action action = new Notification.Action.Builder(android.R.drawable.btn_minus,
-                service.getText(R.string.service_musicplayback_notification_exitbutton_message),
-                servicePendingIntent)
-                .build();
 
         notification = new Notification.Builder(service)
                 .setContentTitle(service.getText(R.string.service_musicplayback_notification_title))
                 .setContentText(service.getText(R.string.service_musicplayback_notification_message))
                 .setSmallIcon(android.R.drawable.star_on)
                 .setContentIntent(activityPendingIntent)
-                .addAction(action)
                 .build();
     }
 
