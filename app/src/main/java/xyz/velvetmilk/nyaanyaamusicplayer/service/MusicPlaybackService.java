@@ -36,7 +36,7 @@ public class MusicPlaybackService extends Service {
 
     // 5 minutes allowed to be inactive before death
     private static final int DELAY_TIME = 5 * 60 * 1000;
-    private static final String ACTION_SHUTDOWN = "SHUTDOWN";
+    public static final String ACTION_SHUTDOWN = "SHUTDOWN";
 
 
     // ========================================================================

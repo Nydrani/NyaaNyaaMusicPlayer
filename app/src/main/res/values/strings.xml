@@ -9,4 +9,9 @@
     <string name="actionbar_homelink">Link</string>
 
     <string name="dialog_about_message">Ayyy lmaooooo</string>
+
+    <string name="service_musicplayback_notification_title">Music</string>
+    <string name="service_musicplayback_notification_message">playing music</string>
+    <string name="service_musicplayback_notification_exitbutton_message">exit</string>
+
 </resources>
