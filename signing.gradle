@@ -11,7 +11,10 @@ def getProperties(String fileName) {
 }
 
 def getProperty(@Nullable Properties properties, String name) {
-    return properties.getProperty(name)
+    if (properties.getProperty(name)) {
+        return properties.getProperty(name)
+    }
+    return "cant find prop: $name"
 }
 
 ext {
