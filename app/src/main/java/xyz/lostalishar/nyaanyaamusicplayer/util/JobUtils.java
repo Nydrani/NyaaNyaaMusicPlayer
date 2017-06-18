@@ -11,7 +11,6 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.service.MediaJobService;
 
 /**
- * Created by nydrani on 14/06/17.
  * Utilities for scheduling jobs
  */
 

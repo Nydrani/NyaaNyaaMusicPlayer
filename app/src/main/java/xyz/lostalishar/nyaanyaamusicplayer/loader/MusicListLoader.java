@@ -15,7 +15,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 
 /**
- * Created by nydrani on 27/05/17.
+ * Loads a List of Music classes from the MediaStore cursor in the background
  */
 
 public class MusicListLoader extends CachedAsyncTaskLoader<List<Music>> {

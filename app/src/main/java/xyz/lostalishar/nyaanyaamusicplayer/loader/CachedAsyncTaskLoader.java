@@ -8,7 +8,7 @@ import android.util.Log;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 
 /**
- * Created by nydrani on 27/05/17.
+ * AsyncTaskLoader that caches the result of the asynchronous task
  */
 
 public abstract class CachedAsyncTaskLoader<D> extends AsyncTaskLoader<D> {

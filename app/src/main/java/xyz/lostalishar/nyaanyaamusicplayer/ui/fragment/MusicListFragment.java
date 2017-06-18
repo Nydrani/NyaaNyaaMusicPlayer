@@ -23,7 +23,6 @@ import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicListLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 
 /**
- * Created by nydrani on 28/05/17.
  * Fragment containing entire list of music on device
  */
 public class MusicListFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Music>> {

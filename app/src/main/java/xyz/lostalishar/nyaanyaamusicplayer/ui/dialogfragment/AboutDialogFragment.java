@@ -11,9 +11,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 
 /**
- * Created by nydrani on 23/05/17.
- *
- * Dialog that show the about fragment ezpz
+ * DialogFragment displaying about information
  */
 
 public class AboutDialogFragment extends DialogFragment {

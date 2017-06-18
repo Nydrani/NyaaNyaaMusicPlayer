@@ -8,7 +8,6 @@ import android.util.Log;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 
 /**
- * Created by nydrani on 14/06/17.
  * Job service for media playback service startup
  */
 

@@ -17,13 +17,12 @@ import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 
 /**
- * Created by nydrani on 28/05/17.
- *
  * Currently not implementing a List rather than Cursor due to:
  *     1. It will use UI thread to convert database response to List (which is bad)
  *     2. No objectively good reasoning (no real google implementation yet)
  *     3. cbf doing benchmarks
  */
+
 public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicViewHolder> {
     private static final String TAG = MusicAdapter.class.getSimpleName();
 

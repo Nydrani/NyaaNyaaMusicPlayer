@@ -3,7 +3,6 @@ package xyz.lostalishar.nyaanyaamusicplayer.model;
 import java.util.Objects;
 
 /**
- * Created by nydrani on 27/05/17.
  * Class for holding music information
  */
 

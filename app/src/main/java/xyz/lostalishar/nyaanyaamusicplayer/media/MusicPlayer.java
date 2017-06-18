@@ -9,7 +9,6 @@ import java.io.IOException;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 
 /**
- * Created by nydrani on 12/06/17.
  * Custom music player wrapper around MediaPlayer
  */
 
@@ -45,7 +44,7 @@ public class MusicPlayer implements
             if (BuildConfig.DEBUG) Log.e(TAG, "Unable to load data source: " + source);
             return false;
         } catch (IllegalStateException e) {
-            if (BuildConfig.DEBUG) Log.e(TAG, "Called prepareAsync in illegal state");
+            if (BuildConfig.DEBUG) Log.e(TAG, "Called prepare in illegal state");
             return false;
         }
 

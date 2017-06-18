@@ -13,8 +13,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.service.INyaaNyaaMusicService;
 import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
 
 /**
- * Created by nydrani on 12/06/17.
- * Music service utilities
+ * Utilities for interacting with the music service
  */
 
 public class MusicUtils {
