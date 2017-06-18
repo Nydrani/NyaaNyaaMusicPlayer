@@ -1,8 +1,18 @@
 apply plugin: 'com.android.application'
 
 apply from: "$rootDir/versioning.gradle"
+apply from: "$rootDir/signing.gradle"
 
 android {
+    signingConfigs {
+        release {
+            Properties properties = getProperties('../keystore.properties')
+            storeFile file(getProperty(properties, 'store'))
+            storePassword getProperty(properties, 'storepass')
+            keyAlias getProperty(properties, 'alias')
+            keyPassword getProperty(properties, 'aliaspass')
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion '26.0.0'
     defaultConfig {
@@ -17,6 +27,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     productFlavors {

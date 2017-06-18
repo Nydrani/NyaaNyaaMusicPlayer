@@ -1,0 +1,23 @@
+@Nullable
+def getProperties(String fileName) {
+    final def Properties properties = new Properties()
+    def file = file(fileName)
+    if (file.exists()) {
+        file.withInputStream {
+            stream -> properties.load(stream)
+        }
+    }
+    return properties
+}
+
+def getProperty(@Nullable Properties properties, String name) {
+    if (properties.getProperty(name)) {
+        return properties.getProperty(name)
+    }
+    return "$name missing"
+}
+
+ext {
+    getProperties = this.&getProperties
+    getProperty = this.&getProperty
+}

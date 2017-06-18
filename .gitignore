@@ -13,3 +13,6 @@ gradle.properties
 .idea
 *.iml
 .externalNativeBuild
+
+# Keystore info
+keystore.properties

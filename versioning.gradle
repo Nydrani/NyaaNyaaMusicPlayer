@@ -1,26 +1,26 @@
 def getVersionCode() {
     try {
-        def output = new ByteArrayOutputStream();
+        def output = new ByteArrayOutputStream()
         exec {
-            commandLine 'git', 'rev-list', '--first-parent', '--count', 'origin/master';
-            standardOutput = output;
+            commandLine 'git', 'rev-list', '--first-parent', '--count', 'origin/master'
+            standardOutput = output
         }
-        return Integer.parseInt(output.toString().trim());
+        return Integer.parseInt(output.toString().trim())
     } catch (NumberFormatException e) {
-        return -1;
+        return -1
     }
 }
 
 def getVersionName() {
     def output = new ByteArrayOutputStream();
     exec {
-        commandLine 'git', 'describe', '--dirty';
-        standardOutput = output;
+        commandLine 'git', 'describe', '--dirty'
+        standardOutput = output
     }
-    return output.toString().substring(1).trim();
+    return output.toString().substring(1).trim()
 }
 
 ext {
-    getVersionCode = this.&getVersionCode;
-    getVersionName = this.&getVersionName;
+    getVersionCode = this.&getVersionCode
+    getVersionName = this.&getVersionName
 }
