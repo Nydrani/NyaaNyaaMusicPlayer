@@ -66,13 +66,20 @@ public class MusicPlaybackService extends Service implements
         mediaController = mediaSession.getController();
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
-        musicPlayer = new MusicPlayer();
+        musicPlayer = new MusicPlayer(this);
+
+        // restore previous playback state
+        loadPlaybackState();
+
+        // schedule shutdown for idle service
+        scheduleDelayedShutdown();
     }
 
     @Override
     public IBinder onBind(Intent intent) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onBind");
 
+        cancelDelayedShutdown();
         return binder;
     }
 
@@ -89,7 +96,9 @@ public class MusicPlaybackService extends Service implements
 
         // @TODO find out when intent can be null
         // intent can be null (not sure when)
+        // make sure to call for a shutdown since it sits in idle
         if (intent == null) {
+            scheduleDelayedShutdown();
             return START_STICKY;
         }
 
@@ -112,6 +121,7 @@ public class MusicPlaybackService extends Service implements
         if (BuildConfig.DEBUG) Log.d(TAG, "onUnbind");
 
         savePlaybackState();
+        scheduleDelayedShutdown();
 
         return true;
     }
@@ -188,9 +198,11 @@ public class MusicPlaybackService extends Service implements
         }
 
         // @TODO extra functionality
-        //   1. update the media session to play, pause, stop etc status
-        //   2. enable listening to play/pause buttons from quick settings/hardware buttons
-        //   3. don't get killed by OS
+        //   1. make sure the app doesn't schedule to kill itself
+        //   2. update the media session to play, pause, stop etc status
+        //   3. enable listening to play/pause buttons from quick settings/hardware buttons
+        //   4. don't get killed by OS
+        cancelDelayedShutdown();
         updateMediaSession("PLAY");
         mediaSession.setActive(true);
         startForeground(MUSIC_NOTIFICATION_ID, musicNotification);
@@ -201,6 +213,7 @@ public class MusicPlaybackService extends Service implements
     public void pause() {
         if (BuildConfig.DEBUG) Log.d(TAG, "pause");
 
+        scheduleDelayedShutdown();
         updateMediaSession("PAUSE");
         stopForeground(true);
 
@@ -210,6 +223,7 @@ public class MusicPlaybackService extends Service implements
     public void stop() {
         if (BuildConfig.DEBUG) Log.d(TAG, "stop");
 
+        scheduleDelayedShutdown();
         updateMediaSession("STOP");
         mediaSession.setActive(false);
         stopForeground(true);
@@ -221,6 +235,7 @@ public class MusicPlaybackService extends Service implements
     public void reset() {
         if (BuildConfig.DEBUG) Log.d(TAG, "reset");
 
+        scheduleDelayedShutdown();
         updateMediaSession("RESET");
         mediaSession.setActive(false);
         stopForeground(true);
@@ -419,7 +434,9 @@ public class MusicPlaybackService extends Service implements
         }
     }
 
-    private void scheduleDelayedShutdown() {
+    // @TODO QUICK HACKY FIX to allow music player onCompletion to shut down the service
+    // @TODO fix later by using a handler (message passing)
+    public void scheduleDelayedShutdown() {
         if (BuildConfig.DEBUG) Log.d(TAG, "scheduleDelayedShutdown");
 
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,

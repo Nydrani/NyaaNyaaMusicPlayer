@@ -7,6 +7,7 @@ import android.util.Log;
 import java.io.IOException;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
+import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
 
 /**
  * Custom music player wrapper around MediaPlayer
@@ -18,12 +19,14 @@ public class MusicPlayer implements
     private static final String TAG = MusicPlayer.class.getSimpleName();
 
     private MediaPlayer mediaPlayer;
-
     public long musicId;
 
-    public MusicPlayer() {
+    private MusicPlaybackService service;
+
+    public MusicPlayer(MusicPlaybackService service) {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
+        this.service = service;
         musicId = 0;
 
         initMediaPlayer();
@@ -137,7 +140,9 @@ public class MusicPlayer implements
     public void onCompletion(MediaPlayer mp) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCompletion");
 
-        // @TODO on completion send message back to service to schedule shutdown (currently does not)
+        // @TODO on completion send message back to service to schedule shutdown
+        // @TODO QUICK HACKY FIX --> sending service so then this can call schedule shutdown
+        service.scheduleDelayedShutdown();
     }
 
 
