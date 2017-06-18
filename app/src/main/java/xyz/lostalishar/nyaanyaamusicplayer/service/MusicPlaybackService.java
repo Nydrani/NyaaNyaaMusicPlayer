@@ -27,7 +27,9 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.activity.BaseActivity;
 import xyz.lostalishar.nyaanyaamusicplayer.media.MusicPlayer;
+import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
 import xyz.lostalishar.nyaanyaamusicplayer.receiver.MediaButtonIntentReceiver;
+import xyz.lostalishar.nyaanyaamusicplayer.util.PreferenceUtils;
 
 public class MusicPlaybackService extends Service implements
         AudioManager.OnAudioFocusChangeListener {
@@ -42,11 +44,10 @@ public class MusicPlaybackService extends Service implements
 
     public Notification musicNotification;
 
-    // 5 minutes allowed to be inactive before death
-    private static final int DELAY_TIME = 5 * 60 * 1000;
+    // 1 minutes allowed to be inactive before death for testing (@TODO service killed before song finishes)
+    private static final int DELAY_TIME = 60 * 1000;
     public static final String ACTION_SHUTDOWN = "SHUTDOWN";
     private static final int MUSIC_NOTIFICATION_ID = 1;
-
 
 
     // ========================================================================
@@ -96,6 +97,7 @@ public class MusicPlaybackService extends Service implements
         if (ACTION_SHUTDOWN.equals(action)) {
             if (BuildConfig.DEBUG) Log.d(TAG, "ACTION_SHUTDOWN called");
 
+            savePlaybackState();
             stopSelf();
             return START_NOT_STICKY;
         }
@@ -109,7 +111,7 @@ public class MusicPlaybackService extends Service implements
     public boolean onUnbind(Intent intent) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onUnbind");
 
-        scheduleDelayedShutdown();
+        savePlaybackState();
 
         return true;
     }
@@ -123,7 +125,6 @@ public class MusicPlaybackService extends Service implements
 
         // stop running as foreground service
         stopForeground(true);
-
 
         // release media session
         mediaSession.release();
@@ -147,7 +148,7 @@ public class MusicPlaybackService extends Service implements
         if (BuildConfig.DEBUG) Log.d(TAG, "load");
 
         // store song id
-        musicPlayer.setMusicId(musicId);
+        musicPlayer.musicId = musicId;
 
         // find the location from the MediaStore
         Cursor cursor = makeMusicLocationCursor(musicId);
@@ -189,7 +190,7 @@ public class MusicPlaybackService extends Service implements
         // @TODO extra functionality
         //   1. update the media session to play, pause, stop etc status
         //   2. enable listening to play/pause buttons from quick settings/hardware buttons
-        //   3. dont get killed by OS
+        //   3. don't get killed by OS
         updateMediaSession("PLAY");
         mediaSession.setActive(true);
         startForeground(MUSIC_NOTIFICATION_ID, musicNotification);
@@ -228,10 +229,32 @@ public class MusicPlaybackService extends Service implements
         musicPlayer.reset();
     }
 
+    // @TODO make private since not exposed function
+    public void seekTo(int msec) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "seekTo");
+
+        musicPlayer.seekTo(msec);
+    }
+
+    // @TODO make private since not exposed function
     public void setVolume(float leftVolume, float rightVolume) {
         if (BuildConfig.DEBUG) Log.d(TAG, "setVolume");
 
         musicPlayer.setVolume(leftVolume, rightVolume);
+    }
+
+    // @TODO make private since not exposed function
+    public int getCurrentPosition() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentPosition");
+
+        return musicPlayer.getCurrentPosition();
+    }
+
+    // @TODO make private since not exposed function
+    public long getCurrentId() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentId");
+
+        return musicPlayer.musicId;
     }
 
 
@@ -243,12 +266,12 @@ public class MusicPlaybackService extends Service implements
         if (BuildConfig.DEBUG) Log.d(TAG, "makeMusicLocationCursor");
 
         ContentResolver musicResolver = getContentResolver();
+
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String[] projection = { MediaStore.Audio.Media.DATA };
         String selection = MediaStore.Audio.Media._ID + "=?";
         String[] selectionArgs = { String.valueOf(musicId) };
         String sortOrder = MediaStore.Audio.Media.DEFAULT_SORT_ORDER;
-
 
         return musicResolver.query(musicUri, projection, selection, selectionArgs, sortOrder);
     }
@@ -415,7 +438,7 @@ public class MusicPlaybackService extends Service implements
         // @TODO debugging
         PlaybackState playbackState = mediaController.getPlaybackState();
         if (playbackState == null) {
-            if (BuildConfig.DEBUG) Log.w(TAG, "No playstate found");
+            if (BuildConfig.DEBUG) Log.w(TAG, "No play state found");
         } else {
             if (BuildConfig.DEBUG) Log.d(TAG, "State before: " + String.valueOf(playbackState.getState()));
         }
@@ -464,10 +487,30 @@ public class MusicPlaybackService extends Service implements
 
         playbackState = mediaController.getPlaybackState();
         if (playbackState == null) {
-            if (BuildConfig.DEBUG) Log.w(TAG, "No playstate found");
+            if (BuildConfig.DEBUG) Log.w(TAG, "No play state found");
         } else {
             if (BuildConfig.DEBUG) Log.d(TAG, "State after: " + String.valueOf(playbackState.getState()));
         }
+    }
+
+    private void savePlaybackState() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "savePlaybackState");
+
+        MusicPlaybackState state = new MusicPlaybackState(getCurrentId(), getCurrentPosition());
+        PreferenceUtils.saveCurPlaying(this, state);
+    }
+
+    // @TODO could refactor to instead store the loaded state in the service
+    // @TODO and let the service take care of loading
+    private void loadPlaybackState() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "loadPlaybackState");
+
+        MusicPlaybackState state = PreferenceUtils.loadCurPlaying(this);
+        load(state.getMusicId());
+        seekTo(state.getMusicPos());
+
+        // make sure to update the MediaSession upon loading
+        updateMediaSession("PAUSE");
     }
 
 

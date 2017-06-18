@@ -93,16 +93,16 @@ public class MusicPlayer implements
         mediaPlayer.release();
     }
 
+    public void seekTo(int msec) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "seekTo");
+
+        mediaPlayer.seekTo(msec);
+    }
+
     public void setVolume(float leftVolume, float rightVolume) {
         if (BuildConfig.DEBUG) Log.d(TAG, "setVolume");
 
-       mediaPlayer.setVolume(leftVolume, rightVolume);
-    }
-
-    public void setMusicId(long musicId) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "setMusicId");
-
-        this.musicId = musicId;
+        mediaPlayer.setVolume(leftVolume, rightVolume);
     }
 
     public int getCurrentPosition() {
@@ -136,6 +136,8 @@ public class MusicPlayer implements
     @Override
     public void onCompletion(MediaPlayer mp) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCompletion");
+
+        // @TODO on completion send message back to service to schedule shutdown (currently does not)
     }
 
 
