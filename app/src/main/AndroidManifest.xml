@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="xyz.velvetmilk.nyaanyaamusicplayer">
+    package="xyz.lostalishar.nyaanyaamusicplayer">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
@@ -11,7 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activity.BaseActivity">
+            android:name="xyz.lostalishar.nyaanyaamusicplayer.activity.BaseActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.MUSIC_PLAYER" />
@@ -23,19 +23,19 @@
         </activity>
 
         <service
-            android:name=".service.MusicPlaybackService"
+            android:name="xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService"
             android:enabled="true"
             android:exported="true"
             android:label="@string/app_name" />
 
         <service
-            android:name=".service.MediaJobService"
+            android:name="xyz.lostalishar.nyaanyaamusicplayer.service.MediaJobService"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <receiver
-            android:name=".receiver.MediaButtonIntentReceiver"
+            android:name="xyz.lostalishar.nyaanyaamusicplayer.receiver.MediaButtonIntentReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
