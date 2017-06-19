@@ -38,9 +38,11 @@ public class MusicPlaybackService extends Service implements
     private MusicPlayer musicPlayer;
     private AlarmManager alarmManager;
     private PendingIntent shutdownPendingIntent;
-    private MediaSession mediaSession;
+
+    // @TODO quick hacky fix for fixing session state when onCompleted called in MusicPlayer.class (made public)
+    public MediaSession mediaSession;
     private MediaController mediaController;
-    private AudioManager audioManager;
+    public AudioManager audioManager;
 
     public Notification musicNotification;
 
@@ -449,7 +451,8 @@ public class MusicPlaybackService extends Service implements
         alarmManager.cancel(shutdownPendingIntent);
     }
 
-    private void updateMediaSession(String state) {
+    // @TODO quick hacky fix for updating session from within MusicPlayer.class (made public)
+    public void updateMediaSession(String state) {
         if (BuildConfig.DEBUG) Log.d(TAG, "updateMediaSession");
 
         // @TODO debugging

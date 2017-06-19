@@ -220,6 +220,7 @@ public class BaseActivity extends AppCompatActivity {
         String[] neededPermissions = new String[permissionList.size()];
         neededPermissions = permissionList.toArray(neededPermissions);
 
+        // requests permissions on post android M versions
         if (neededPermissions.length > 0) {
             requestPermissions(neededPermissions, PERMISSION_REQUEST_CODE);
         }

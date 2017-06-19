@@ -142,7 +142,15 @@ public class MusicPlayer implements
 
         // @TODO on completion send message back to service to schedule shutdown
         // @TODO QUICK HACKY FIX --> sending service so then this can call schedule shutdown
+        // @TODO need to update all
         service.scheduleDelayedShutdown();
+        service.updateMediaSession("STOP");
+        service.mediaSession.setActive(false);
+        service.stopForeground(true);
+        service.audioManager.abandonAudioFocus(service);
+
+        // @TODO reset to 0 since only single file. --> fix later when sending message back to service
+        mp.seekTo(0);
     }
 
 
