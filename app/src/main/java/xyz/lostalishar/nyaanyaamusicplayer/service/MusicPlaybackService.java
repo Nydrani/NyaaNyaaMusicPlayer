@@ -29,6 +29,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.activity.BaseActivity;
 import xyz.lostalishar.nyaanyaamusicplayer.media.MusicPlayer;
 import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
 import xyz.lostalishar.nyaanyaamusicplayer.receiver.MediaButtonIntentReceiver;
+import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.PreferenceUtils;
 
 public class MusicPlaybackService extends Service implements
@@ -60,6 +61,13 @@ public class MusicPlaybackService extends Service implements
     public void onCreate() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
 
+        // die if service doesn't have necessary permissions
+        if (NyaaUtils.needsPermissions(this)) {
+            stopSelf();
+            return;
+        }
+
+        // init service
         binder = new NyaaNyaaMusicServiceStub(this);
         setupAlarms();
 
@@ -81,7 +89,13 @@ public class MusicPlaybackService extends Service implements
     public IBinder onBind(Intent intent) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onBind");
 
-        cancelDelayedShutdown();
+        // race condition may happen if onBind or onUnbind gets called before onDestroy when stopSelf()
+        // is called in onCreate() due to missing permissions
+        // so we need to check here if we have permissions since we only instantiate when we do
+        if (!(NyaaUtils.needsPermissions(this))) {
+            cancelDelayedShutdown();
+        }
+
         return binder;
     }
 
@@ -95,6 +109,13 @@ public class MusicPlaybackService extends Service implements
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onStartCommand");
+
+        // we need to check for permissions here if the user ever runs the service and then denies
+        // the permissions later
+        if (NyaaUtils.needsPermissions(this)) {
+            stopSelf();
+            return START_NOT_STICKY;
+        }
 
         // @TODO find out when intent can be null
         // intent can be null (not sure when)
@@ -122,8 +143,14 @@ public class MusicPlaybackService extends Service implements
     public boolean onUnbind(Intent intent) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onUnbind");
 
-        savePlaybackState();
-        scheduleDelayedShutdown();
+        // race condition may happen if onBind or onUnbind gets called before onDestroy when stopSelf()
+        // is called in onCreate() due to missing permissions
+        // this results in binding when no fields have been instantiated
+        // so we need to check here if we have permissions since we only instantiate when we do
+        if (!(NyaaUtils.needsPermissions(this))) {
+            savePlaybackState();
+            scheduleDelayedShutdown();
+        }
 
         return true;
     }
@@ -131,6 +158,11 @@ public class MusicPlaybackService extends Service implements
     @Override
     public void onDestroy() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
+
+        // early die if service never had the necessary permissions
+        if (NyaaUtils.needsPermissions(this)) {
+            return;
+        }
 
         // make sure to cancel lingering AlarmManager tasks
         cancelDelayedShutdown();

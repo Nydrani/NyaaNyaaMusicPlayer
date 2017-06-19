@@ -36,7 +36,8 @@ public class MusicUtils {
         if (BuildConfig.DEBUG) Log.d(TAG, "bindToService");
 
         Intent intent = new Intent(context, MusicPlaybackService.class);
-        return context.bindService(intent, musicServiceConnection, Context.BIND_AUTO_CREATE);
+        // only bind to services that are already running
+        return context.bindService(intent, musicServiceConnection, 0);
     }
 
     public static void unbindFromService(Context context) {

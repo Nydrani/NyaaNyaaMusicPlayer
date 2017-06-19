@@ -1,6 +1,5 @@
 package xyz.lostalishar.nyaanyaamusicplayer.activity;
 
-import android.Manifest;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -8,7 +7,6 @@ import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,19 +17,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-
-import java.util.ArrayList;
-import java.util.List;
-
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicListFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
+import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
 public class BaseActivity extends AppCompatActivity {
     private static final String TAG = BaseActivity.class.getSimpleName();
-    private static final int PERMISSION_REQUEST_CODE = 0;
 
     // flag for service binding
     private boolean bound = false;
@@ -49,9 +43,13 @@ public class BaseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_base);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        if (hasPermissions()) {
-            init();
+        // check if app has all the necessary permissions
+        if (NyaaUtils.needsPermissions(this)) {
+            NyaaUtils.requestMissingPermissions(this);
+            return;
         }
+
+        init();
     }
 
     @Override
@@ -108,14 +106,18 @@ public class BaseActivity extends AppCompatActivity {
             return;
         }
 
-
         switch (resultCode) {
-            case PERMISSION_REQUEST_CODE:
-                if (checkPermissionGrantResults(grantResults)) {
-                    init();
-                } else {
-                    finish();
+            case NyaaUtils.PERMISSION_REQUEST_CODE:
+                for (int result : grantResults) {
+                    if (result == PackageManager.PERMISSION_DENIED) {
+                        // exit if permissions are denied
+                        finish();
+                        return;
+                    }
                 }
+
+                // got all permissions
+                init();
                 break;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unhandled result code");
@@ -194,52 +196,5 @@ public class BaseActivity extends AppCompatActivity {
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(android.R.id.content, fragment);
         ft.commit();
-    }
-
-    /**
-     * Checks if app has permissions and asks for permissions when it does not.
-     */
-    private boolean hasPermissions() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "hasPermissions");
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-
-        String[] permissions = new String[1];
-        List<String> permissionList = new ArrayList<>();
-
-        permissions[0] = Manifest.permission.READ_EXTERNAL_STORAGE;
-        
-        for (String permission : permissions) {
-            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                permissionList.add(permission);
-            }
-        }
-
-        String[] neededPermissions = new String[permissionList.size()];
-        neededPermissions = permissionList.toArray(neededPermissions);
-
-        // requests permissions on post android M versions
-        if (neededPermissions.length > 0) {
-            requestPermissions(neededPermissions, PERMISSION_REQUEST_CODE);
-        }
-
-        return neededPermissions.length == 0;
-    }
-
-    /**
-     * Checks if the grant results from permission request succeeds
-     */
-    private boolean checkPermissionGrantResults(int[] grantResults) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "checkPermissionGrantResults");
-
-        for (int result : grantResults) {
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }
