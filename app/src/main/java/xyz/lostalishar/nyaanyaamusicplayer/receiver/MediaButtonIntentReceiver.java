@@ -19,12 +19,10 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
 
         final KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
 
-        // return if for some reason there is no EXTRA_KEY_EVENT
-        // from android.intent.action.MEDIA_BUTTON
-        if (event == null) {
-            return;
+        // only schedule if there is a EXTRA_KEY_EVENT extra as well as it being ACTION_DOWN
+        // e.g. from android.intent.action.MEDIA_BUTTON
+        if (event != null && event.getAction() == KeyEvent.ACTION_DOWN) {
+            JobUtils.scheduleMediaJob(context, event.getKeyCode());
         }
-
-        JobUtils.scheduleMediaJob(context, event.getKeyCode());
     }
 }
