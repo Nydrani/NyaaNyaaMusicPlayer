@@ -91,7 +91,7 @@ public class MusicListLoader extends CachedAsyncTaskLoader<List<Music>> {
         ContentResolver musicResolver = context.getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String[] projection = new String[6];
-        String selection = MediaStore.Audio.Media.IS_MUSIC;
+        String selection = MediaStore.Audio.Media.IS_MUSIC + "=1";
         String sortOrder = MediaStore.Audio.Media.DEFAULT_SORT_ORDER;
 
         projection[0] = MediaStore.Audio.Media._ID;
