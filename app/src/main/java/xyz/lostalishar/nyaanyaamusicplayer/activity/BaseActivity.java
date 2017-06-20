@@ -57,9 +57,16 @@ public class BaseActivity extends AppCompatActivity {
         if (BuildConfig.DEBUG) Log.d(TAG, "onStart");
         super.onStart();
 
-        ComponentName name = MusicUtils.startService(this);
-        if (BuildConfig.DEBUG) Log.d(TAG, name.toString());
-        bound = MusicUtils.bindToService(this);
+        // if i don't have permissions, don't start service
+        if (NyaaUtils.needsPermissions(this)) {
+            return;
+        }
+
+        // don't rebind if already bound
+        if (!bound) {
+            ComponentName name = MusicUtils.startService(this);
+            bound = MusicUtils.bindToService(this);
+        }
     }
 
     @Override
@@ -177,6 +184,13 @@ public class BaseActivity extends AppCompatActivity {
         if (BuildConfig.DEBUG) Log.d(TAG, "init");
 
         setFragment(MusicListFragment.newInstance());
+
+        // don't rebind if already bound (might try to double bind due to onStart binding and binding here)
+        // @TODO find better solution so doesn't need to be called twice on load
+        if (!bound) {
+            ComponentName name = MusicUtils.startService(this);
+            bound = MusicUtils.bindToService(this);
+        }
     }
 
     protected void setDialogFragment(DialogFragment dialog) {
