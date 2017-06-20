@@ -32,6 +32,16 @@ import xyz.lostalishar.nyaanyaamusicplayer.receiver.MediaButtonIntentReceiver;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.PreferenceUtils;
 
+/*
+ * MusicPlaybackService is the main service behind the app background audio playback.
+ * It must be run with the preconditions:
+ *   1. It has READ_EXTERNAL_STORE permissions. (otherwise all entrances to the app are barred)
+ *     a. @TODO if the user changes the permissions as the service is running, -->
+ *     a. @TODO it will leak some managers and sessions (FIX THIS)
+ *
+ * After some time (SHUTDOWN_DELAY_TIME) it will automatically shutdown.
+ */
+
 public class MusicPlaybackService extends Service implements
         AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = MusicPlaybackService.class.getSimpleName();
@@ -48,7 +58,7 @@ public class MusicPlaybackService extends Service implements
     public Notification musicNotification;
 
     // 1 minutes allowed to be inactive before death for testing (@TODO service killed before song finishes)
-    private static final int DELAY_TIME = 60 * 1000;
+    private static final int SHUTDOWN_DELAY_TIME = 60 * 1000;
     public static final String ACTION_SHUTDOWN = "SHUTDOWN";
     private static final int MUSIC_NOTIFICATION_ID = 1;
 
@@ -92,16 +102,22 @@ public class MusicPlaybackService extends Service implements
         // race condition may happen if onBind or onUnbind gets called before onDestroy when stopSelf()
         // is called in onCreate() due to missing permissions
         // so we need to check here if we have permissions since we only instantiate when we do
-        if (!(NyaaUtils.needsPermissions(this))) {
-            cancelDelayedShutdown();
+        if (NyaaUtils.needsPermissions(this)) {
+            return null;
         }
 
+        cancelDelayedShutdown();
         return binder;
     }
 
     @Override
     public void onRebind(Intent intent) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onRebind");
+
+        // permissions are needed
+        if (NyaaUtils.needsPermissions(this)) {
+            return;
+        }
 
         cancelDelayedShutdown();
     }
@@ -126,9 +142,9 @@ public class MusicPlaybackService extends Service implements
         }
 
         final String action = intent.getAction();
-        if (ACTION_SHUTDOWN.equals(action)) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "ACTION_SHUTDOWN called");
+        if (BuildConfig.DEBUG) Log.d(TAG, "Action: " + action + " called");
 
+        if (ACTION_SHUTDOWN.equals(action)) {
             savePlaybackState();
             stopSelf();
             return START_NOT_STICKY;
@@ -203,7 +219,7 @@ public class MusicPlaybackService extends Service implements
 
         // more than 1 item of this id --> debug me
         if (cursor.getCount() != 1) {
-            if (BuildConfig.DEBUG) Log.w(TAG, "Found more than 1 item");
+            if (BuildConfig.DEBUG) Log.w(TAG, "Found more/less than 1 item");
             int dataColumn = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 if (BuildConfig.DEBUG) Log.w(TAG, "Item: " + cursor.getString(dataColumn));
@@ -417,6 +433,8 @@ public class MusicPlaybackService extends Service implements
                 .build();
     }
 
+    // @TODO update later to make this function only handle KEYCODES while having a generic function
+    // @TODO to delegate which function to which intent
     private void handleCommand(Intent intent) {
         if (BuildConfig.DEBUG) Log.d(TAG, "handleCommand");
 
@@ -474,7 +492,7 @@ public class MusicPlaybackService extends Service implements
         if (BuildConfig.DEBUG) Log.d(TAG, "scheduleDelayedShutdown");
 
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + DELAY_TIME, shutdownPendingIntent);
+                SystemClock.elapsedRealtime() + SHUTDOWN_DELAY_TIME, shutdownPendingIntent);
     }
 
     private void cancelDelayedShutdown() {
@@ -548,19 +566,25 @@ public class MusicPlaybackService extends Service implements
     private void savePlaybackState() {
         if (BuildConfig.DEBUG) Log.d(TAG, "savePlaybackState");
 
+        // @TODO need to check if the music player is loaded otherwise calling getCurrentPosition
+        // @TODO and getCurrentId is erroneous
         MusicPlaybackState state = new MusicPlaybackState(getCurrentId(), getCurrentPosition());
         PreferenceUtils.saveCurPlaying(this, state);
     }
 
-    // @TODO could refactor to instead store the loaded state in the service
-    // @TODO and let the service take care of loading
+    // @TODO could refactor to instead store the loaded state in the service rather
+    // @TODO than the MusicPlayer class and let the service take care of loading
     private void loadPlaybackState() {
         if (BuildConfig.DEBUG) Log.d(TAG, "loadPlaybackState");
 
         MusicPlaybackState state = PreferenceUtils.loadCurPlaying(this);
-        load(state.getMusicId());
-        seekTo(state.getMusicPos());
 
+        // die if load failed, probably due to ID not found
+        if (!(load(state.getMusicId()))) {
+            return;
+        }
+
+        seekTo(state.getMusicPos());
         // make sure to update the MediaSession upon loading
         updateMediaSession("PAUSE");
     }
