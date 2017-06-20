@@ -46,10 +46,7 @@ public class BaseActivity extends AppCompatActivity {
         // check if app has all the necessary permissions
         if (NyaaUtils.needsPermissions(this)) {
             NyaaUtils.requestMissingPermissions(this);
-            return;
         }
-
-        init();
     }
 
     @Override
@@ -59,14 +56,11 @@ public class BaseActivity extends AppCompatActivity {
 
         // if i don't have permissions, don't start service
         if (NyaaUtils.needsPermissions(this)) {
+            setFragment(null);
             return;
         }
 
-        // don't rebind if already bound
-        if (!bound) {
-            ComponentName name = MusicUtils.startService(this);
-            bound = MusicUtils.bindToService(this);
-        }
+        initialise();
     }
 
     @Override
@@ -86,10 +80,7 @@ public class BaseActivity extends AppCompatActivity {
         if (BuildConfig.DEBUG) Log.d(TAG, "onStop");
         super.onStop();
 
-        if (bound) {
-            MusicUtils.unbindFromService(this);
-            bound = false;
-        }
+        deinitialise();
     }
 
     @Override
@@ -124,7 +115,7 @@ public class BaseActivity extends AppCompatActivity {
                 }
 
                 // got all permissions
-                init();
+                initialise();
                 break;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unhandled result code");
@@ -179,17 +170,23 @@ public class BaseActivity extends AppCompatActivity {
     // Helper functions
     //=========================================================================
 
-    // startup code
-    protected void init() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "init");
+    // initialisation code
+    protected void initialise() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "initialise");
 
         setFragment(MusicListFragment.newInstance());
 
-        // don't rebind if already bound (might try to double bind due to onStart binding and binding here)
-        // @TODO find better solution so doesn't need to be called twice on load
-        if (!bound) {
-            ComponentName name = MusicUtils.startService(this);
-            bound = MusicUtils.bindToService(this);
+        ComponentName name = MusicUtils.startService(this);
+        bound = MusicUtils.bindToService(this);
+    }
+
+    // deinitialsation code
+    protected void deinitialise() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "deinitialise");
+
+        if (bound) {
+            MusicUtils.unbindFromService(this);
+            bound = false;
         }
     }
 
@@ -203,12 +200,28 @@ public class BaseActivity extends AppCompatActivity {
         dialog.show(ft, null);
     }
 
+    /*
+     * Replaces the fragment in the FrameLayout container
+     * If fragment == null : remove "all" from fragment     <---- all is assuming only 1
+     * If fragment != null : replace with new fragment
+     */
     protected void setFragment(Fragment fragment) {
         if (BuildConfig.DEBUG) Log.d(TAG, "setFragment");
 
         FragmentManager fm = getFragmentManager();
+        Fragment element = fm.findFragmentById(R.id.activity_base_content);
+
+        // check for "remove fragment" and null fragment in container
+        if (fragment == null && element == null) {
+            return;
+        }
+
         FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(android.R.id.content, fragment);
+        if (fragment == null) {
+            ft.remove(element);
+        } else {
+            ft.replace(R.id.activity_base_content, fragment);
+        }
         ft.commit();
     }
 }
