@@ -126,11 +126,14 @@ public class MusicPlayer implements
         switch (what) {
             case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
                 if (BuildConfig.DEBUG) Log.e(TAG, "MEDIA_ERROR_SERVER_DIED");
-                release();
+                mp.release();
                 initMediaPlayer();
                 return true;
             default:
                 if (BuildConfig.DEBUG) Log.wtf(TAG, "VERY BAD HAPPENED");
+                // @TODO not sure what to do here --> fix later. for now just reset
+                mp.release();
+                initMediaPlayer();
                 break;
         }
         return false;
@@ -150,6 +153,8 @@ public class MusicPlayer implements
         service.audioManager.abandonAudioFocus(service);
 
         // @TODO reset to 0 since only single file. --> fix later when sending message back to service
+        // @TODO will be used later for multiple audio track playing
+        // @TODO also assumes that mp is in a seekable state
         mp.seekTo(0);
     }
 
