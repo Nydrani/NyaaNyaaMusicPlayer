@@ -6,6 +6,12 @@
         android:title="@string/actionbar_homelink"
         android:enabled="false" />
     <item
+        android:id="@+id/actionbar_music_list"
+        android:title="@string/actionbar_music_list" />
+    <item
+        android:id="@+id/actionbar_music_queue"
+        android:title="@string/actionbar_music_queue" />
+    <item
         android:id="@+id/actionbar_about"
         android:title="@string/actionbar_about" />
     <item

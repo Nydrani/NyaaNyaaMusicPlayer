@@ -21,6 +21,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicListFragment;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicQueueFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
@@ -148,15 +149,18 @@ public class BaseActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(android.R.id.content), "Replace with your own action", Snackbar.LENGTH_LONG)
                         .show();
                 return true;
-
             case R.id.actionbar_settings:
                 Toast.makeText(this, R.string.app_name, Toast.LENGTH_LONG).show();
                 return true;
-
             case R.id.actionbar_about:
                 setDialogFragment(AboutDialogFragment.newInstance());
                 return true;
-
+            case R.id.actionbar_music_queue:
+                setFragment(MusicQueueFragment.newInstance());
+                return true;
+            case R.id.actionbar_music_list:
+                setFragment(MusicListFragment.newInstance());
+                return true;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item");
                 break;
