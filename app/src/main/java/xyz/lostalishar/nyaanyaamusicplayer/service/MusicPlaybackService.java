@@ -597,9 +597,14 @@ public class MusicPlaybackService extends Service implements
     private void savePlaybackState() {
         if (BuildConfig.DEBUG) Log.d(TAG, "savePlaybackState");
 
-        // @TODO need to check if the music player is loaded otherwise calling getCurrentPosition
-        // @TODO and getCurrentId is erroneous
-        MusicPlaybackState state = new MusicPlaybackState(getCurrentId(), getCurrentPosition());
+        // check if MusicPlayer has a known musicId (initialised)
+        // don't save if not
+        long id = getCurrentId();
+        if (id == MusicPlayer.UNKNOWN_ID) {
+            return;
+        }
+
+        MusicPlaybackState state = new MusicPlaybackState(id, getCurrentPosition());
         PreferenceUtils.saveCurPlaying(this, state);
     }
 
