@@ -37,51 +37,30 @@ public class MusicPlayer implements
     // Exposed MediaPlayer functions
     // ========================================================================
 
-    public boolean load(String source) {
+    public void load(String source) throws IOException, IllegalStateException {
         if (BuildConfig.DEBUG) Log.d(TAG, "load");
 
-        try {
-            mediaPlayer.setDataSource(source);
-            mediaPlayer.prepare();
-        } catch (IOException e) {
-            if (BuildConfig.DEBUG) Log.e(TAG, "Unable to load data source: " + source);
-            return false;
-        } catch (IllegalStateException e) {
-            if (BuildConfig.DEBUG) Log.e(TAG, "Called prepare in illegal state");
-            return false;
-        }
-
-        return true;
+        mediaPlayer.setDataSource(source);
+        mediaPlayer.prepare();
     }
 
-    public void start() {
+    public void start() throws IllegalStateException {
         if (BuildConfig.DEBUG) Log.d(TAG, "start");
 
-        try {
-            mediaPlayer.start();
-        } catch (IllegalStateException e) {
-            if (BuildConfig.DEBUG) Log.e(TAG, "Called start in illegal state");
-        }
+        mediaPlayer.start();
     }
 
-    public void pause() {
+    public void pause() throws IllegalStateException {
         if (BuildConfig.DEBUG) Log.d(TAG, "pause");
 
-        try {
-            mediaPlayer.pause();
-        } catch (IllegalStateException e) {
-            if (BuildConfig.DEBUG) Log.e(TAG, "Called pause in illegal state");
-        }
+        mediaPlayer.pause();
+
     }
 
-    public void stop() {
+    public void stop() throws IllegalStateException {
         if (BuildConfig.DEBUG) Log.d(TAG, "stop");
 
-        try {
-            mediaPlayer.stop();
-        } catch (IllegalStateException e) {
-            if (BuildConfig.DEBUG) Log.e(TAG, "Called stop in illegal state");
-        }
+        mediaPlayer.stop();
     }
 
     public void reset() {

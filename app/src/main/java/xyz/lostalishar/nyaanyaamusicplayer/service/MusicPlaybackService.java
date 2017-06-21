@@ -21,6 +21,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
@@ -234,7 +235,19 @@ public class MusicPlaybackService extends Service implements
         String loc = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
         cursor.close();
 
-        return musicPlayer.load(loc);
+        try {
+            musicPlayer.load(loc);
+
+            updateMediaSession("STOP");
+        } catch (IOException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Unable to load data source: " + loc);
+            return false;
+        } catch (IllegalStateException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Called prepare in illegal state");
+            return false;
+        }
+
+        return true;
     }
 
     public void start() {
@@ -247,51 +260,64 @@ public class MusicPlaybackService extends Service implements
             return;
         }
 
-        // @TODO extra functionality
-        //   1. make sure the app doesn't schedule to kill itself
-        //   2. update the media session to play, pause, stop etc status
-        //   3. enable listening to play/pause buttons from quick settings/hardware buttons
-        //   4. don't get killed by OS
-        cancelDelayedShutdown();
-        updateMediaSession("PLAY");
-        mediaSession.setActive(true);
-        startForeground(MUSIC_NOTIFICATION_ID, musicNotification);
+        try {
+            musicPlayer.start();
 
-        musicPlayer.start();
+            // @TODO extra functionality
+            //   1. make sure the app doesn't schedule to kill itself
+            //   2. update the media session to play, pause, stop etc status
+            //   3. enable listening to play/pause buttons from quick settings/hardware buttons
+            //   4. don't get killed by OS
+            cancelDelayedShutdown();
+            updateMediaSession("PLAY");
+            mediaSession.setActive(true);
+            startForeground(MUSIC_NOTIFICATION_ID, musicNotification);
+        } catch (IllegalStateException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Called start in illegal state");
+        }
     }
 
     public void pause() {
         if (BuildConfig.DEBUG) Log.d(TAG, "pause");
 
-        scheduleDelayedShutdown();
-        updateMediaSession("PAUSE");
-        stopForeground(true);
+        try {
+            musicPlayer.pause();
 
-        musicPlayer.pause();
+            scheduleDelayedShutdown();
+            updateMediaSession("PAUSE");
+            stopForeground(true);
+        } catch (IllegalStateException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Called pause in illegal state");
+        }
     }
 
     public void stop() {
         if (BuildConfig.DEBUG) Log.d(TAG, "stop");
 
-        scheduleDelayedShutdown();
-        updateMediaSession("STOP");
-        mediaSession.setActive(false);
-        stopForeground(true);
-        audioManager.abandonAudioFocus(this);
+        try {
+            musicPlayer.stop();
 
-        musicPlayer.stop();
+            scheduleDelayedShutdown();
+            updateMediaSession("STOP");
+            mediaSession.setActive(false);
+            stopForeground(true);
+            audioManager.abandonAudioFocus(this);
+        } catch (IllegalStateException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Called stop in illegal state");
+        }
+
     }
 
     public void reset() {
         if (BuildConfig.DEBUG) Log.d(TAG, "reset");
+
+        musicPlayer.reset();
 
         scheduleDelayedShutdown();
         updateMediaSession("RESET");
         mediaSession.setActive(false);
         stopForeground(true);
         audioManager.abandonAudioFocus(this);
-
-        musicPlayer.reset();
     }
 
     // @TODO make private since not exposed function
