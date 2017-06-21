@@ -505,9 +505,11 @@ public class MusicPlaybackService extends Service implements
             return;
         }
 
-        if (playbackState.getState() == PlaybackState.STATE_PLAYING) {
+        int state = playbackState.getState();
+        if (state == PlaybackState.STATE_PLAYING) {
             pause();
-        } else if (playbackState.getState() == PlaybackState.STATE_PAUSED) {
+        } else if (state == PlaybackState.STATE_PAUSED ||
+                state == PlaybackState.STATE_STOPPED) {
             start();
         }
     }
