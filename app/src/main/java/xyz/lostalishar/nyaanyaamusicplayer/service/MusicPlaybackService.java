@@ -211,9 +211,6 @@ public class MusicPlaybackService extends Service implements
     public boolean load(long musicId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "load");
 
-        // store song id
-        musicPlayer.musicId = musicId;
-
         // find the location from the MediaStore
         Cursor cursor = makeMusicLocationCursor(musicId);
 
@@ -240,6 +237,9 @@ public class MusicPlaybackService extends Service implements
 
         try {
             musicPlayer.load(loc);
+
+            // store song id on success
+            musicPlayer.musicId = musicId;
 
             updateMediaSession("STOP");
         } catch (IOException e) {
@@ -597,9 +597,14 @@ public class MusicPlaybackService extends Service implements
     private void savePlaybackState() {
         if (BuildConfig.DEBUG) Log.d(TAG, "savePlaybackState");
 
-        // @TODO need to check if the music player is loaded otherwise calling getCurrentPosition
-        // @TODO and getCurrentId is erroneous
-        MusicPlaybackState state = new MusicPlaybackState(getCurrentId(), getCurrentPosition());
+        // check if MusicPlayer has a known musicId (initialised)
+        // don't save if not
+        long id = getCurrentId();
+        if (id == MusicPlayer.UNKNOWN_ID) {
+            return;
+        }
+
+        MusicPlaybackState state = new MusicPlaybackState(id, getCurrentPosition());
         PreferenceUtils.saveCurPlaying(this, state);
     }
 
@@ -616,8 +621,6 @@ public class MusicPlaybackService extends Service implements
         }
 
         seekTo(state.getMusicPos());
-        // make sure to update the MediaSession upon loading
-        updateMediaSession("PAUSE");
     }
 
 
