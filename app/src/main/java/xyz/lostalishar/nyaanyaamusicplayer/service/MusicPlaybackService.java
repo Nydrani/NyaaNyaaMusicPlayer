@@ -165,8 +165,11 @@ public class MusicPlaybackService extends Service implements
         // this results in binding when no fields have been instantiated
         // so we need to check here if we have permissions since we only instantiate when we do
         if (!(NyaaUtils.needsPermissions(this))) {
-            savePlaybackState();
-            scheduleDelayedShutdown();
+            // only schedule if service is not in use
+            if (!(musicPlayer.isPlaying())) {
+                savePlaybackState();
+                scheduleDelayedShutdown();
+            }
         }
 
         return true;

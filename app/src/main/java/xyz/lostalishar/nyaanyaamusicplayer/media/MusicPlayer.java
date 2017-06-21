@@ -93,6 +93,12 @@ public class MusicPlayer implements
         return mediaPlayer.getCurrentPosition();
     }
 
+    public boolean isPlaying() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "isPlaying");
+
+        return mediaPlayer.isPlaying();
+    }
+
 
     // ========================================================================
     // MediaPlayer listener overrides
