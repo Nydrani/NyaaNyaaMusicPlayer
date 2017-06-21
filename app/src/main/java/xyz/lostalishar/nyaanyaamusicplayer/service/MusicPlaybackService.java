@@ -211,9 +211,6 @@ public class MusicPlaybackService extends Service implements
     public boolean load(long musicId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "load");
 
-        // store song id
-        musicPlayer.musicId = musicId;
-
         // find the location from the MediaStore
         Cursor cursor = makeMusicLocationCursor(musicId);
 
@@ -240,6 +237,9 @@ public class MusicPlaybackService extends Service implements
 
         try {
             musicPlayer.load(loc);
+
+            // store song id on success
+            musicPlayer.musicId = musicId;
 
             updateMediaSession("STOP");
         } catch (IOException e) {
