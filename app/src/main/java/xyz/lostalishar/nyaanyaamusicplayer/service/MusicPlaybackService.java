@@ -621,8 +621,6 @@ public class MusicPlaybackService extends Service implements
         }
 
         seekTo(state.getMusicPos());
-        // make sure to update the MediaSession upon loading
-        updateMediaSession("PAUSE");
     }
 
 
