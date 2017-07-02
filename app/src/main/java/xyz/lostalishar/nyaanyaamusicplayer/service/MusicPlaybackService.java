@@ -51,10 +51,10 @@ public class MusicPlaybackService extends Service implements
 
     // @TODO quick hacky fix for fixing session state when onCompleted called in MusicPlayer.class (made public)
     public MediaSession mediaSession;
-    private MediaController mediaController;
     public AudioManager audioManager;
+    private MediaController mediaController;
 
-    public Notification musicNotification;
+    private Notification musicNotification;
 
     // 1 minutes allowed to be inactive before death for testing
     private static final int SHUTDOWN_DELAY_TIME = 60 * 1000;
