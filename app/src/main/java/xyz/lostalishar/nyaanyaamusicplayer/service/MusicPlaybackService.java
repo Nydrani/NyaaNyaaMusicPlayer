@@ -37,8 +37,6 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.PreferenceUtils;
  * MusicPlaybackService is the main service behind the app background audio playback.
  * It must be run with the preconditions:
  *   1. It has READ_EXTERNAL_STORE permissions. (otherwise all entrances to the app are barred)
- *     a. @TODO if the user changes the permissions as the service is running, -->
- *     a. @TODO it will leak some managers and sessions (FIX THIS)
  *
  * After some time (SHUTDOWN_DELAY_TIME) it will automatically shutdown.
  */
@@ -58,9 +56,11 @@ public class MusicPlaybackService extends Service implements
 
     public Notification musicNotification;
 
-    // 1 minutes allowed to be inactive before death for testing (@TODO service killed before song finishes)
+    // 1 minutes allowed to be inactive before death for testing
     private static final int SHUTDOWN_DELAY_TIME = 60 * 1000;
     public static final String ACTION_SHUTDOWN = "SHUTDOWN";
+    public static final String ACTION_EXTRA_KEYCODE = "KEYCODE";
+
     private static final int MUSIC_NOTIFICATION_ID = 1;
 
 
@@ -455,7 +455,7 @@ public class MusicPlaybackService extends Service implements
         PendingIntent activityPendingIntent = PendingIntent.getActivity(this, 0, activityIntent, 0);
 
         Intent serviceIntent = new Intent(this, MusicPlaybackService.class);
-        serviceIntent.putExtra("KEYCODE", KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+        serviceIntent.putExtra(ACTION_EXTRA_KEYCODE, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
 
         // @TODO apparently deprecated. fix later
         PendingIntent servicePendingIntent = PendingIntent.getService(this, 0, serviceIntent, 0);
@@ -477,7 +477,7 @@ public class MusicPlaybackService extends Service implements
     private void handleCommand(Intent intent) {
         if (BuildConfig.DEBUG) Log.d(TAG, "handleCommand");
 
-        final int keyCode = intent.getIntExtra("KEYCODE", 0);
+        final int keyCode = intent.getIntExtra(ACTION_EXTRA_KEYCODE, 0);
 
         switch (keyCode) {
             case KeyEvent.KEYCODE_MEDIA_PLAY:

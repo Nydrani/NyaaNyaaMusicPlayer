@@ -9,6 +9,7 @@ import android.util.Log;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.service.MediaJobService;
+import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
 
 /**
  * Utilities for scheduling jobs
@@ -29,7 +30,7 @@ public class JobUtils {
 
         ComponentName mediaJobServiceComponent = new ComponentName(context, MediaJobService.class);
         PersistableBundle infoBundle = new PersistableBundle();
-        infoBundle.putInt("KEYCODE", keyCode);
+        infoBundle.putInt(MusicPlaybackService.ACTION_EXTRA_KEYCODE, keyCode);
         JobInfo jobInfo = new JobInfo.Builder(0, mediaJobServiceComponent)
                 .setMinimumLatency(0)
                 .setOverrideDeadline(5000)
