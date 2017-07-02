@@ -10,12 +10,11 @@
     <string name="actionbar_music_queue">Show queue</string>
     <string name="actionbar_music_list">Show music list</string>
 
-
-
     <string name="dialog_about_message">Ayyy lmaooooo</string>
 
     <string name="service_musicplayback_notification_title">Music</string>
     <string name="service_musicplayback_notification_message">playing music</string>
+    <string name="service_musicplayback_notification_pause_message">Pause</string>
     <string name="service_musicplayback_notification_exitbutton_message">exit</string>
 
 </resources>

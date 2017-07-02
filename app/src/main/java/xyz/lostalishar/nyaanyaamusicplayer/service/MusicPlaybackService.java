@@ -454,11 +454,21 @@ public class MusicPlaybackService extends Service implements
         Intent activityIntent = new Intent(this, BaseActivity.class);
         PendingIntent activityPendingIntent = PendingIntent.getActivity(this, 0, activityIntent, 0);
 
+        Intent serviceIntent = new Intent(this, MusicPlaybackService.class);
+        serviceIntent.putExtra("KEYCODE", KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+
+        // @TODO apparently deprecated. fix later
+        PendingIntent servicePendingIntent = PendingIntent.getService(this, 0, serviceIntent, 0);
+        Notification.Action playPauseAction = new Notification.Action.Builder(android.R.drawable.ic_media_pause,
+                getText(R.string.service_musicplayback_notification_pause_message), servicePendingIntent)
+                .build();
+
         musicNotification = new Notification.Builder(this)
                 .setContentTitle(getText(R.string.service_musicplayback_notification_title))
                 .setContentText(getText(R.string.service_musicplayback_notification_message))
                 .setSmallIcon(android.R.drawable.star_on)
                 .setContentIntent(activityPendingIntent)
+                .addAction(playPauseAction)
                 .build();
     }
 
