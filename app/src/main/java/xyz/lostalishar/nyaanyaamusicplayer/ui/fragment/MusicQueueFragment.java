@@ -48,8 +48,8 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
         super.onCreate(savedInstanceState);
 
         Activity activity = getActivity();
-        List<Music> musicList = new ArrayList<>();
-        adapter = new MusicAdapter(musicList);
+        List<Music> queueList = new ArrayList<>();
+        adapter = new MusicAdapter(queueList);
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
     }
 
