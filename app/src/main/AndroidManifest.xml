@@ -11,7 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme">
         <activity
-            android:name="xyz.lostalishar.nyaanyaamusicplayer.activity.BaseActivity">
+            android:name=".activity.BaseActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.MUSIC_PLAYER" />
@@ -23,25 +23,31 @@
         </activity>
 
         <service
-            android:name="xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService"
+            android:name=".service.MusicPlaybackService"
             android:enabled="true"
             android:exported="true"
             android:label="@string/app_name" />
-
         <service
-            android:name="xyz.lostalishar.nyaanyaamusicplayer.service.MediaJobService"
+            android:name=".service.MediaJobService"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <receiver
-            android:name="xyz.lostalishar.nyaanyaamusicplayer.receiver.MediaButtonIntentReceiver"
+            android:name=".receiver.MediaButtonIntentReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
+
+        <provider
+            android:name=".provider.MusicDatabaseProvider"
+            android:authorities="xyz.lostalishar.nyaanyaamusicplayer.provider"
+            android:enabled="true"
+            android:exported="true">
+        </provider>
     </application>
 
 </manifest>

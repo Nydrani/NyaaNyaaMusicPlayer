@@ -25,6 +25,7 @@ public class PlaybackQueueSQLHelper extends SQLiteOpenHelper {
     // SQLiteOpenHelper callback overrides
     // ========================================================================
 
+    @Override
     public void onCreate(SQLiteDatabase db) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
 
@@ -35,6 +36,7 @@ public class PlaybackQueueSQLHelper extends SQLiteOpenHelper {
         db.execSQL(playbackQueueSQL);
     }
 
+    @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onUpgrade");
 
@@ -42,11 +44,17 @@ public class PlaybackQueueSQLHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onDowngrade");
 
         db.execSQL("DROP TABLE IF EXISTS " + PlaybackQueueColumns.NAME);
         onCreate(db);
+    }
+
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onOpen");
     }
 
 
