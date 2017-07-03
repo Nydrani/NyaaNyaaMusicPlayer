@@ -7,4 +7,5 @@ interface INyaaNyaaMusicService {
     void pause();
     void stop();
     void reset();
+    long[] getQueue();
 }

@@ -86,6 +86,22 @@ public class MusicUtils {
         }
     }
 
+    public static long[] getQueue() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getQueue");
+
+        if (musicService == null) {
+            return new long[0];
+        }
+
+        try {
+            return musicService.getQueue();
+        } catch (RemoteException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
+        }
+
+        return new long[0];
+    }
+
 
     //=========================================================================
     // ServiceConnection implementation

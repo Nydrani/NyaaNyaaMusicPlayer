@@ -323,6 +323,12 @@ public class MusicPlaybackService extends Service implements
         audioManager.abandonAudioFocus(this);
     }
 
+    public long[] getQueue() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getQueue");
+
+        return new long[0];
+    }
+
     // @TODO make private since not exposed function
     public void seekTo(int msec) {
         if (BuildConfig.DEBUG) Log.d(TAG, "seekTo");
@@ -728,6 +734,13 @@ public class MusicPlaybackService extends Service implements
             if (BuildConfig.DEBUG) Log.d(TAG, "reset");
 
             musicPlaybackService.get().reset();
+        }
+
+        @Override
+        public long[] getQueue() throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "getQueue");
+
+            return musicPlaybackService.get().getQueue();
         }
     }
 }
