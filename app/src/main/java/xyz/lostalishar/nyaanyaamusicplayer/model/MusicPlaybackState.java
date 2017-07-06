@@ -7,36 +7,36 @@ package xyz.lostalishar.nyaanyaamusicplayer.model;
  */
 
 public class MusicPlaybackState {
-    private long musicId;
-    private int musicPos;
+    private int queuePos;
+    private int seekPos;
 
     public MusicPlaybackState() {
     }
 
-    public MusicPlaybackState(long musicId, int musicPos) {
-        this.musicId = musicId;
-        this.musicPos = musicPos;
+    public MusicPlaybackState(int queuePos, int seekPos) {
+        this.queuePos = queuePos;
+        this.seekPos = seekPos;
     }
 
 
-    public long getMusicId() {
-        return musicId;
+    public int getQueuePos() {
+        return queuePos;
     }
 
-    public int getMusicPos() {
-        return musicPos;
+    public int getSeekPos() {
+        return seekPos;
     }
 
-    public void setMusicId(long musicId) {
-        this.musicId = musicId;
+    public void setQueuePos(int queuePos) {
+        this.queuePos = queuePos;
     }
 
-    public void setMusicPos(int musicPos) {
-        this.musicPos = musicPos;
+    public void setSeekPos(int seekPos) {
+        this.seekPos = seekPos;
     }
 
     @Override
     public String toString() {
-        return "Id: " + String.valueOf(musicId) + " | Pos: " + String.valueOf(musicPos);
+        return "QueuePos: " + String.valueOf(queuePos) + " | seekPos: " + String.valueOf(seekPos);
     }
 }

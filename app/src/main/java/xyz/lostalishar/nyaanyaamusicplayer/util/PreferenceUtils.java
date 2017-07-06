@@ -16,21 +16,21 @@ public class PreferenceUtils {
     private static final String SETTINGS_PREFERENCES = "Settings";
     private static final String SERVICE_PREFERENCES = "Service";
 
-    private static final String SERVICE_PLAYING_ID = "cur_music_id";
-    private static final String SERVICE_PLAYING_SEEKPOS = "cur_music_pos";
+    private static final String SERVICE_QUEUE_PLAYING_POS = "cur_queue_music_pos";
+    private static final String SERVICE_QUEUE_PLAYING_SEEKPOS = "cur_queue_music_seekpos";
 
     public PreferenceUtils() {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
     }
 
     public static void saveCurPlaying(Context context, MusicPlaybackState state) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "setCurPlaying");
+        if (BuildConfig.DEBUG) Log.d(TAG, "saveCurPlaying");
 
         SharedPreferences.Editor editor = context.getSharedPreferences(SERVICE_PREFERENCES, Context.MODE_PRIVATE)
                 .edit();
 
-        editor.putLong(SERVICE_PLAYING_ID, state.getMusicId());
-        editor.putInt(SERVICE_PLAYING_SEEKPOS, state.getMusicPos());
+        editor.putInt(SERVICE_QUEUE_PLAYING_POS, state.getQueuePos());
+        editor.putInt(SERVICE_QUEUE_PLAYING_SEEKPOS, state.getSeekPos());
 
         editor.apply();
     }
@@ -42,10 +42,10 @@ public class PreferenceUtils {
         MusicPlaybackState state = new MusicPlaybackState();
 
         try {
-            long musicId = preferences.getLong(SERVICE_PLAYING_ID, 0);
-            int musicPos = preferences.getInt(SERVICE_PLAYING_SEEKPOS, 0);
-            state.setMusicId(musicId);
-            state.setMusicPos(musicPos);
+            int queuePos = preferences.getInt(SERVICE_QUEUE_PLAYING_POS, 0);
+            int seekPos = preferences.getInt(SERVICE_QUEUE_PLAYING_SEEKPOS, 0);
+            state.setQueuePos(queuePos);
+            state.setSeekPos(seekPos);
         } catch (ClassCastException e) {
             if (BuildConfig.DEBUG) Log.d(TAG, "Incorrect type found for preference");
         }

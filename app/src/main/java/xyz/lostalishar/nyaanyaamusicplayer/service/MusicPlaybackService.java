@@ -23,12 +23,15 @@ import android.view.KeyEvent;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.activity.BaseActivity;
 import xyz.lostalishar.nyaanyaamusicplayer.media.MusicPlayer;
 import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
+import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackTrack;
 import xyz.lostalishar.nyaanyaamusicplayer.receiver.MediaButtonIntentReceiver;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.PreferenceUtils;
@@ -44,6 +47,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.PreferenceUtils;
 public class MusicPlaybackService extends Service implements
         AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = MusicPlaybackService.class.getSimpleName();
+
     private IBinder binder;
     private MusicPlayer musicPlayer;
     private AlarmManager alarmManager;
@@ -56,10 +60,16 @@ public class MusicPlaybackService extends Service implements
 
     private Notification musicNotification;
 
+    private MusicPlaybackState musicPlaybackState;
+    private List<MusicPlaybackTrack> musicQueue;
+
     // 1 minutes allowed to be inactive before death for testing
     private static final int SHUTDOWN_DELAY_TIME = 60 * 1000;
+
     public static final String ACTION_SHUTDOWN = "SHUTDOWN";
     public static final String ACTION_EXTRA_KEYCODE = "KEYCODE";
+    private static final int UNKNOWN_POS = -1;
+
 
     private static final int MUSIC_NOTIFICATION_ID = 1;
 
@@ -88,9 +98,14 @@ public class MusicPlaybackService extends Service implements
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
         musicPlayer = new MusicPlayer(this);
+        musicPlaybackState = new MusicPlaybackState(UNKNOWN_POS, 0);
+        musicQueue = new ArrayList<>();
 
         // restore previous playback state
         loadPlaybackState();
+
+        // restore playback queue
+        loadPlaybackQueue();
 
         // schedule shutdown for idle service
         scheduleDelayedShutdown();
@@ -147,6 +162,7 @@ public class MusicPlaybackService extends Service implements
 
         if (ACTION_SHUTDOWN.equals(action)) {
             savePlaybackState();
+            savePlaybackQueue();
             stopSelf();
             return START_NOT_STICKY;
         }
@@ -168,6 +184,7 @@ public class MusicPlaybackService extends Service implements
             // only schedule if service is not in use
             if (!(musicPlayer.isPlaying())) {
                 savePlaybackState();
+                savePlaybackQueue();
                 scheduleDelayedShutdown();
             }
         }
@@ -211,8 +228,12 @@ public class MusicPlaybackService extends Service implements
     public boolean load(long musicId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "load");
 
+        int queuePos = 0;
+        MusicPlaybackTrack track = new MusicPlaybackTrack(musicId);
+        musicQueue.add(track);
+
         // find the location from the MediaStore
-        Cursor cursor = makeMusicLocationCursor(musicId);
+        Cursor cursor = makeMusicLocationCursor(musicQueue.get(queuePos).getId());
 
         if (cursor == null) {
             return false;
@@ -239,7 +260,8 @@ public class MusicPlaybackService extends Service implements
             musicPlayer.load(loc);
 
             // store song id on success
-            musicPlayer.musicId = musicId;
+            // musicPlayer.musicId = musicId;
+            musicPlaybackState.setQueuePos(queuePos);
 
             updateMediaSession("STOP");
         } catch (IOException e) {
@@ -351,10 +373,10 @@ public class MusicPlaybackService extends Service implements
     }
 
     // @TODO make private since not exposed function
-    public long getCurrentId() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentId");
+    public int getCurrentQueuePos() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentQueuePos");
 
-        return musicPlayer.musicId;
+        return musicPlaybackState.getQueuePos();
     }
 
 
@@ -570,7 +592,7 @@ public class MusicPlaybackService extends Service implements
 
         PlaybackState.Builder stateBuilder = new PlaybackState.Builder()
                 .setActions(playBackStateActions)
-                .setActiveQueueItemId(musicPlayer.musicId);
+                .setActiveQueueItemId(musicPlaybackState.getQueuePos());
 
         switch (state) {
             case "PLAY":
@@ -615,13 +637,14 @@ public class MusicPlaybackService extends Service implements
 
         // check if MusicPlayer has a known musicId (initialised)
         // don't save if not
-        long id = getCurrentId();
-        if (id == MusicPlayer.UNKNOWN_ID) {
+        int id = getCurrentQueuePos();
+        if (id == UNKNOWN_POS) {
             return;
         }
 
-        MusicPlaybackState state = new MusicPlaybackState(id, getCurrentPosition());
-        PreferenceUtils.saveCurPlaying(this, state);
+        // update the current playback seek position
+        musicPlaybackState.setSeekPos(getCurrentPosition());
+        PreferenceUtils.saveCurPlaying(this, musicPlaybackState);
     }
 
     // @TODO could refactor to instead store the loaded state in the service rather
@@ -630,13 +653,27 @@ public class MusicPlaybackService extends Service implements
         if (BuildConfig.DEBUG) Log.d(TAG, "loadPlaybackState");
 
         MusicPlaybackState state = PreferenceUtils.loadCurPlaying(this);
-
+        musicPlaybackState.setSeekPos(state.getSeekPos());
+        musicPlaybackState.setQueuePos(state.getQueuePos());
         // die if load failed, probably due to ID not found
-        if (!(load(state.getMusicId()))) {
+        // @TODO update this when load changes signature to load(int queuePos)
+        if (!(load(state.getQueuePos()))) {
             return;
         }
 
-        seekTo(state.getMusicPos());
+        seekTo(state.getSeekPos());
+    }
+
+    private void loadPlaybackQueue() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "loadPlaybackQueue");
+
+        // @TODO get music queue from contentprovider
+    }
+
+    private void savePlaybackQueue() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "savePlaybackQueue");
+
+        // @TODO save music queue into contentprovider
     }
 
 

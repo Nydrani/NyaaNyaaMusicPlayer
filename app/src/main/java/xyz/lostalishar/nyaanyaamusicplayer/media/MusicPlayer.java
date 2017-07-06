@@ -7,7 +7,6 @@ import android.util.Log;
 import java.io.IOException;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
-import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
 import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
 
 /**
@@ -19,10 +18,7 @@ public class MusicPlayer implements
         MediaPlayer.OnErrorListener {
     private static final String TAG = MusicPlayer.class.getSimpleName();
 
-    public static final int UNKNOWN_ID = -1;
-
     private MediaPlayer mediaPlayer;
-    public long musicId;
 
     private MusicPlaybackService service;
 
@@ -30,7 +26,6 @@ public class MusicPlayer implements
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         this.service = service;
-        musicId = UNKNOWN_ID;
 
         initMediaPlayer();
     }
@@ -155,7 +150,6 @@ public class MusicPlayer implements
         if (BuildConfig.DEBUG) Log.d(TAG, "initMediaPlayer");
 
         mediaPlayer = new MediaPlayer();
-        musicId = UNKNOWN_ID;
 
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_MEDIA)
