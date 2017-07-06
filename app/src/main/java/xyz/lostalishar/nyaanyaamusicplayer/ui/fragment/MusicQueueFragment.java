@@ -17,7 +17,7 @@ import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
-import xyz.lostalishar.nyaanyaamusicplayer.adapter.MusicAdapter;
+import xyz.lostalishar.nyaanyaamusicplayer.adapter.QueueAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicQueueLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 
@@ -29,7 +29,7 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
     private static final String TAG = MusicQueueFragment.class.getSimpleName();
 
     private RecyclerView.LayoutManager layout;
-    private MusicAdapter adapter;
+    private QueueAdapter adapter;
 
     public static MusicQueueFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -49,7 +49,7 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
 
         Activity activity = getActivity();
         List<Music> queueList = new ArrayList<>();
-        adapter = new MusicAdapter(queueList);
+        adapter = new QueueAdapter(queueList);
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
     }
 
