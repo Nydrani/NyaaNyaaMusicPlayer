@@ -351,6 +351,25 @@ public class MusicPlaybackService extends Service implements
         return new long[0];
     }
 
+
+    public void addToQueue(long musicId) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "addToQueue");
+
+        MusicPlaybackTrack track = new MusicPlaybackTrack(musicId);
+        musicQueue.add(track);
+    }
+
+    public void removeFromQueue(long musicId) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "removeFromQueue");
+
+        for (MusicPlaybackTrack track : musicQueue) {
+            if (track.getId() == musicId) {
+                musicQueue.remove(track);
+                break;
+            }
+        }
+    }
+
     // @TODO make private since not exposed function
     public void seekTo(int msec) {
         if (BuildConfig.DEBUG) Log.d(TAG, "seekTo");
@@ -778,6 +797,20 @@ public class MusicPlaybackService extends Service implements
             if (BuildConfig.DEBUG) Log.d(TAG, "getQueue");
 
             return musicPlaybackService.get().getQueue();
+        }
+
+        @Override
+        public void addToQueue(long musicId) throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "addToQueue");
+
+            musicPlaybackService.get().addToQueue(musicId);
+        }
+
+        @Override
+        public void removeFromQueue(long musicId) throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "removeFromQueue");
+
+            musicPlaybackService.get().removeFromQueue(musicId);
         }
     }
 }

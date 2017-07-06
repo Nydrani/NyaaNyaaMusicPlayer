@@ -8,4 +8,6 @@ interface INyaaNyaaMusicService {
     void stop();
     void reset();
     long[] getQueue();
+    void addToQueue(long musicId);
+    void removeFromQueue(long musicId);
 }

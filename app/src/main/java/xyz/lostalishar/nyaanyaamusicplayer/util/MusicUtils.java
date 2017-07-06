@@ -102,6 +102,34 @@ public class MusicUtils {
         return new long[0];
     }
 
+    public static void addToQueue(long musicId) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "addToQueue");
+
+        if (musicService == null) {
+            return;
+        }
+
+        try {
+            musicService.addToQueue(musicId);
+        } catch (RemoteException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
+        }
+    }
+
+    public static void removeFromQueue(long musicId) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "removeFromQueue");
+
+        if (musicService == null) {
+            return;
+        }
+
+        try {
+            musicService.removeFromQueue(musicId);
+        } catch (RemoteException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
+        }
+    }
+
 
     //=========================================================================
     // ServiceConnection implementation
