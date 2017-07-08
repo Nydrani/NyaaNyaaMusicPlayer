@@ -73,6 +73,9 @@ public class MusicPlaybackService extends Service implements
 
     private static final int MUSIC_NOTIFICATION_ID = 1;
 
+    public static final String PACKAGE_NAME = "xyz.lostalishar.nyaanyaamusicplayer";
+    public static final String QUEUE_CHANGED = PACKAGE_NAME + ".queuechanged";
+
 
     // ========================================================================
     // Service lifecycle overrides
@@ -228,10 +231,11 @@ public class MusicPlaybackService extends Service implements
     public boolean load(long musicId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "load");
 
-        int queuePos = 0;
-        MusicPlaybackTrack track = new MusicPlaybackTrack(musicId);
-        musicQueue.add(queuePos, track);
 
+        // @TODO it seems that multiple musicId doesnt work (queue ui doesn't display it)
+        int queuePos = musicQueue.size() + 1;
+        MusicPlaybackTrack track = new MusicPlaybackTrack(musicId);
+        musicQueue.add(track);
         if (BuildConfig.DEBUG) Log.w(TAG, "ID at: " + queuePos + " | " + musicQueue.get(queuePos).getId());
 
         // find the location from the MediaStore
@@ -364,9 +368,12 @@ public class MusicPlaybackService extends Service implements
     public void removeFromQueue(long musicId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "removeFromQueue");
 
+        // removes the first item from the queue
+        // @TODO change this to remove the correct item by queuePosition later
         for (MusicPlaybackTrack track : musicQueue) {
             if (track.getId() == musicId) {
                 musicQueue.remove(track);
+                notifyChange(QUEUE_CHANGED);
                 break;
             }
         }
@@ -695,6 +702,13 @@ public class MusicPlaybackService extends Service implements
         if (BuildConfig.DEBUG) Log.d(TAG, "savePlaybackQueue");
 
         // @TODO save music queue into contentprovider
+    }
+
+    private void notifyChange(String what) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "notifyChange");
+
+        Intent intent = new Intent(what);
+        sendBroadcast(intent);
     }
 
 
