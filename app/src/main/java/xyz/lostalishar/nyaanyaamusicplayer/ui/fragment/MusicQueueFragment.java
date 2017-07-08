@@ -3,6 +3,10 @@ package xyz.lostalishar.nyaanyaamusicplayer.ui.fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +25,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.QueueAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicQueueLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
+import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
 
 /**
  * Fragment containing the current play queue
@@ -30,6 +36,8 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
 
     private RecyclerView.LayoutManager layout;
     private QueueAdapter adapter;
+    private IntentFilter filter;
+    private QueueUpdateListener queueUpdateListener;
 
     public static MusicQueueFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -51,6 +59,17 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
         List<Music> queueList = new ArrayList<>();
         adapter = new QueueAdapter(queueList);
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
+        filter = new IntentFilter(MusicPlaybackService.QUEUE_CHANGED);
+        queueUpdateListener = new QueueUpdateListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
+        super.onResume();
+
+        Activity activity = getActivity();
+        activity.registerReceiver(queueUpdateListener, filter);
     }
 
     @Override
@@ -73,6 +92,16 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
 
         getLoaderManager().initLoader(0, null, this);
     }
+
+    @Override
+    public void onPause() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onPause");
+        super.onPause();
+
+        Activity activity = getActivity();
+        activity.unregisterReceiver(queueUpdateListener);
+    }
+
 
 
     //=========================================================================
@@ -100,5 +129,44 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
         adapter.swap(null);
+    }
+
+
+    //=========================================================================
+    // Helper functions
+    //=========================================================================
+
+    private void refreshQueue() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "refreshQueue");
+
+        getLoaderManager().restartLoader(0, null, this);
+    }
+
+
+    //=========================================================================
+    // Update queue UI on change listener
+    //=========================================================================
+
+    private static final class QueueUpdateListener extends BroadcastReceiver {
+        private static final String TAG = QueueUpdateListener.class.getSimpleName();
+
+        private WeakReference<MusicQueueFragment> reference;
+
+        public QueueUpdateListener(MusicQueueFragment musicQueueFragment) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
+
+            reference = new WeakReference<>(musicQueueFragment);
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "onReceive");
+
+            final String action = intent.getAction();
+
+            if (action.equals(MusicPlaybackService.QUEUE_CHANGED)) {
+                reference.get().refreshQueue();
+            }
+        }
     }
 }
