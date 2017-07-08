@@ -8,7 +8,11 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
+import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackTrack;
 import xyz.lostalishar.nyaanyaamusicplayer.service.INyaaNyaaMusicService;
 import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
 
@@ -86,11 +90,11 @@ public class MusicUtils {
         }
     }
 
-    public static long[] getQueue() {
+    public static List<MusicPlaybackTrack> getQueue() {
         if (BuildConfig.DEBUG) Log.d(TAG, "getQueue");
 
         if (musicService == null) {
-            return new long[0];
+            return new ArrayList<>();
         }
 
         try {
@@ -99,7 +103,7 @@ public class MusicUtils {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
         }
 
-        return new long[0];
+        return new ArrayList<>();
     }
 
     public static void addToQueue(long musicId) {

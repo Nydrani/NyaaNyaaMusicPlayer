@@ -184,7 +184,7 @@ public class BaseActivity extends AppCompatActivity {
         bound = MusicUtils.bindToService(this);
     }
 
-    // deinitialsation code
+    // deinitialisation code
     protected void deinitialise() {
         if (BuildConfig.DEBUG) Log.d(TAG, "deinitialise");
 

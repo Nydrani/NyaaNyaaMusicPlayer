@@ -230,7 +230,9 @@ public class MusicPlaybackService extends Service implements
 
         int queuePos = 0;
         MusicPlaybackTrack track = new MusicPlaybackTrack(musicId);
-        musicQueue.add(track);
+        musicQueue.add(queuePos, track);
+
+        if (BuildConfig.DEBUG) Log.w(TAG, "ID at: " + queuePos + " | " + musicQueue.get(queuePos).getId());
 
         // find the location from the MediaStore
         Cursor cursor = makeMusicLocationCursor(musicQueue.get(queuePos).getId());
@@ -241,7 +243,7 @@ public class MusicPlaybackService extends Service implements
 
         // more than 1 item of this id --> debug me
         if (cursor.getCount() != 1) {
-            if (BuildConfig.DEBUG) Log.w(TAG, "Found more/less than 1 item");
+            if (BuildConfig.DEBUG) Log.w(TAG, "Found " + cursor.getCount() + " item(s)");
             int dataColumn = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 if (BuildConfig.DEBUG) Log.w(TAG, "Item: " + cursor.getString(dataColumn));
@@ -345,10 +347,10 @@ public class MusicPlaybackService extends Service implements
         audioManager.abandonAudioFocus(this);
     }
 
-    public long[] getQueue() {
+    public List<MusicPlaybackTrack> getQueue() {
         if (BuildConfig.DEBUG) Log.d(TAG, "getQueue");
 
-        return new long[0];
+        return musicQueue;
     }
 
 
@@ -793,7 +795,7 @@ public class MusicPlaybackService extends Service implements
         }
 
         @Override
-        public long[] getQueue() throws RemoteException {
+        public List<MusicPlaybackTrack> getQueue() throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "getQueue");
 
             return musicPlaybackService.get().getQueue();

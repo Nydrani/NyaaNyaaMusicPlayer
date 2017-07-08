@@ -13,6 +13,7 @@ import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
+import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackTrack;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 
 /**
@@ -91,8 +92,8 @@ public class MusicQueueLoader extends CachedAsyncTaskLoader<List<Music>> {
         if (BuildConfig.DEBUG) Log.d(TAG, "makeMusicCursor");
 
         // obtain the current queue from the service
-        long[] queueArray = MusicUtils.getQueue();
-        int queueArraySize = queueArray.length;
+        List<MusicPlaybackTrack> queueArray = MusicUtils.getQueue();
+        int queueArraySize = queueArray.size();
 
         ContentResolver musicResolver = context.getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
@@ -102,7 +103,7 @@ public class MusicQueueLoader extends CachedAsyncTaskLoader<List<Music>> {
         StringBuilder selection = new StringBuilder();
         selection.append(MediaStore.Audio.Media._ID + " IN (");
         for (int i = 0; i < queueArraySize; i++) {
-            selection.append(queueArray[i]);
+            selection.append(queueArray.get(i).getId());
             if (i < queueArraySize - 1) {
                 selection.append(", ");
             }
