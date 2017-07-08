@@ -85,9 +85,8 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueViewHolder> {
     public void swap(List<Music> newList){
         if (BuildConfig.DEBUG) Log.d(TAG, "swap");
 
-        if (newList == null) {
-            musicList.clear();
-        } else {
+        musicList.clear();
+        if (newList != null) {
             musicList.addAll(newList);
         }
         notifyDataSetChanged();

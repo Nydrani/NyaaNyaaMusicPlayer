@@ -233,7 +233,7 @@ public class MusicPlaybackService extends Service implements
 
 
         // @TODO it seems that multiple musicId doesnt work (queue ui doesn't display it)
-        int queuePos = musicQueue.size() + 1;
+        int queuePos = musicQueue.size();
         MusicPlaybackTrack track = new MusicPlaybackTrack(musicId);
         musicQueue.add(track);
         if (BuildConfig.DEBUG) Log.w(TAG, "ID at: " + queuePos + " | " + musicQueue.get(queuePos).getId());
