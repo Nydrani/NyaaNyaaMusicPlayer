@@ -384,18 +384,15 @@ public class MusicPlaybackService extends Service implements
         return musicQueue.indexOf(track);
     }
 
-    public void removeFromQueue(long musicId) {
+    public long removeFromQueue(int pos) {
         if (BuildConfig.DEBUG) Log.d(TAG, "removeFromQueue");
 
-        // removes the first item from the queue
-        // @TODO change this to remove the correct item by queuePosition later
-        for (MusicPlaybackTrack track : musicQueue) {
-            if (track.getId() == musicId) {
-                musicQueue.remove(track);
-                notifyChange(QUEUE_CHANGED);
-                break;
-            }
-        }
+        long id = musicQueue.get(pos).getId();
+
+        musicQueue.remove(pos);
+        notifyChange(QUEUE_CHANGED);
+
+        return id;
     }
 
     // @TODO make private since not exposed function
@@ -851,10 +848,10 @@ public class MusicPlaybackService extends Service implements
         }
 
         @Override
-        public void removeFromQueue(long musicId) throws RemoteException {
+        public long removeFromQueue(int pos) throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "removeFromQueue");
 
-            musicPlaybackService.get().removeFromQueue(musicId);
+            return musicPlaybackService.get().removeFromQueue(pos);
         }
     }
 }

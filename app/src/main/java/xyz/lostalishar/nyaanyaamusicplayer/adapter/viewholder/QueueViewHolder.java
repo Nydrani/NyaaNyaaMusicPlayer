@@ -55,8 +55,8 @@ public class QueueViewHolder extends RecyclerView.ViewHolder implements View.OnC
                                 .show();
                     }
                 }).show();
-        // play song here
-        MusicUtils.removeFromQueue(musicDataHolder.musicId);
+        // remove song
+        MusicUtils.removeFromQueue(getAdapterPosition());
     }
 
     // ========================================================================

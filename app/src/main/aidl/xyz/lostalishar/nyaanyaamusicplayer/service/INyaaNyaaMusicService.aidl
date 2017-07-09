@@ -13,5 +13,5 @@ interface INyaaNyaaMusicService {
     MusicPlaybackState getState();
     List<MusicPlaybackTrack> getQueue();
     int addToQueue(long musicId);
-    void removeFromQueue(long musicId);
+    long removeFromQueue(int pos);
 }

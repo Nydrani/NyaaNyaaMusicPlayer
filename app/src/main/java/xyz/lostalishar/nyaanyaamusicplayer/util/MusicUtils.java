@@ -125,18 +125,22 @@ public class MusicUtils {
         return pos;
     }
 
-    public static void removeFromQueue(long musicId) {
+    public static long removeFromQueue(int pos) {
         if (BuildConfig.DEBUG) Log.d(TAG, "removeFromQueue");
+        long id = MusicPlaybackService.UNKNOWN_ID;
 
         if (musicService == null) {
-            return;
+            return id;
         }
 
         try {
-            musicService.removeFromQueue(musicId);
+            id = musicService.removeFromQueue(pos);
+            return id;
         } catch (RemoteException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
         }
+
+        return id;
     }
 
 
