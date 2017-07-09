@@ -68,7 +68,7 @@ public class MusicPlaybackService extends Service implements
 
     public static final String ACTION_SHUTDOWN = "SHUTDOWN";
     public static final String ACTION_EXTRA_KEYCODE = "KEYCODE";
-    private static final int UNKNOWN_POS = -1;
+    public static final int UNKNOWN_POS = -1;
 
 
     private static final int MUSIC_NOTIFICATION_ID = 1;
@@ -665,8 +665,8 @@ public class MusicPlaybackService extends Service implements
 
         // check if MusicPlayer has a known musicId (initialised)
         // don't save if not
-        int id = getCurrentQueuePos();
-        if (id == UNKNOWN_POS) {
+        int pos = getCurrentQueuePos();
+        if (pos == UNKNOWN_POS) {
             return;
         }
 
@@ -681,11 +681,20 @@ public class MusicPlaybackService extends Service implements
         if (BuildConfig.DEBUG) Log.d(TAG, "loadPlaybackState");
 
         MusicPlaybackState state = PreferenceUtils.loadCurPlaying(this);
+        int pos = state.getQueuePos();
+
+        musicPlaybackState.setQueuePos(pos);
         musicPlaybackState.setSeekPos(state.getSeekPos());
-        musicPlaybackState.setQueuePos(state.getQueuePos());
+
+
+        // die if unknown position
+        if (pos == UNKNOWN_POS) {
+            return;
+        }
+
         // die if load failed, probably due to ID not found
         // @TODO update this when load changes signature to load(int queuePos)
-        if (!(load(state.getQueuePos()))) {
+        if (!(load(musicQueue.get(pos).getId()))) {
             return;
         }
 

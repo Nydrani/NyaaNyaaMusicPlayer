@@ -48,6 +48,9 @@ public class MusicQueueLoader extends CachedAsyncTaskLoader<List<Music>> {
             return musicList;
         }
 
+        if (BuildConfig.DEBUG) Log.d(TAG, "QueueCursor size: " + cursor.getCount());
+
+
         int idColumn = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
         int titleColumn = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
         int artistColumn = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
@@ -94,6 +97,9 @@ public class MusicQueueLoader extends CachedAsyncTaskLoader<List<Music>> {
         // obtain the current queue from the service
         List<MusicPlaybackTrack> queueArray = MusicUtils.getQueue();
         int queueArraySize = queueArray.size();
+
+        if (BuildConfig.DEBUG) Log.d(TAG, "QueueArray size: " + queueArraySize);
+
 
         ContentResolver musicResolver = context.getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;

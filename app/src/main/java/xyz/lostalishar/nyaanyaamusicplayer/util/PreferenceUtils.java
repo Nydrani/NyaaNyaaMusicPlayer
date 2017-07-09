@@ -6,6 +6,7 @@ import android.util.Log;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
+import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
 
 /**
  * Utilities for SharedPreferences for various preferences in the app
@@ -42,7 +43,7 @@ public class PreferenceUtils {
         MusicPlaybackState state = new MusicPlaybackState();
 
         try {
-            int queuePos = preferences.getInt(SERVICE_QUEUE_PLAYING_POS, 0);
+            int queuePos = preferences.getInt(SERVICE_QUEUE_PLAYING_POS, MusicPlaybackService.UNKNOWN_POS);
             int seekPos = preferences.getInt(SERVICE_QUEUE_PLAYING_SEEKPOS, 0);
             state.setQueuePos(queuePos);
             state.setSeekPos(seekPos);
