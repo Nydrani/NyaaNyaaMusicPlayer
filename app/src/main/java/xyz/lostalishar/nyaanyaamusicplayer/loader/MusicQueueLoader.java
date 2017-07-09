@@ -37,6 +37,7 @@ public class MusicQueueLoader extends CachedAsyncTaskLoader<List<Music>> {
     // AsyncTaskLoader implementation
     //=========================================================================
 
+    // @TODO it seems that multiple musicId doesnt work (queue ui doesn't display it)
     @Override
     public List<Music> loadInBackground() {
         if (BuildConfig.DEBUG) Log.d(TAG, "loadInBackground");

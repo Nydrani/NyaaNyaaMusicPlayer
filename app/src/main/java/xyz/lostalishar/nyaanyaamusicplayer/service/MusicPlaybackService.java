@@ -228,15 +228,14 @@ public class MusicPlaybackService extends Service implements
     // Exposed functions for clients
     // ========================================================================
 
-    public boolean load(long musicId) {
+    public boolean load(int queuePos) {
         if (BuildConfig.DEBUG) Log.d(TAG, "load");
 
 
-        // @TODO it seems that multiple musicId doesnt work (queue ui doesn't display it)
-        int queuePos = musicQueue.size();
-        MusicPlaybackTrack track = new MusicPlaybackTrack(musicId);
-        musicQueue.add(track);
-        if (BuildConfig.DEBUG) Log.w(TAG, "ID at: " + queuePos + " | " + musicQueue.get(queuePos).getId());
+        // early exit if there are no items in the queue
+        if (musicQueue.size() == 0) {
+            return false;
+        }
 
         // find the location from the MediaStore
         Cursor cursor = makeMusicLocationCursor(musicQueue.get(queuePos).getId());
@@ -294,7 +293,7 @@ public class MusicPlaybackService extends Service implements
         try {
             musicPlayer.start();
 
-            // @TODO extra functionality
+            // @TODO extra functionality (move somewhere else later)
             //   1. make sure the app doesn't schedule to kill itself
             //   2. update the media session to play, pause, stop etc status
             //   3. enable listening to play/pause buttons from quick settings/hardware buttons
@@ -358,11 +357,13 @@ public class MusicPlaybackService extends Service implements
     }
 
 
-    public void addToQueue(long musicId) {
+    public int addToQueue(long musicId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "addToQueue");
 
         MusicPlaybackTrack track = new MusicPlaybackTrack(musicId);
         musicQueue.add(track);
+
+        return musicQueue.indexOf(track);
     }
 
     public void removeFromQueue(long musicId) {
@@ -694,7 +695,7 @@ public class MusicPlaybackService extends Service implements
 
         // die if load failed, probably due to ID not found
         // @TODO update this when load changes signature to load(int queuePos)
-        if (!(load(musicQueue.get(pos).getId()))) {
+        if (!(load(pos))) {
             return;
         }
 
@@ -783,10 +784,10 @@ public class MusicPlaybackService extends Service implements
         }
 
         @Override
-        public boolean load(long musicId) throws RemoteException {
+        public boolean load(int queuePos) throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "load");
 
-            return musicPlaybackService.get().load(musicId);
+            return musicPlaybackService.get().load(queuePos);
         }
 
         @Override
@@ -825,10 +826,10 @@ public class MusicPlaybackService extends Service implements
         }
 
         @Override
-        public void addToQueue(long musicId) throws RemoteException {
+        public int addToQueue(long musicId) throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "addToQueue");
 
-            musicPlaybackService.get().addToQueue(musicId);
+            return musicPlaybackService.get().addToQueue(musicId);
         }
 
         @Override

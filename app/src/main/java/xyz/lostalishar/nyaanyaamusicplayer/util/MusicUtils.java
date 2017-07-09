@@ -68,7 +68,8 @@ public class MusicUtils {
 
         try {
             musicService.reset();
-            if (musicService.load(songId)) {
+            int pos = musicService.addToQueue(songId);
+            if (musicService.load(pos)) {
                 musicService.start();
             }
         } catch (RemoteException e) {
