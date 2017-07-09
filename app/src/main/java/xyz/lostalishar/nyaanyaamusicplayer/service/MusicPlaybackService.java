@@ -69,6 +69,8 @@ public class MusicPlaybackService extends Service implements
     public static final String ACTION_SHUTDOWN = "SHUTDOWN";
     public static final String ACTION_EXTRA_KEYCODE = "KEYCODE";
     public static final int UNKNOWN_POS = -1;
+    public static final int UNKNOWN_ID = -1;
+
 
 
     private static final int MUSIC_NOTIFICATION_ID = 1;
@@ -231,6 +233,10 @@ public class MusicPlaybackService extends Service implements
     public boolean load(int queuePos) {
         if (BuildConfig.DEBUG) Log.d(TAG, "load");
 
+        // early exit if out of bounds queue position
+        if (queuePos <= UNKNOWN_POS || queuePos >= musicQueue.size()) {
+            return false;
+        }
 
         // early exit if there are no items in the queue
         if (musicQueue.size() == 0) {
@@ -356,9 +362,21 @@ public class MusicPlaybackService extends Service implements
         return musicQueue;
     }
 
+    public MusicPlaybackState getState() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getState");
+
+        return musicPlaybackState;
+    }
 
     public int addToQueue(long musicId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "addToQueue");
+
+        // @TODO for now only allow item in queue when it doesnt already exist (return old pos)
+        for (int i = 0; i < musicQueue.size(); i++) {
+            if (musicQueue.get(i).getId() == musicId) {
+                return i;
+            }
+        }
 
         MusicPlaybackTrack track = new MusicPlaybackTrack(musicId);
         musicQueue.add(track);
@@ -687,14 +705,7 @@ public class MusicPlaybackService extends Service implements
         musicPlaybackState.setQueuePos(pos);
         musicPlaybackState.setSeekPos(state.getSeekPos());
 
-
-        // die if unknown position
-        if (pos == UNKNOWN_POS) {
-            return;
-        }
-
-        // die if load failed, probably due to ID not found
-        // @TODO update this when load changes signature to load(int queuePos)
+        // die if load failed, probably due to out of bounds array position
         if (!(load(pos))) {
             return;
         }
@@ -816,6 +827,13 @@ public class MusicPlaybackService extends Service implements
             if (BuildConfig.DEBUG) Log.d(TAG, "reset");
 
             musicPlaybackService.get().reset();
+        }
+
+        @Override
+        public MusicPlaybackState getState() throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "getState");
+
+            return musicPlaybackService.get().getState();
         }
 
         @Override

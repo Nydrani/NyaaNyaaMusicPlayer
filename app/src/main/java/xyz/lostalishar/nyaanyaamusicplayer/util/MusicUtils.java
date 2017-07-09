@@ -107,18 +107,22 @@ public class MusicUtils {
         return new ArrayList<>();
     }
 
-    public static void addToQueue(long musicId) {
+    public static int addToQueue(long musicId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "addToQueue");
+        int pos = MusicPlaybackService.UNKNOWN_POS;
 
         if (musicService == null) {
-            return;
+            return pos;
         }
 
         try {
-            musicService.addToQueue(musicId);
+            pos = musicService.addToQueue(musicId);
+            return pos;
         } catch (RemoteException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
         }
+
+        return pos;
     }
 
     public static void removeFromQueue(long musicId) {

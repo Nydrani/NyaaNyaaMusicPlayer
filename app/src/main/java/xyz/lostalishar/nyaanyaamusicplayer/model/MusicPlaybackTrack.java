@@ -19,10 +19,12 @@ public class MusicPlaybackTrack implements Parcelable {
     }
 
 
+    @Override
     public int describeContents() {
         return 0;
     }
 
+    @Override
     public void writeToParcel(Parcel out, int flags) {
         out.writeLong(id);
     }
@@ -50,5 +52,10 @@ public class MusicPlaybackTrack implements Parcelable {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "TrackId: " + String.valueOf(id);
     }
 }

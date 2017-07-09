@@ -126,6 +126,15 @@ public class MusicPlayer implements
     public void onCompletion(MediaPlayer mp) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCompletion");
 
+        service.removeFromQueue(service.getQueue().get(service.getState().getQueuePos()).getId());
+
+        if (service.getQueue().size() > 0) {
+            service.reset();
+            service.load(0);
+            service.start();
+            return;
+        }
+
         // @TODO on completion send message back to service to schedule shutdown
         // @TODO QUICK HACKY FIX --> sending service so then this can call schedule shutdown
         // @TODO need to update all
