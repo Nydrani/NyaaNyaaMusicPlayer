@@ -69,6 +69,7 @@ public class HomeActivity extends BaseActivity {
                 setFragment(MusicListFragment.newInstance());
                 return true;
             case R.id.actionbar_library:
+                setFragment(LibraryFragment.newInstance());
                 return true;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item");
