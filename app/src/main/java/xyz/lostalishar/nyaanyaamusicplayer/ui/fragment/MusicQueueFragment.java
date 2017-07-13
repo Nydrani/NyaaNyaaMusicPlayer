@@ -78,7 +78,7 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
 
         View rootView = inflater.inflate(R.layout.list_base, container, false);
-        RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.list_base);
+        RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.list_base_view);
         recyclerView.setLayoutManager(layout);
         recyclerView.setAdapter(adapter);
 

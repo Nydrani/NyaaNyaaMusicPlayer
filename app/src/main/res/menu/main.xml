@@ -12,6 +12,9 @@
         android:id="@+id/actionbar_music_queue"
         android:title="@string/actionbar_music_queue" />
     <item
+        android:id="@+id/actionbar_library"
+        android:title="@string/actionbar_library" />
+    <item
         android:id="@+id/actionbar_about"
         android:title="@string/actionbar_about" />
     <item

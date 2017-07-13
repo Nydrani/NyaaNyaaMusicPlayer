@@ -9,6 +9,8 @@
     <string name="actionbar_homelink">Link</string>
     <string name="actionbar_music_queue">Show queue</string>
     <string name="actionbar_music_list">Show music list</string>
+    <string name="actionbar_library">Library</string>
+
 
     <string name="dialog_about_message">Ayyy lmaooooo</string>
 
