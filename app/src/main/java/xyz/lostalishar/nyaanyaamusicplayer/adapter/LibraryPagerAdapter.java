@@ -1,7 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.v13.app.FragmentPagerAdapter;
@@ -48,6 +47,11 @@ public class LibraryPagerAdapter extends FragmentPagerAdapter {
         return holderList.size();
     }
 
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return holderList.get(position).sname;
+    }
+
 
     // ========================================================================
     // Internal classes
@@ -57,6 +61,7 @@ public class LibraryPagerAdapter extends FragmentPagerAdapter {
         private static final String TAG = PageHolder.class.getSimpleName();
 
         public String fname;
+        public String sname;
 
         public PageHolder() {
             if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
