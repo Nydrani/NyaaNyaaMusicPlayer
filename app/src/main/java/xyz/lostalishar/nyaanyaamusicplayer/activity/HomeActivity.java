@@ -89,6 +89,6 @@ public class HomeActivity extends BaseActivity {
         if (BuildConfig.DEBUG) Log.d(TAG, "initialise");
         super.initialise();
 
-        setFragment(MusicListFragment.newInstance());
+        setFragment(LibraryFragment.newInstance());
     }
 }
