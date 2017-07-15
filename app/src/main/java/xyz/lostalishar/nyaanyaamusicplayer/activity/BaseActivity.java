@@ -138,6 +138,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
+    // Displays a dialog fragment on top of activity
     protected void setDialogFragment(DialogFragment dialog) {
         if (BuildConfig.DEBUG) Log.d(TAG, "setDialogFragment");
 
@@ -157,7 +158,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (BuildConfig.DEBUG) Log.d(TAG, "setFragment");
 
         FragmentManager fm = getFragmentManager();
-        Fragment element = fm.findFragmentById(R.id.activity_base_content);
+        Fragment element = getFragment(fm);
 
         // check for "remove fragment" and null fragment in container
         if (fragment == null && element == null) {
@@ -171,5 +172,12 @@ public abstract class BaseActivity extends AppCompatActivity {
             ft.replace(R.id.activity_base_content, fragment);
         }
         ft.commit();
+    }
+
+    // Gets the current fragment being shown
+    protected Fragment getFragment(FragmentManager fm) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getFragment");
+
+        return fm.findFragmentById(R.id.activity_base_content);
     }
 }
