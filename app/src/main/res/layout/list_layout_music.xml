@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-    android:paddingEnd="?android:attr/listPreferredItemPaddingEnd" >
+    android:paddingEnd="?android:attr/listPreferredItemPaddingEnd">
 
     <TextView
         android:id="@+id/music_name"

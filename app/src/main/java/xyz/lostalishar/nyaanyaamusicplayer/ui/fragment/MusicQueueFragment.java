@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,6 +27,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.adapter.QueueAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicQueueLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
+import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
 /**
  * Fragment containing the current play queue
@@ -59,7 +61,7 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
         List<Music> queueList = new ArrayList<>();
         adapter = new QueueAdapter(queueList);
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
-        filter = new IntentFilter(MusicPlaybackService.QUEUE_CHANGED);
+        filter = new IntentFilter(NyaaUtils.QUEUE_CHANGED);
         queueUpdateListener = new QueueUpdateListener(this);
     }
 
@@ -77,8 +79,13 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
                              Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
 
+        Activity activity = getActivity();
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(activity,
+                DividerItemDecoration.VERTICAL);
         View rootView = inflater.inflate(R.layout.list_base, container, false);
-        RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.list_base);
+        RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.list_base_view);
+
+        recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setLayoutManager(layout);
         recyclerView.setAdapter(adapter);
 
@@ -164,7 +171,7 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
 
             final String action = intent.getAction();
 
-            if (action.equals(MusicPlaybackService.QUEUE_CHANGED)) {
+            if (action.equals(NyaaUtils.QUEUE_CHANGED)) {
                 reference.get().refreshQueue();
             }
         }

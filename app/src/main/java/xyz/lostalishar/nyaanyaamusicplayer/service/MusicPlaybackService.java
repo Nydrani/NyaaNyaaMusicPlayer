@@ -72,11 +72,7 @@ public class MusicPlaybackService extends Service implements
     public static final int UNKNOWN_ID = -1;
 
 
-
     private static final int MUSIC_NOTIFICATION_ID = 1;
-
-    public static final String PACKAGE_NAME = "xyz.lostalishar.nyaanyaamusicplayer";
-    public static final String QUEUE_CHANGED = PACKAGE_NAME + ".queuechanged";
 
 
     // ========================================================================
@@ -380,6 +376,7 @@ public class MusicPlaybackService extends Service implements
 
         MusicPlaybackTrack track = new MusicPlaybackTrack(musicId);
         musicQueue.add(track);
+        NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
 
         return musicQueue.indexOf(track);
     }
@@ -390,7 +387,7 @@ public class MusicPlaybackService extends Service implements
         long id = musicQueue.get(pos).getId();
 
         musicQueue.remove(pos);
-        notifyChange(QUEUE_CHANGED);
+        NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
 
         return id;
     }
