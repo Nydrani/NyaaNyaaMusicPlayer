@@ -62,14 +62,11 @@ public class HomeActivity extends BaseActivity {
             case R.id.actionbar_about:
                 setDialogFragment(AboutDialogFragment.newInstance());
                 return true;
-            case R.id.actionbar_music_queue:
-                setFragment(MusicQueueFragment.newInstance());
-                return true;
-            case R.id.actionbar_music_list:
-                setFragment(MusicListFragment.newInstance());
-                return true;
             case R.id.actionbar_library:
                 setFragment(LibraryFragment.newInstance());
+                return true;
+            case R.id.actionbar_refresh:
+                refreshFragments();
                 return true;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item");
@@ -90,5 +87,11 @@ public class HomeActivity extends BaseActivity {
         super.initialise();
 
         setFragment(LibraryFragment.newInstance());
+    }
+
+    protected void refreshFragments() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "refreshFragments");
+
+        // @TODO stub
     }
 }
