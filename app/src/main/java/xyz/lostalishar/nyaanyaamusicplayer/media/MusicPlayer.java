@@ -126,9 +126,14 @@ public class MusicPlayer implements
     public void onCompletion(MediaPlayer mp) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCompletion");
 
-        service.removeFromQueue(service.getState().getQueuePos());
+        // @TODO fix this later to no longer remove from queue and just loop playback or something
+        int queueSize = service.getQueue().size();
 
-        if (service.getQueue().size() > 0) {
+        if (queueSize > 1) {
+            service.removeFromQueue(service.getState().getQueuePos());
+        }
+
+        if (queueSize > 0) {
             service.reset();
             service.load(0);
             service.start();
