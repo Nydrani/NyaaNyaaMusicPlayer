@@ -26,7 +26,6 @@ import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.QueueAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicQueueLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
-import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
 /**
@@ -59,6 +58,7 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
 
         Activity activity = getActivity();
         List<Music> queueList = new ArrayList<>();
+
         adapter = new QueueAdapter(queueList);
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
         filter = new IntentFilter(NyaaUtils.QUEUE_CHANGED);
@@ -108,7 +108,6 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
         Activity activity = getActivity();
         activity.unregisterReceiver(queueUpdateListener);
     }
-
 
 
     //=========================================================================

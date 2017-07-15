@@ -24,6 +24,7 @@ public class NyaaUtils {
 
     public static final String PACKAGE_NAME = "xyz.lostalishar.nyaanyaamusicplayer";
     public static final String QUEUE_CHANGED = PACKAGE_NAME + ".queuechanged";
+    public static final String REFRESH = PACKAGE_NAME + ".refresh";
 
     public NyaaUtils() {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
@@ -67,7 +68,6 @@ public class NyaaUtils {
     }
 
     /**
-     *
      * Given a context and what, it will send a broadcast intent to listeners.
      * Usually used to notify events
      */

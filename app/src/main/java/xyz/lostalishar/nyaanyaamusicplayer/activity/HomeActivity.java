@@ -91,6 +91,6 @@ public class HomeActivity extends BaseActivity {
     protected void refreshFragments() {
         if (BuildConfig.DEBUG) Log.d(TAG, "refreshFragments");
 
-        NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
+        NyaaUtils.notifyChange(this, NyaaUtils.REFRESH);
     }
 }
