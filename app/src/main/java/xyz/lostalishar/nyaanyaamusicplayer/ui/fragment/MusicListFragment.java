@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Loader;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -49,6 +50,7 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
 
         Activity activity = getActivity();
         List<Music> musicList = new ArrayList<>();
+
         adapter = new MusicAdapter(musicList);
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
     }
@@ -58,10 +60,16 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
                              Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
 
+        Activity activity = getActivity();
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(activity,
+                DividerItemDecoration.VERTICAL);
         View rootView = inflater.inflate(R.layout.list_base, container, false);
         RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.list_base_view);
-        recyclerView.setLayoutManager(layout);
+
+        recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(layout);
+
 
         return rootView;
     }

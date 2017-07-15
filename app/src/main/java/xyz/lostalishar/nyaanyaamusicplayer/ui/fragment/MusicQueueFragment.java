@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -78,8 +79,13 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
                              Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
 
+        Activity activity = getActivity();
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(activity,
+                DividerItemDecoration.VERTICAL);
         View rootView = inflater.inflate(R.layout.list_base, container, false);
         RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.list_base_view);
+
+        recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setLayoutManager(layout);
         recyclerView.setAdapter(adapter);
 
