@@ -3,6 +3,7 @@ package xyz.lostalishar.nyaanyaamusicplayer.util;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
@@ -20,6 +21,9 @@ import xyz.lostalishar.nyaanyaamusicplayer.activity.BaseActivity;
 public class NyaaUtils {
     private static final String TAG = BaseActivity.class.getSimpleName();
     public static final int PERMISSION_REQUEST_CODE = 0;
+
+    public static final String PACKAGE_NAME = "xyz.lostalishar.nyaanyaamusicplayer";
+    public static final String QUEUE_CHANGED = PACKAGE_NAME + ".queuechanged";
 
     public NyaaUtils() {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
@@ -60,6 +64,18 @@ public class NyaaUtils {
         if (BuildConfig.DEBUG) Log.d(TAG, "hasPermissions");
 
         return getMissingPermissions(context).size() > 0;
+    }
+
+    /**
+     *
+     * Given a context and what, it will send a broadcast intent to listeners.
+     * Usually used to notify events
+     */
+    public static void notifyChange(Context context, String what) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "notifyChange");
+
+        Intent intent = new Intent(what);
+        context.sendBroadcast(intent);
     }
 
 

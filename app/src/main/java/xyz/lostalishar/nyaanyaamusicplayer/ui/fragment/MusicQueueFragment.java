@@ -26,6 +26,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.adapter.QueueAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicQueueLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
+import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
 /**
  * Fragment containing the current play queue
@@ -59,7 +60,7 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
         List<Music> queueList = new ArrayList<>();
         adapter = new QueueAdapter(queueList);
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
-        filter = new IntentFilter(MusicPlaybackService.QUEUE_CHANGED);
+        filter = new IntentFilter(NyaaUtils.QUEUE_CHANGED);
         queueUpdateListener = new QueueUpdateListener(this);
     }
 
@@ -164,7 +165,7 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
 
             final String action = intent.getAction();
 
-            if (action.equals(MusicPlaybackService.QUEUE_CHANGED)) {
+            if (action.equals(NyaaUtils.QUEUE_CHANGED)) {
                 reference.get().refreshQueue();
             }
         }

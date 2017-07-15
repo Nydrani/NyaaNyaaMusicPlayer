@@ -12,8 +12,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.LibraryFragment;
-import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicListFragment;
-import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicQueueFragment;
+import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
 public class HomeActivity extends BaseActivity {
     private static final String TAG = HomeActivity.class.getSimpleName();
@@ -92,6 +91,6 @@ public class HomeActivity extends BaseActivity {
     protected void refreshFragments() {
         if (BuildConfig.DEBUG) Log.d(TAG, "refreshFragments");
 
-        // @TODO stub
+        NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
     }
 }
