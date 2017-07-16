@@ -1,7 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.provider;
 
 import android.content.ContentProvider;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -62,7 +61,7 @@ public class MusicDatabaseProvider extends ContentProvider {
         if (BuildConfig.DEBUG) Log.d(TAG, "insert");
 
         SQLiteDatabase db = queueSQLHelper.getWritableDatabase();
-        long id = 0;
+        long id;
 
         switch (uriMatcher.match(uri)) {
             case QUEUE:

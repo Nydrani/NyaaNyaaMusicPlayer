@@ -24,6 +24,11 @@ public class PreferenceUtils {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
     }
 
+
+    //=========================================================================
+    // Exposed functions
+    //=========================================================================
+
     public static void saveCurPlaying(Context context, MusicPlaybackState state) {
         if (BuildConfig.DEBUG) Log.d(TAG, "saveCurPlaying");
 

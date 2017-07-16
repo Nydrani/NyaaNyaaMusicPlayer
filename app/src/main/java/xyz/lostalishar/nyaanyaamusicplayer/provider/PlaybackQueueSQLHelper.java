@@ -62,9 +62,16 @@ public class PlaybackQueueSQLHelper extends SQLiteOpenHelper {
     // PlaybackQueue table column structure
     // ========================================================================
 
-    public class PlaybackQueueColumns {
+    public static class PlaybackQueueColumns {
+        private static final String TAG = PlaybackQueueColumns.class.getSimpleName();
+
         public static final String NAME = "playbackqueue";
         public static final String ID = "id";
         public static final String POSITION = "position";
+
+        public PlaybackQueueColumns() {
+            if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
+            // empty constructor for now
+        }
     }
 }

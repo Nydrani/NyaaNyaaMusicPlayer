@@ -23,6 +23,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
 public class MusicUtils {
     private static final String TAG = MusicUtils.class.getSimpleName();
     private static INyaaNyaaMusicService musicService;
+    private static MusicServiceConnection musicServiceConnection = new MusicServiceConnection();
 
     public MusicUtils() {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
@@ -149,8 +150,12 @@ public class MusicUtils {
     //=========================================================================
 
     /** Defines callbacks for service binding, passed to bindService() */
-    private static ServiceConnection musicServiceConnection = new ServiceConnection() {
-        private final String TAG = ServiceConnection.class.getSimpleName();
+    private static class MusicServiceConnection implements ServiceConnection {
+        private static final String TAG = MusicServiceConnection.class.getSimpleName();
+
+        private MusicServiceConnection() {
+            if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
+        }
 
 
         @Override
@@ -166,5 +171,5 @@ public class MusicUtils {
 
             musicService = null;
         }
-    };
+    }
 }
