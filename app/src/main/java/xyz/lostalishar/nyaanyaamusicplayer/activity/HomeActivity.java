@@ -55,17 +55,17 @@ public class HomeActivity extends BaseActivity {
                 Snackbar.make(findViewById(android.R.id.content), "Replace with your own action", Snackbar.LENGTH_LONG)
                         .show();
                 return true;
-            case R.id.actionbar_settings:
-                Toast.makeText(this, R.string.app_name, Toast.LENGTH_LONG).show();
-                return true;
-            case R.id.actionbar_about:
-                setDialogFragment(AboutDialogFragment.newInstance());
+            case R.id.actionbar_refresh:
+                refreshFragments();
                 return true;
             case R.id.actionbar_library:
                 setFragment(LibraryFragment.newInstance());
                 return true;
-            case R.id.actionbar_refresh:
-                refreshFragments();
+            case R.id.actionbar_about:
+                setDialogFragment(AboutDialogFragment.newInstance());
+                return true;
+            case R.id.actionbar_settings:
+                Toast.makeText(this, R.string.app_name, Toast.LENGTH_LONG).show();
                 return true;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item");
