@@ -129,11 +129,11 @@ public class MusicPlayer implements
         // @TODO fix this later to no longer remove from queue and just loop playback or something
         int queueSize = service.getQueue().size();
 
-        if (queueSize > 1) {
+        if (queueSize > 0) {
             service.removeFromQueue(service.getState().getQueuePos());
         }
-
-        if (queueSize > 0) {
+        
+        if (queueSize > 1) {
             service.reset();
             service.load(0);
             service.start();
