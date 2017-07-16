@@ -10,7 +10,7 @@ import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
-import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.MusicViewHolder;
+import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.MusicListViewHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 
 /**
@@ -20,7 +20,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
  *     3. cbf doing benchmarks
  */
 
-public class MusicAdapter extends RecyclerView.Adapter<MusicViewHolder> {
+public class MusicAdapter extends RecyclerView.Adapter<MusicListViewHolder> {
     private static final String TAG = MusicAdapter.class.getSimpleName();
 
     private List<Music> musicList;
@@ -41,17 +41,17 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicViewHolder> {
     // ========================================================================
 
     @Override
-    public MusicViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MusicListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateViewHolder");
 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View v = inflater.inflate(R.layout.list_layout_music, parent, false);
 
-        return new MusicViewHolder(v);
+        return new MusicListViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(MusicViewHolder holder, int position) {
+    public void onBindViewHolder(MusicListViewHolder holder, int position) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onBindViewHolder");
 
         Music music = musicList.get(position);
