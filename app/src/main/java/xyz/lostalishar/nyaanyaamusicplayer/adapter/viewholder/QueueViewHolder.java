@@ -15,7 +15,8 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
  * ViewHolder for the playback queue
  */
 
-public class QueueViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class QueueViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+        View.OnLongClickListener {
     private static final String TAG = QueueViewHolder.class.getSimpleName();
 
     public TextView musicTitle;
@@ -47,6 +48,14 @@ public class QueueViewHolder extends RecyclerView.ViewHolder implements View.OnC
     public void onClick(View v) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
 
+        // remove song
+        MusicUtils.removeFromQueue(getAdapterPosition());
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onLongClick");
+
         Snackbar.make(v, musicTitle.getText(), Snackbar.LENGTH_LONG)
                 .setAction("Description", new View.OnClickListener() {
                     @Override
@@ -55,9 +64,10 @@ public class QueueViewHolder extends RecyclerView.ViewHolder implements View.OnC
                                 .show();
                     }
                 }).show();
-        // remove song
-        MusicUtils.removeFromQueue(getAdapterPosition());
+
+        return true;
     }
+
 
     // ========================================================================
     // Internal classes
