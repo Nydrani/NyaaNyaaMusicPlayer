@@ -150,7 +150,7 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
 
 
     //=========================================================================
-    // Update queue UI on change listener
+    // Internal classes
     //=========================================================================
 
     private static final class ListRefreshListener extends BroadcastReceiver {

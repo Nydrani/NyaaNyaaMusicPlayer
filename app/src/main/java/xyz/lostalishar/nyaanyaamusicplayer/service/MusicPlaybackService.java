@@ -4,9 +4,11 @@ import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.session.MediaController;
@@ -74,6 +76,8 @@ public class MusicPlaybackService extends Service implements
 
     private static final int MUSIC_NOTIFICATION_ID = 1;
 
+    private NoisyAudioReceiver noisyAudioReceiver;
+
 
     // ========================================================================
     // Service lifecycle overrides
@@ -91,6 +95,7 @@ public class MusicPlaybackService extends Service implements
 
         // init service
         binder = new NyaaNyaaMusicServiceStub(this);
+        setupReceivers();
         setupAlarms();
 
         setupMediaSession();
@@ -201,6 +206,9 @@ public class MusicPlaybackService extends Service implements
         if (NyaaUtils.needsPermissions(this)) {
             return;
         }
+
+        // unregister receivers
+        unregisterReceivers();
 
         // make sure to cancel lingering AlarmManager tasks
         cancelDelayedShutdown();
@@ -447,6 +455,7 @@ public class MusicPlaybackService extends Service implements
         MediaSession.Callback mediaSessionCallback = new MediaSession.Callback() {
             private final String TAG = MusicPlaybackService.class.getSimpleName();
 
+
             @Override
             public void onPlay() {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onPlay");
@@ -539,6 +548,20 @@ public class MusicPlaybackService extends Service implements
                 .setContentIntent(activityPendingIntent)
                 .addAction(playPauseAction)
                 .build();
+    }
+
+    private void setupReceivers() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setupReceivers");
+
+        IntentFilter filter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        noisyAudioReceiver = new NoisyAudioReceiver(this);
+        registerReceiver(noisyAudioReceiver, filter);
+    }
+
+    private void unregisterReceivers() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "unregisterReceivers");
+
+        unregisterReceiver(noisyAudioReceiver);
     }
 
     // @TODO update later to make this function only handle KEYCODES while having a generic function
@@ -719,13 +742,6 @@ public class MusicPlaybackService extends Service implements
         // @TODO save music queue into contentprovider
     }
 
-    private void notifyChange(String what) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "notifyChange");
-
-        Intent intent = new Intent(what);
-        sendBroadcast(intent);
-    }
-
 
     // ========================================================================
     // AudioManager listener overrides
@@ -774,6 +790,35 @@ public class MusicPlaybackService extends Service implements
 
 
     // ========================================================================
+    // Internal classes
+    // ========================================================================
+
+    private static class NoisyAudioReceiver extends BroadcastReceiver {
+        private static final String TAG = NoisyAudioReceiver.class.getSimpleName();
+
+        private final WeakReference<MusicPlaybackService> musicPlaybackService;
+
+        private NoisyAudioReceiver(MusicPlaybackService service) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
+
+            musicPlaybackService = new WeakReference<>(service);
+        }
+
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "onReceive");
+
+            final String action = intent.getAction();
+
+            if (BuildConfig.DEBUG) Log.d(TAG, "Action: " + action);
+
+            musicPlaybackService.get().pause();
+        }
+    }
+
+
+    // ========================================================================
     // AIDL music playback service implementation for binder
     // ========================================================================
 
@@ -787,6 +832,7 @@ public class MusicPlaybackService extends Service implements
 
             musicPlaybackService = new WeakReference<>(service);
         }
+
 
         @Override
         public boolean load(int queuePos) throws RemoteException {
