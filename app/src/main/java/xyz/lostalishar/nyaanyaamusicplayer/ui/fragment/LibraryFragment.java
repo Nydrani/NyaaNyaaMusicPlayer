@@ -84,13 +84,13 @@ public class LibraryFragment extends Fragment {
 
         LibraryPagerAdapter.PageHolder page = new LibraryPagerAdapter.PageHolder();
         page.fname = MusicListFragment.class.getName();
-        page.sname = MusicListFragment.class.getSimpleName();
+        page.sname = getString(R.string.fragment_name_music_list);
 
         pageList.add(page);
 
         page = new LibraryPagerAdapter.PageHolder();
         page.fname = MusicQueueFragment.class.getName();
-        page.sname = MusicQueueFragment.class.getSimpleName();
+        page.sname = getString(R.string.fragment_name_queue);
 
         pageList.add(page);
 
