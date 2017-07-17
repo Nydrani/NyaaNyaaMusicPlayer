@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,8 @@ import java.util.List;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.LibraryPagerAdapter;
+import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
+import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 
 /**
  * Fragment containing entire list of music on device
@@ -27,6 +30,7 @@ public class LibraryFragment extends Fragment {
     private List<LibraryPagerAdapter.PageHolder> pageList;
     private LibraryPagerAdapter adapter;
     private ViewPager viewPager;
+    private TextView pauseBox;
 
     public static LibraryFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -57,10 +61,28 @@ public class LibraryFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_library, container, false);
         viewPager = (ViewPager)rootView.findViewById(R.id.fragment_library_view_pager);
+        pauseBox = (TextView) rootView.findViewById(R.id.fragment_library_bottom_bar);
         TabLayout tabLayout = (TabLayout)viewPager.findViewById(R.id.fragment_library_tab_layout);
 
         tabLayout.setupWithViewPager(viewPager);
         viewPager.setAdapter(adapter);
+
+        // @TODO quick code to update the pause box (fix later)
+        updatePauseBox();
+        pauseBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
+
+                if (MusicUtils.isPlaying()) {
+                    MusicUtils.stop();
+                } else {
+                    MusicUtils.start();
+                }
+
+                updatePauseBox();
+            }
+        });
 
         return rootView;
     }
@@ -95,5 +117,15 @@ public class LibraryFragment extends Fragment {
         pageList.add(page);
 
         return pageList;
+    }
+
+    private void updatePauseBox() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updatePauseBox");
+
+        if (MusicUtils.isPlaying()) {
+            pauseBox.setText(getString(R.string.fragment_library_bottom_bar_pause));
+        } else {
+            pauseBox.setText(getString(R.string.fragment_library_bottom_bar_play));
+        }
     }
 }

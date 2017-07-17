@@ -36,7 +36,7 @@ public class MusicListViewHolder extends BaseMusicViewHolder implements View.OnC
         if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
 
         // play song here
-        MusicUtils.play(musicDataHolder.musicId);
+        MusicUtils.addToQueue(musicDataHolder.musicId);
     }
 
     @Override

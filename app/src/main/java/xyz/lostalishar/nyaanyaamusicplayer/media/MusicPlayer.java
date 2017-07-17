@@ -126,33 +126,11 @@ public class MusicPlayer implements
     public void onCompletion(MediaPlayer mp) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCompletion");
 
-        // @TODO fix this later to no longer remove from queue and just loop playback or something
-        int queueSize = service.getQueue().size();
+        int nextQueuePos = (service.getCurrentQueuePos() + 1) % service.getQueue().size();
 
-        if (queueSize > 0) {
-            service.removeFromQueue(service.getState().getQueuePos());
-        }
-        
-        if (queueSize > 1) {
-            service.reset();
-            service.load(0);
-            service.start();
-            return;
-        }
-
-        // @TODO on completion send message back to service to schedule shutdown
-        // @TODO QUICK HACKY FIX --> sending service so then this can call schedule shutdown
-        // @TODO need to update all
-        service.scheduleDelayedShutdown();
-        service.updateMediaSession("STOP");
-        service.mediaSession.setActive(false);
-        service.stopForeground(true);
-        service.audioManager.abandonAudioFocus(service);
-
-        // @TODO reset to 0 since only single file. --> fix later when sending message back to service
-        // @TODO will be used later for multiple audio track playing
-        // @TODO also assumes that mp is in a seekable state
-        mp.seekTo(0);
+        service.reset();
+        service.load(nextQueuePos);
+        service.start();
     }
 
 
