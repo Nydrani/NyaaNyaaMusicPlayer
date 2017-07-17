@@ -400,6 +400,12 @@ public class MusicPlaybackService extends Service implements
         return id;
     }
 
+    public boolean isPlaying() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "isPlaying");
+
+        return musicPlayer.isPlaying();
+    }
+
     // @TODO make private since not exposed function
     public void seekTo(int msec) {
         if (BuildConfig.DEBUG) Log.d(TAG, "seekTo");
@@ -895,6 +901,13 @@ public class MusicPlaybackService extends Service implements
             if (BuildConfig.DEBUG) Log.d(TAG, "removeFromQueue");
 
             return musicPlaybackService.get().removeFromQueue(pos);
+        }
+
+        @Override
+        public boolean isPlaying() throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "isPlaying");
+
+            return musicPlaybackService.get().isPlaying();
         }
     }
 }

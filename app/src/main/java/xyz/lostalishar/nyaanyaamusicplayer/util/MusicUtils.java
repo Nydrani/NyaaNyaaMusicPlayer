@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
+import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
 import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackTrack;
 import xyz.lostalishar.nyaanyaamusicplayer.service.INyaaNyaaMusicService;
 import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
@@ -71,6 +72,25 @@ public class MusicUtils {
             musicService.reset();
             int pos = musicService.addToQueue(songId);
             if (musicService.load(pos)) {
+                musicService.start();
+            }
+        } catch (RemoteException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
+        }
+    }
+
+    public static void start() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "start");
+
+        if (musicService == null) {
+            return;
+        }
+
+        try {
+            musicService.reset();
+            if (musicService.load(musicService.getState().getQueuePos())) {
+                musicService.start();
+            } else if (musicService.load(0)) {
                 musicService.start();
             }
         } catch (RemoteException e) {
@@ -142,6 +162,38 @@ public class MusicUtils {
         }
 
         return id;
+    }
+
+    public static MusicPlaybackState getState() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getState");
+
+        if (musicService == null) {
+            return null;
+        }
+
+        try {
+            return musicService.getState();
+        } catch (RemoteException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
+        }
+
+        return null;
+    }
+
+    public static boolean isPlaying() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "isPlaying");
+
+        if (musicService == null) {
+            return false;
+        }
+
+        try {
+            return musicService.isPlaying();
+        } catch (RemoteException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
+        }
+
+        return false;
     }
 
 
