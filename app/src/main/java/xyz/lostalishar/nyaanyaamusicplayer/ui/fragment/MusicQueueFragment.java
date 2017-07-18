@@ -66,15 +66,6 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
     }
 
     @Override
-    public void onResume() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
-        super.onResume();
-
-        Activity activity = getActivity();
-        activity.registerReceiver(queueUpdateListener, filter);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
@@ -98,6 +89,15 @@ public class MusicQueueFragment extends Fragment implements LoaderManager.Loader
         super.onActivityCreated(savedInstanceState);
 
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public void onResume() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
+        super.onResume();
+
+        Activity activity = getActivity();
+        activity.registerReceiver(queueUpdateListener, filter);
     }
 
     @Override

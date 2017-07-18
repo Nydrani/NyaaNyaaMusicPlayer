@@ -31,6 +31,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 /**
  * Fragment containing entire list of music on device
  */
+
 public class MusicListFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Music>> {
     private static final String TAG = MusicListFragment.class.getSimpleName();
 
@@ -38,7 +39,6 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
     private MusicAdapter adapter;
     private IntentFilter filter;
     private ListRefreshListener listRefreshListener;
-
 
     public static MusicListFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -66,15 +66,6 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     @Override
-    public void onResume() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
-        super.onResume();
-
-        Activity activity = getActivity();
-        activity.registerReceiver(listRefreshListener, filter);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
@@ -99,6 +90,15 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
         super.onActivityCreated(savedInstanceState);
 
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public void onResume() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
+        super.onResume();
+
+        Activity activity = getActivity();
+        activity.registerReceiver(listRefreshListener, filter);
     }
 
     @Override
