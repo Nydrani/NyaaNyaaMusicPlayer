@@ -21,7 +21,7 @@ public class MusicDatabaseProvider extends ContentProvider {
 
     private static final String URI_AUTHORITY = "xyz.lostalishar.nyaanyaamusicplayer.provider";
     private static final String BASE_PATH = "music";
-    public static final Uri EXTERNAL_CONTENT_URI = Uri.parse("content://" + URI_AUTHORITY+
+    public static final Uri EXTERNAL_CONTENT_URI = Uri.parse("content://" + URI_AUTHORITY +
             "/" + BASE_PATH);
 
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);

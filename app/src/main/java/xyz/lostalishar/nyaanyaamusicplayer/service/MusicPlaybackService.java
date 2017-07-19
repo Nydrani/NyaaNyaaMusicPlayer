@@ -55,9 +55,8 @@ public class MusicPlaybackService extends Service implements
     private AlarmManager alarmManager;
     private PendingIntent shutdownPendingIntent;
 
-    // @TODO quick hacky fix for fixing session state when onCompleted called in MusicPlayer.class (made public)
-    public MediaSession mediaSession;
-    public AudioManager audioManager;
+    private MediaSession mediaSession;
+    private AudioManager audioManager;
     private MediaController mediaController;
 
     private Notification musicNotification;
@@ -159,6 +158,7 @@ public class MusicPlaybackService extends Service implements
         // intent can be null (not sure when)
         // make sure to call for a shutdown since it sits in idle
         if (intent == null) {
+            if (BuildConfig.DEBUG) Log.w(TAG, "INTENT IS NULL (CHECK ME OUT)");
             scheduleDelayedShutdown();
             return START_STICKY;
         }
@@ -375,7 +375,7 @@ public class MusicPlaybackService extends Service implements
     public int addToQueue(long musicId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "addToQueue");
 
-        // @TODO for now only allow item in queue when it doesnt already exist (return old pos)
+        // @TODO for now only allow item in queue when it doesn't already exist (return old pos)
         for (int i = 0; i < musicQueue.size(); i++) {
             if (musicQueue.get(i).getId() == musicId) {
                 return i;
@@ -625,9 +625,7 @@ public class MusicPlaybackService extends Service implements
         }
     }
 
-    // @TODO QUICK HACKY FIX to allow music player onCompletion to shut down the service
-    // @TODO fix later by using a handler (message passing)
-    public void scheduleDelayedShutdown() {
+    private void scheduleDelayedShutdown() {
         if (BuildConfig.DEBUG) Log.d(TAG, "scheduleDelayedShutdown");
 
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
@@ -640,8 +638,7 @@ public class MusicPlaybackService extends Service implements
         alarmManager.cancel(shutdownPendingIntent);
     }
 
-    // @TODO quick hacky fix for updating session from within MusicPlayer.class (made public)
-    public void updateMediaSession(String state) {
+    private void updateMediaSession(String state) {
         if (BuildConfig.DEBUG) Log.d(TAG, "updateMediaSession");
 
         // @TODO debugging
@@ -717,8 +714,6 @@ public class MusicPlaybackService extends Service implements
         PreferenceUtils.saveCurPlaying(this, musicPlaybackState);
     }
 
-    // @TODO could refactor to instead store the loaded state in the service rather
-    // @TODO than the MusicPlayer class and let the service take care of loading
     private void loadPlaybackState() {
         if (BuildConfig.DEBUG) Log.d(TAG, "loadPlaybackState");
 
