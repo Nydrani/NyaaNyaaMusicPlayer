@@ -72,7 +72,7 @@ public class MusicUtils {
             musicService.reset();
             int pos = musicService.addToQueue(songId);
             if (musicService.load(pos)) {
-                musicService.start();
+                musicService.play();
             }
         } catch (RemoteException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
@@ -89,10 +89,38 @@ public class MusicUtils {
         try {
             musicService.reset();
             if (musicService.load(musicService.getState().getQueuePos())) {
-                musicService.start();
+                musicService.play();
             } else if (musicService.load(0)) {
-                musicService.start();
+                musicService.play();
             }
+        } catch (RemoteException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
+        }
+    }
+
+    public static void resume() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "resume");
+
+        if (musicService == null) {
+            return;
+        }
+
+        try {
+            musicService.play();
+        } catch (RemoteException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
+        }
+    }
+
+    public static void pause() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "pause");
+
+        if (musicService == null) {
+            return;
+        }
+
+        try {
+            musicService.pause();
         } catch (RemoteException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
         }

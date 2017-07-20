@@ -293,8 +293,8 @@ public class MusicPlaybackService extends Service implements
         return true;
     }
 
-    public void start() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "start");
+    public void play() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "play");
 
         int status = audioManager.requestAudioFocus(this,
                 AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
@@ -469,7 +469,7 @@ public class MusicPlaybackService extends Service implements
             public void onPlay() {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onPlay");
 
-                start();
+                play();
             }
 
             @Override
@@ -583,7 +583,7 @@ public class MusicPlaybackService extends Service implements
         switch (keyCode) {
             case KeyEvent.KEYCODE_MEDIA_PLAY:
                 if (BuildConfig.DEBUG) Log.d(TAG, KeyEvent.keyCodeToString(keyCode));
-                start();
+                play();
                 break;
             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                 if (BuildConfig.DEBUG) Log.d(TAG, KeyEvent.keyCodeToString(keyCode));
@@ -624,7 +624,7 @@ public class MusicPlaybackService extends Service implements
             pause();
         } else if (state == PlaybackState.STATE_PAUSED ||
                 state == PlaybackState.STATE_STOPPED) {
-            start();
+            play();
         }
     }
 
@@ -782,7 +782,7 @@ public class MusicPlaybackService extends Service implements
                 if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_GAIN");
 
                 setVolume(1.0f, 1.0f);
-                start();
+                play();
                 break;
             case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
                 if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_GAIN_TRANSIENT");
@@ -868,10 +868,10 @@ public class MusicPlaybackService extends Service implements
         }
 
         @Override
-        public void start() throws RemoteException {
+        public void play() throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "start");
 
-            musicPlaybackService.get().start();
+            musicPlaybackService.get().play();
         }
 
         @Override

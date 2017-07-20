@@ -6,7 +6,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackTrack;
 
 interface INyaaNyaaMusicService {
     boolean load(int queuePos);
-    void start();
+    void play();
     void pause();
     void stop();
     void reset();

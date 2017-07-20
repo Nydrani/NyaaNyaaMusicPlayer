@@ -130,7 +130,7 @@ public class MusicPlayer implements
 
         service.reset();
         service.load(nextQueuePos);
-        service.start();
+        service.play();
     }
 
 

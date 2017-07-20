@@ -75,9 +75,10 @@ public class LibraryFragment extends Fragment {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
 
                 if (MusicUtils.isPlaying()) {
-                    MusicUtils.stop();
+                    MusicUtils.pause();
                 } else {
                     MusicUtils.start();
+                    // @TODO resume when already playing. start when not loaded
                 }
 
                 updatePauseBox();
