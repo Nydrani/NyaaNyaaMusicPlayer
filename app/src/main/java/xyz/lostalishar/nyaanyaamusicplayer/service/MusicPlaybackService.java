@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -34,6 +35,8 @@ import xyz.lostalishar.nyaanyaamusicplayer.activity.BaseActivity;
 import xyz.lostalishar.nyaanyaamusicplayer.media.MusicPlayer;
 import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
 import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackTrack;
+import xyz.lostalishar.nyaanyaamusicplayer.provider.MusicDatabaseProvider;
+import xyz.lostalishar.nyaanyaamusicplayer.provider.PlaybackQueueSQLHelper;
 import xyz.lostalishar.nyaanyaamusicplayer.receiver.MediaButtonIntentReceiver;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.PreferenceUtils;
@@ -734,13 +737,35 @@ public class MusicPlaybackService extends Service implements
     private void loadPlaybackQueue() {
         if (BuildConfig.DEBUG) Log.d(TAG, "loadPlaybackQueue");
 
-        // @TODO get music queue from contentprovider
+        Cursor cursor = getContentResolver().query(MusicDatabaseProvider.QUEUE_CONTENT_URI, null, null, null, null);
+
+        if (cursor == null) {
+            return;
+        }
+
+        int idColumn = cursor.getColumnIndex(PlaybackQueueSQLHelper.PlaybackQueueColumns.ID);
+        int positionColumn = cursor.getColumnIndex(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION);
+
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            final long id = cursor.getLong(idColumn);
+            final String position = cursor.getString(positionColumn);
+
+            MusicPlaybackTrack track = new MusicPlaybackTrack(id);
+            musicQueue.add(track);
+        }
+
+        cursor.close();
     }
 
     private void savePlaybackQueue() {
         if (BuildConfig.DEBUG) Log.d(TAG, "savePlaybackQueue");
 
-        // @TODO save music queue into contentprovider
+        ContentValues values = new ContentValues();
+        for (int i = 0; i < musicQueue.size(); i++) {
+            values.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.ID, musicQueue.get(i).getId());
+            values.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION, i);
+        }
+        getContentResolver().insert(MusicDatabaseProvider.QUEUE_CONTENT_URI, values);
     }
 
 

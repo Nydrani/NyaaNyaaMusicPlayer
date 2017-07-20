@@ -21,13 +21,17 @@ public class MusicDatabaseProvider extends ContentProvider {
 
     private static final String URI_AUTHORITY = "xyz.lostalishar.nyaanyaamusicplayer.provider";
     private static final String BASE_PATH = "music";
+    private static final String QUEUE_PATH = "queue";
+
     public static final Uri EXTERNAL_CONTENT_URI = Uri.parse("content://" + URI_AUTHORITY +
             "/" + BASE_PATH);
+    public static final Uri QUEUE_CONTENT_URI = Uri.parse("content://" + URI_AUTHORITY +
+            "/" + QUEUE_PATH);
 
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
-        uriMatcher.addURI(URI_AUTHORITY, BASE_PATH, QUEUE);
+        uriMatcher.addURI(URI_AUTHORITY, QUEUE_PATH, QUEUE);
     }
 
     private PlaybackQueueSQLHelper queueSQLHelper;
