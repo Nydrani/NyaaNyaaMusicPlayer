@@ -49,8 +49,18 @@ public class MusicDatabaseProvider extends ContentProvider {
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         if (BuildConfig.DEBUG) Log.d(TAG, "delete");
 
-        // Implement this to handle requests to delete one or more rows.
-        throw new UnsupportedOperationException("Not yet implemented");
+        SQLiteDatabase db = queueSQLHelper.getWritableDatabase();
+        int id = 0;
+
+        switch (uriMatcher.match(uri)) {
+            case QUEUE:
+                id = db.delete(PlaybackQueueSQLHelper.PlaybackQueueColumns.NAME, selection, selectionArgs);
+                return id;
+            default:
+                if (BuildConfig.DEBUG) Log.d(TAG, "Unsupported URI: " + uri);
+        }
+
+        return id;
     }
 
     @Override
