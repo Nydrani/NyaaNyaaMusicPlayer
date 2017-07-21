@@ -760,12 +760,17 @@ public class MusicPlaybackService extends Service implements
     private void savePlaybackQueue() {
         if (BuildConfig.DEBUG) Log.d(TAG, "savePlaybackQueue");
 
+        ContentResolver resolver = getContentResolver();
+        int deleted = resolver.delete(MusicDatabaseProvider.QUEUE_CONTENT_URI, null, null);
+        if (BuildConfig.DEBUG) Log.d(TAG, "Number rows delete: " + String.valueOf(deleted));
+
         ContentValues values = new ContentValues();
         for (int i = 0; i < musicQueue.size(); i++) {
             values.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.ID, musicQueue.get(i).getId());
             values.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION, i);
         }
-        getContentResolver().insert(MusicDatabaseProvider.QUEUE_CONTENT_URI, values);
+        Uri uri = resolver.insert(MusicDatabaseProvider.QUEUE_CONTENT_URI, values);
+        if (BuildConfig.DEBUG) Log.d(TAG, "Inserted into URI: " + uri);
     }
 
 
