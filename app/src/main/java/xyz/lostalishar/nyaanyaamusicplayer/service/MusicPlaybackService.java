@@ -192,8 +192,6 @@ public class MusicPlaybackService extends Service implements
         if (!(NyaaUtils.needsPermissions(this))) {
             // only schedule if service is not in use
             if (!(musicPlayer.isPlaying())) {
-                savePlaybackState();
-                savePlaybackQueue();
                 scheduleDelayedShutdown();
             }
         }
@@ -748,7 +746,12 @@ public class MusicPlaybackService extends Service implements
 
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             final long id = cursor.getLong(idColumn);
-            final String position = cursor.getString(positionColumn);
+            final int position = cursor.getInt(positionColumn);
+
+            // @TODO debugging
+            if (BuildConfig.DEBUG) Log.d(TAG, "id: " + String.valueOf(id));
+            if (BuildConfig.DEBUG) Log.d(TAG, "position: " + String.valueOf(position));
+
 
             MusicPlaybackTrack track = new MusicPlaybackTrack(id);
             musicQueue.add(track);
@@ -762,7 +765,7 @@ public class MusicPlaybackService extends Service implements
 
         ContentResolver resolver = getContentResolver();
         int deleted = resolver.delete(MusicDatabaseProvider.QUEUE_CONTENT_URI, null, null);
-        if (BuildConfig.DEBUG) Log.d(TAG, "Number rows delete: " + String.valueOf(deleted));
+        if (BuildConfig.DEBUG) Log.d(TAG, "Number rows deleted: " + String.valueOf(deleted));
 
         ContentValues values = new ContentValues();
         for (int i = 0; i < musicQueue.size(); i++) {
