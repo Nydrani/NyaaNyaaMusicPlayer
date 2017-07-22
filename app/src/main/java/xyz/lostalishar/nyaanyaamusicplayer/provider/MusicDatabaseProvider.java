@@ -46,6 +46,14 @@ public class MusicDatabaseProvider extends ContentProvider {
     // ========================================================================
 
     @Override
+    public boolean onCreate() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
+
+        queueSQLHelper = new PlaybackQueueSQLHelper(getContext(), DATABASE_NAME, null, DATABASE_VERSION);
+        return false;
+    }
+
+    @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         if (BuildConfig.DEBUG) Log.d(TAG, "delete");
 
@@ -92,14 +100,6 @@ public class MusicDatabaseProvider extends ContentProvider {
         }
 
         return Uri.parse(BASE_PATH + "/" + id);
-    }
-
-    @Override
-    public boolean onCreate() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
-
-        queueSQLHelper = new PlaybackQueueSQLHelper(getContext(), DATABASE_NAME, null, DATABASE_VERSION);
-        return false;
     }
 
     @Override
