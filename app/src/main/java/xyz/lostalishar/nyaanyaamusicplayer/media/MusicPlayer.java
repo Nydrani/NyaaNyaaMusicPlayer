@@ -52,7 +52,6 @@ public class MusicPlayer implements
         if (BuildConfig.DEBUG) Log.d(TAG, "pause");
 
         mediaPlayer.pause();
-
     }
 
     public void stop() throws IllegalStateException {
@@ -73,7 +72,7 @@ public class MusicPlayer implements
         mediaPlayer.release();
     }
 
-    public void seekTo(int msec) {
+    public void seekTo(int msec) throws IllegalStateException {
         if (BuildConfig.DEBUG) Log.d(TAG, "seekTo");
 
         mediaPlayer.seekTo(msec);
@@ -91,7 +90,7 @@ public class MusicPlayer implements
         return mediaPlayer.getCurrentPosition();
     }
 
-    public boolean isPlaying() {
+    public boolean isPlaying() throws IllegalStateException {
         if (BuildConfig.DEBUG) Log.d(TAG, "isPlaying");
 
         return mediaPlayer.isPlaying();

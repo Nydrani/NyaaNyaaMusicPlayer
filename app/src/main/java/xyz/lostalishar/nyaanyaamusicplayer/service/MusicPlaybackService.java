@@ -412,14 +412,24 @@ public class MusicPlaybackService extends Service implements
     public boolean isPlaying() {
         if (BuildConfig.DEBUG) Log.d(TAG, "isPlaying");
 
-        return musicPlayer.isPlaying();
+        try {
+            return musicPlayer.isPlaying();
+        } catch (IllegalStateException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Called isPlaying in illegal state");
+        }
+
+        return false;
     }
 
     // @TODO make private since not exposed function
     public void seekTo(int msec) {
         if (BuildConfig.DEBUG) Log.d(TAG, "seekTo");
 
-        musicPlayer.seekTo(msec);
+        try {
+            musicPlayer.seekTo(msec);
+        } catch (IllegalStateException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Called seekTo in illegal state");
+        }
     }
 
     // @TODO make private since not exposed function
