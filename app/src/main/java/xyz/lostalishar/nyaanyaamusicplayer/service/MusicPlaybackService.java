@@ -170,8 +170,6 @@ public class MusicPlaybackService extends Service implements
         if (BuildConfig.DEBUG) Log.d(TAG, "Action: " + action + " called");
 
         if (ACTION_SHUTDOWN.equals(action)) {
-            savePlaybackState();
-            savePlaybackQueue();
             stopSelf();
             return START_NOT_STICKY;
         }
@@ -309,10 +307,12 @@ public class MusicPlaybackService extends Service implements
             //   2. update the media session to play, pause, stop etc status
             //   3. enable listening to play/pause buttons from quick settings/hardware buttons
             //   4. don't get killed by OS
+            //   5. save current playback state
             cancelDelayedShutdown();
             updateMediaSession("PLAY");
             mediaSession.setActive(true);
             startForeground(MUSIC_NOTIFICATION_ID, musicNotification);
+            savePlaybackState();
         } catch (IllegalStateException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Called start in illegal state");
         }
@@ -327,6 +327,7 @@ public class MusicPlaybackService extends Service implements
             scheduleDelayedShutdown();
             updateMediaSession("PAUSE");
             stopForeground(true);
+            savePlaybackState();
         } catch (IllegalStateException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Called pause in illegal state");
         }
@@ -342,6 +343,7 @@ public class MusicPlaybackService extends Service implements
             updateMediaSession("STOP");
             mediaSession.setActive(false);
             stopForeground(true);
+            savePlaybackState();
             audioManager.abandonAudioFocus(this);
         } catch (IllegalStateException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Called stop in illegal state");
@@ -387,6 +389,9 @@ public class MusicPlaybackService extends Service implements
         musicQueue.add(track);
         NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
 
+        // @TODO for now update queue in here (change to use message handling later)
+        savePlaybackQueue();
+
         return musicQueue.indexOf(track);
     }
 
@@ -397,6 +402,9 @@ public class MusicPlaybackService extends Service implements
 
         musicQueue.remove(pos);
         NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
+
+        // @TODO for now update queue in here (change to use message handling later)
+        savePlaybackQueue();
 
         return id;
     }
@@ -765,15 +773,23 @@ public class MusicPlaybackService extends Service implements
 
         ContentResolver resolver = getContentResolver();
         int deleted = resolver.delete(MusicDatabaseProvider.QUEUE_CONTENT_URI, null, null);
-        if (BuildConfig.DEBUG) Log.d(TAG, "Number rows deleted: " + String.valueOf(deleted));
+        if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows deleted: " + String.valueOf(deleted));
 
-        ContentValues values = new ContentValues();
+        ContentValues values[] = new ContentValues[musicQueue.size()];
         for (int i = 0; i < musicQueue.size(); i++) {
-            values.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.ID, musicQueue.get(i).getId());
-            values.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION, i);
+            ContentValues value = new ContentValues();
+            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.ID, musicQueue.get(i).getId());
+            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION, i);
+
+            values[i] = value;
         }
-        Uri uri = resolver.insert(MusicDatabaseProvider.QUEUE_CONTENT_URI, values);
-        if (BuildConfig.DEBUG) Log.d(TAG, "Inserted into URI: " + uri);
+
+        for (ContentValues value : values) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "ContentValue: " + value.toString());
+        }
+
+        int inserted = resolver.bulkInsert(MusicDatabaseProvider.QUEUE_CONTENT_URI, values);
+        if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows inserted: " + inserted);
     }
 
 
