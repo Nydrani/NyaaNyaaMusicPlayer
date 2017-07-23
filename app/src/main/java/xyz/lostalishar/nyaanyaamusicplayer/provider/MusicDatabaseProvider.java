@@ -7,6 +7,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.provider.SyncStateContract;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -22,17 +23,16 @@ public class MusicDatabaseProvider extends ContentProvider {
 
     private static final String URI_AUTHORITY = "xyz.lostalishar.nyaanyaamusicplayer.provider";
     private static final String BASE_PATH = "music";
-    private static final String QUEUE_PATH = "queue";
 
     public static final Uri EXTERNAL_CONTENT_URI = Uri.parse("content://" + URI_AUTHORITY +
             "/" + BASE_PATH);
     public static final Uri QUEUE_CONTENT_URI = Uri.parse("content://" + URI_AUTHORITY +
-            "/" + QUEUE_PATH);
+            "/" + PlaybackQueueSQLHelper.PlaybackQueueColumns.NAME);
 
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
-        uriMatcher.addURI(URI_AUTHORITY, QUEUE_PATH, QUEUE);
+        uriMatcher.addURI(URI_AUTHORITY, PlaybackQueueSQLHelper.PlaybackQueueColumns.NAME, QUEUE);
     }
 
     private PlaybackQueueSQLHelper queueSQLHelper;
