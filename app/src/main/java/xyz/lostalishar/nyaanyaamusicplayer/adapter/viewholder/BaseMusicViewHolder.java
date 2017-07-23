@@ -20,7 +20,7 @@ public abstract class BaseMusicViewHolder extends RecyclerView.ViewHolder {
 
     public BaseMusicDataHolder musicDataHolder;
 
-    public BaseMusicViewHolder(View view) {
+    protected BaseMusicViewHolder(View view) {
         super(view);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
