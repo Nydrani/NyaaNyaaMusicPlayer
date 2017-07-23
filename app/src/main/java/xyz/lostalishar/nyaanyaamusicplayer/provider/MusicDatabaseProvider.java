@@ -1,6 +1,7 @@
 package xyz.lostalishar.nyaanyaamusicplayer.provider;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -99,7 +100,7 @@ public class MusicDatabaseProvider extends ContentProvider {
             getContext().getContentResolver().notifyChange(uri, null);
         }
 
-        return Uri.parse(BASE_PATH + "/" + id);
+        return ContentUris.withAppendedId(QUEUE_CONTENT_URI, id);
     }
 
     @Override
