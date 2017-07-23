@@ -73,7 +73,7 @@ public class MusicPlaybackService extends Service implements
     public static final String ACTION_SHUTDOWN = "SHUTDOWN";
     public static final String ACTION_EXTRA_KEYCODE = "KEYCODE";
     public static final int UNKNOWN_POS = -1;
-    public static final int UNKNOWN_ID = -1;
+    public static final long UNKNOWN_ID = -1;
 
 
     private static final int MUSIC_NOTIFICATION_ID = 1;
@@ -397,6 +397,16 @@ public class MusicPlaybackService extends Service implements
 
     public long removeFromQueue(int pos) {
         if (BuildConfig.DEBUG) Log.d(TAG, "removeFromQueue");
+
+        // early exit if out of bounds queue position
+        if (pos <= UNKNOWN_POS || pos >= musicQueue.size()) {
+            return UNKNOWN_ID;
+        }
+
+        // early exit if there are no items in the queue
+        if (musicQueue.size() == 0) {
+            return UNKNOWN_ID;
+        }
 
         long id = musicQueue.get(pos).getId();
 
