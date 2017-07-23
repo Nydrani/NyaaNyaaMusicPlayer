@@ -16,7 +16,12 @@ import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
+import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.provider.MediaStore;
@@ -58,6 +63,9 @@ public class MusicPlaybackService extends Service implements
     private AlarmManager alarmManager;
     private PendingIntent shutdownPendingIntent;
 
+    private HandlerThread databaseThread;
+    private Handler databaseHandler;
+
     private MediaSession mediaSession;
     private AudioManager audioManager;
     private MediaController mediaController;
@@ -72,10 +80,11 @@ public class MusicPlaybackService extends Service implements
 
     public static final String ACTION_SHUTDOWN = "SHUTDOWN";
     public static final String ACTION_EXTRA_KEYCODE = "KEYCODE";
+    public static final String THREAD_DATABASE = "DatabaseThread";
     public static final int UNKNOWN_POS = -1;
     public static final long UNKNOWN_ID = -1;
 
-
+    private static final int UPDATE_QUEUE = 0;
     private static final int MUSIC_NOTIFICATION_ID = 1;
 
     private NoisyAudioReceiver noisyAudioReceiver;
@@ -100,11 +109,18 @@ public class MusicPlaybackService extends Service implements
         setupReceivers();
         setupAlarms();
 
+        // setup threads
+        databaseThread = new HandlerThread(THREAD_DATABASE, Process.THREAD_PRIORITY_BACKGROUND);
+        databaseThread.start();
+        databaseHandler = new DatabaseHandler(this, databaseThread.getLooper());
+
+        // setup misc services
         setupMediaSession();
         setupNotification();
         mediaController = mediaSession.getController();
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
+        // setup music state
         musicPlayer = new MusicPlayer(this);
         musicPlaybackState = new MusicPlaybackState(UNKNOWN_POS, 0);
         musicQueue = new ArrayList<>();
@@ -390,7 +406,13 @@ public class MusicPlaybackService extends Service implements
         NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
 
         // @TODO for now update queue database in here (change to use message handling later)
-        updatePlaybackQueue(true, track);
+        //updatePlaybackQueue(true, track);
+        databaseHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                savePlaybackQueue();
+            }
+        });
         // savePlaybackQueue();
 
         return musicQueue.indexOf(track);
@@ -416,7 +438,13 @@ public class MusicPlaybackService extends Service implements
 
         // @TODO for now update queue database in here (change to use message handling later)
         // updatePlaybackQueue(false, track);
-        savePlaybackQueue();
+        databaseHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                savePlaybackQueue();
+            }
+        });
+        // savePlaybackQueue();
 
         return id;
     }
@@ -912,6 +940,32 @@ public class MusicPlaybackService extends Service implements
             if (BuildConfig.DEBUG) Log.d(TAG, "Action: " + action);
 
             musicPlaybackService.get().pause();
+        }
+    }
+
+    private static class DatabaseHandler extends Handler {
+        private static final String TAG = DatabaseHandler.class.getSimpleName();
+
+        private final WeakReference<MusicPlaybackService> musicPlaybackService;
+
+        private DatabaseHandler(MusicPlaybackService service, Looper looper) {
+            super(looper);
+            if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
+
+            musicPlaybackService = new WeakReference<>(service);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "handleMessage");
+
+            switch (msg.what) {
+                case UPDATE_QUEUE:
+                    if (BuildConfig.DEBUG) Log.d(TAG, "UPDATE_QUEUE obtained");
+                default:
+                    if (BuildConfig.DEBUG) Log.d(TAG, "Unknown message code: " + String.valueOf(msg.what));
+            }
+
         }
     }
 
