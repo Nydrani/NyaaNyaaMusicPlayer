@@ -44,6 +44,13 @@ public class MusicQueueLoader extends CachedAsyncTaskLoader<List<Music>> {
 
         Cursor cursor = getCursor();
 
+        // @TODO for now (since list position is not relative to database position due to sorting
+        // @TODO or not sorting changing the order
+        // @TODO fix is Issue #2
+        // @TODO might have issues with concurrency
+        List<MusicPlaybackTrack> queueArray = MusicUtils.getQueue();
+
+
         // can sometimes return null on bad problems
         if (cursor == null) {
             return musicList;
@@ -59,19 +66,28 @@ public class MusicQueueLoader extends CachedAsyncTaskLoader<List<Music>> {
         int durationColumn = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
         int mimeTypeColumn = cursor.getColumnIndex(MediaStore.Audio.Media.MIME_TYPE);
 
-        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-            final long id = cursor.getLong(idColumn);
-            final String name = cursor.getString(titleColumn);
-            final String artistName = cursor.getString(artistColumn);
-            final String albumName = cursor.getString(albumColumn);
-            final long duration = cursor.getLong(durationColumn);
-            final String mimeType = cursor.getString(mimeTypeColumn);
+        for (MusicPlaybackTrack track : queueArray) {
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                final long id = cursor.getLong(idColumn);
 
-            final int durationInSecs = (int) duration / 1000;
-            final Music music = new Music(id, name, artistName, albumName, durationInSecs,
-                    mimeType);
+                // @TODO skip if id is incorrect (this is O(n^2)) but cant do any better right now
+                // @TODO so add will be in the correct position
+                if (id != track.getId()) {
+                    continue;
+                }
 
-            musicList.add(music);
+                final String name = cursor.getString(titleColumn);
+                final String artistName = cursor.getString(artistColumn);
+                final String albumName = cursor.getString(albumColumn);
+                final long duration = cursor.getLong(durationColumn);
+                final String mimeType = cursor.getString(mimeTypeColumn);
+
+                final int durationInSecs = (int) duration / 1000;
+                final Music music = new Music(id, name, artistName, albumName, durationInSecs,
+                        mimeType);
+
+                musicList.add(music);
+            }
         }
 
         cursor.close();
