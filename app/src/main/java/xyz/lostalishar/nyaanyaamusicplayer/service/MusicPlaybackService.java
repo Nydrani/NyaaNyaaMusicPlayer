@@ -158,7 +158,7 @@ public class MusicPlaybackService extends Service implements
         }
 
         // @TODO find out when intent can be null
-        // intent can be null (not sure when)
+        // intent can be null (called when process died since START_STICKY on app close)
         // make sure to call for a shutdown since it sits in idle
         if (intent == null) {
             if (BuildConfig.DEBUG) Log.w(TAG, "INTENT IS NULL (CHECK ME OUT)");
@@ -389,8 +389,9 @@ public class MusicPlaybackService extends Service implements
         musicQueue.add(track);
         NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
 
-        // @TODO for now update queue in here (change to use message handling later)
-        savePlaybackQueue();
+        // @TODO for now update queue database in here (change to use message handling later)
+        updatePlaybackQueue(true, track);
+        // savePlaybackQueue();
 
         return musicQueue.indexOf(track);
     }
@@ -413,7 +414,8 @@ public class MusicPlaybackService extends Service implements
         musicQueue.remove(pos);
         NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
 
-        // @TODO for now update queue in here (change to use message handling later)
+        // @TODO for now update queue database in here (change to use message handling later)
+        // updatePlaybackQueue(false, track);
         savePlaybackQueue();
 
         return id;
@@ -763,7 +765,8 @@ public class MusicPlaybackService extends Service implements
     private void loadPlaybackQueue() {
         if (BuildConfig.DEBUG) Log.d(TAG, "loadPlaybackQueue");
 
-        Cursor cursor = getContentResolver().query(MusicDatabaseProvider.QUEUE_CONTENT_URI, null, null, null, null);
+        Cursor cursor = getContentResolver().query(MusicDatabaseProvider.QUEUE_CONTENT_URI, null, null, null,
+                PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION + " ASC");
 
         if (cursor == null) {
             return;
@@ -796,9 +799,11 @@ public class MusicPlaybackService extends Service implements
         if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows deleted: " + String.valueOf(deleted));
 
         ContentValues values[] = new ContentValues[musicQueue.size()];
+        // making sure to save the position as well to restore for later
         for (int i = 0; i < musicQueue.size(); i++) {
+            MusicPlaybackTrack track = musicQueue.get(i);
             ContentValues value = new ContentValues();
-            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.ID, musicQueue.get(i).getId());
+            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.ID, track.getId());
             value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION, i);
 
             values[i] = value;
@@ -810,6 +815,29 @@ public class MusicPlaybackService extends Service implements
 
         int inserted = resolver.bulkInsert(MusicDatabaseProvider.QUEUE_CONTENT_URI, values);
         if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows inserted: " + inserted);
+    }
+
+    /**
+     *
+     * @param type True for insert, False for deletion
+     * @param track Item of interest
+     */
+    private void updatePlaybackQueue(boolean type, MusicPlaybackTrack track) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updatePlaybackQueue");
+
+        ContentResolver resolver = getContentResolver();
+
+        if (type) {
+            ContentValues value = new ContentValues();
+            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.ID, track.getId());
+            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION, musicQueue.indexOf(track));
+            Uri uri = resolver.insert(MusicDatabaseProvider.QUEUE_CONTENT_URI, value);
+            if (BuildConfig.DEBUG) Log.d(TAG, "Inserted into: " + uri);
+        } else {
+            int deleted = resolver.delete(MusicDatabaseProvider.QUEUE_CONTENT_URI,
+                    PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION + '=' + musicQueue.indexOf(track), null);
+            if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows deleted: " + String.valueOf(deleted));
+        }
     }
 
 
