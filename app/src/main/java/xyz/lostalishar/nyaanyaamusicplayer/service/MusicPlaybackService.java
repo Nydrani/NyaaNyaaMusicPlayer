@@ -228,6 +228,9 @@ public class MusicPlaybackService extends Service implements
         // make sure to cancel lingering AlarmManager tasks
         cancelDelayedShutdown();
 
+        // stop background threads
+        databaseThread.quitSafely();
+
         // stop running as foreground service
         stopForeground(true);
 
