@@ -25,7 +25,7 @@ public class MusicDatabaseProvider extends ContentProvider {
 
     private static final int QUEUE = 1;
 
-    private static final String URI_AUTHORITY = "xyz.lostalishar.nyaanyaamusicplayer.provider";
+    public static final String URI_AUTHORITY = "xyz.lostalishar.nyaanyaamusicplayer.provider";
     private static final String BASE_PATH = "music";
 
     public static final Uri EXTERNAL_CONTENT_URI = Uri.parse("content://" + URI_AUTHORITY +

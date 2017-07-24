@@ -5,11 +5,15 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ContentProvider;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.session.MediaController;
@@ -829,9 +833,10 @@ public class MusicPlaybackService extends Service implements
         int deleted = resolver.delete(MusicDatabaseProvider.QUEUE_CONTENT_URI, null, null);
         if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows deleted: " + String.valueOf(deleted));
 
-        ContentValues values[] = new ContentValues[musicQueue.size()];
-        // making sure to save the position as well to restore for later
-        for (int i = 0; i < musicQueue.size(); i++) {
+        int queueSize = musicQueue.size();
+        ContentValues values[] = new ContentValues[queueSize];
+        // making sure to save the position to restore for later
+        for (int i = 0; i < queueSize; i++) {
             MusicPlaybackTrack track = musicQueue.get(i);
             ContentValues value = new ContentValues();
             value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.ID, track.getId());
@@ -841,7 +846,7 @@ public class MusicPlaybackService extends Service implements
         }
 
         int inserted = resolver.bulkInsert(MusicDatabaseProvider.QUEUE_CONTENT_URI, values);
-        if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows inserted: " + inserted);
+        if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows inserted: " + String.valueOf(inserted));
     }
 
     /**
@@ -853,17 +858,51 @@ public class MusicPlaybackService extends Service implements
         if (BuildConfig.DEBUG) Log.d(TAG, "updatePlaybackQueue");
 
         ContentResolver resolver = getContentResolver();
+        ContentValues value;
+        int trackIndex = musicQueue.indexOf(track);
 
         if (type) {
-            ContentValues value = new ContentValues();
+            value = new ContentValues();
             value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.ID, track.getId());
-            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION, musicQueue.indexOf(track));
+            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION, trackIndex);
+
             Uri uri = resolver.insert(MusicDatabaseProvider.QUEUE_CONTENT_URI, value);
+
             if (BuildConfig.DEBUG) Log.d(TAG, "Inserted into: " + uri);
         } else {
-            int deleted = resolver.delete(MusicDatabaseProvider.QUEUE_CONTENT_URI,
-                    PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION + '=' + musicQueue.indexOf(track), null);
-            if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows deleted: " + String.valueOf(deleted));
+            int queueSize = musicQueue.size();
+            String[] args;
+            ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+
+            // first delete the track from the table
+            args = new String[] { String.valueOf(trackIndex) };
+
+            operations.add(ContentProviderOperation.newDelete(MusicDatabaseProvider.QUEUE_CONTENT_URI)
+                    .withSelection(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION + "=?", args)
+                    .build());
+
+            // then update the rest of the tracks where position > trackPosition
+            for (int i = trackIndex; i < queueSize; i++) {
+                args = new String[] { String.valueOf(i+1) };
+                value = new ContentValues();
+                value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION, i);
+
+                operations.add(ContentProviderOperation.newUpdate(MusicDatabaseProvider.QUEUE_CONTENT_URI)
+                        .withValues(value)
+                        .withSelection(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION + "=?", args)
+                        .build());
+            }
+
+            try {
+                ContentProviderResult[] results = resolver.applyBatch(MusicDatabaseProvider.URI_AUTHORITY, operations);
+                for (ContentProviderResult result : results) {
+                    if (BuildConfig.DEBUG) Log.d(TAG, "Result: " + result.toString());
+                }
+            } catch (RemoteException e) {
+                if (BuildConfig.DEBUG) Log.d(TAG, "RemoteException: " + e);
+            } catch (OperationApplicationException e) {
+                if (BuildConfig.DEBUG) Log.d(TAG, "OperationApplicationException: " + e);
+            }
         }
     }
 
