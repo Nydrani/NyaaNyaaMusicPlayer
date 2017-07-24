@@ -1,5 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,8 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.QueueViewHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
+import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
+import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 
 /**
  * Currently not implementing a List rather than Cursor due to:
@@ -61,6 +64,16 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueViewHolder> {
 
         // store id
         holder.musicDataHolder.musicId = music.getId();
+
+        // update background color if i am playing
+        MusicPlaybackState state = MusicUtils.getState();
+        if (state != null && state.getQueuePos() == position) {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(),
+                    R.color.colorPrimaryDark));
+        } else {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(),
+                    R.color.white));
+        }
     }
 
     @Override
