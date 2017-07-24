@@ -158,38 +158,34 @@ public class MusicUtils {
 
     public static int addToQueue(long musicId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "addToQueue");
-        int pos = MusicPlaybackService.UNKNOWN_POS;
 
         if (musicService == null) {
-            return pos;
+            return MusicPlaybackService.UNKNOWN_POS;
         }
 
         try {
-            pos = musicService.addToQueue(musicId);
-            return pos;
+            return musicService.addToQueue(musicId);
         } catch (RemoteException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
         }
 
-        return pos;
+        return MusicPlaybackService.UNKNOWN_POS;
     }
 
     public static long removeFromQueue(int pos) {
         if (BuildConfig.DEBUG) Log.d(TAG, "removeFromQueue");
-        long id = MusicPlaybackService.UNKNOWN_ID;
 
         if (musicService == null) {
-            return id;
+            return MusicPlaybackService.UNKNOWN_ID;
         }
 
         try {
-            id = musicService.removeFromQueue(pos);
-            return id;
+            return musicService.removeFromQueue(pos);
         } catch (RemoteException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
         }
 
-        return id;
+        return MusicPlaybackService.UNKNOWN_ID;
     }
 
     public static MusicPlaybackState getState() {

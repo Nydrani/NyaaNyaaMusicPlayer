@@ -92,7 +92,8 @@ public class MusicListLoader extends CachedAsyncTaskLoader<List<Music>> {
         ContentResolver musicResolver = context.getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String[] projection = new String[6];
-        String selection = MediaStore.Audio.Media.IS_MUSIC + "=1";
+        String selection = MediaStore.Audio.Media.IS_MUSIC + "=?";
+        String args[] = { "1" };
         String sortOrder = MediaStore.Audio.Media.DEFAULT_SORT_ORDER;
 
         projection[0] = MediaStore.Audio.Media._ID;
@@ -102,6 +103,6 @@ public class MusicListLoader extends CachedAsyncTaskLoader<List<Music>> {
         projection[4] = MediaStore.Audio.Media.DURATION;
         projection[5] = MediaStore.Audio.Media.MIME_TYPE;
 
-        return musicResolver.query(musicUri, projection, selection, null, sortOrder);
+        return musicResolver.query(musicUri, projection, selection, args, sortOrder);
     }
 }

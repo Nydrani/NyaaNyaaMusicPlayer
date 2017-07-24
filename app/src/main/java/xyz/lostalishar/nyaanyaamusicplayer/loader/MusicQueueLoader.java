@@ -124,14 +124,17 @@ public class MusicQueueLoader extends CachedAsyncTaskLoader<List<Music>> {
 
         // build the selection to get only the rows from the ids
         StringBuilder selection = new StringBuilder();
+        String[] args = new String[queueArraySize];
+
         selection.append(MediaStore.Audio.Media._ID + " IN (");
         for (int i = 0; i < queueArraySize; i++) {
-            selection.append(queueArray.get(i).getId());
-            if (i < queueArraySize - 1) {
-                selection.append(", ");
-            }
+            args[i] = String.valueOf(queueArray.get(i).getId());
+            selection.append("?, ");
         }
+        selection.delete(queueArraySize - 2, queueArraySize);
         selection.append(")");
+
+        if (BuildConfig.DEBUG) Log.d(TAG, "Selection query: " + selection.toString());
 
         String sortOrder = MediaStore.Audio.Media.DEFAULT_SORT_ORDER;
 
@@ -142,6 +145,6 @@ public class MusicQueueLoader extends CachedAsyncTaskLoader<List<Music>> {
         projection[4] = MediaStore.Audio.Media.DURATION;
         projection[5] = MediaStore.Audio.Media.MIME_TYPE;
 
-        return musicResolver.query(musicUri, projection, selection.toString(), null, sortOrder);
+        return musicResolver.query(musicUri, projection, selection.toString(), args, sortOrder);
     }
 }
