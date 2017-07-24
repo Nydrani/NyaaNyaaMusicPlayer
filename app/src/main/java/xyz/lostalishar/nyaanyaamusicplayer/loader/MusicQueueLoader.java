@@ -126,12 +126,16 @@ public class MusicQueueLoader extends CachedAsyncTaskLoader<List<Music>> {
         StringBuilder selection = new StringBuilder();
         String[] args = new String[queueArraySize];
 
+        // build the selection statement
         selection.append(MediaStore.Audio.Media._ID + " IN (");
         for (int i = 0; i < queueArraySize; i++) {
             args[i] = String.valueOf(queueArray.get(i).getId());
             selection.append("?, ");
         }
-        selection.delete(queueArraySize - 2, queueArraySize);
+        // edge case for empty array size
+        if (queueArraySize != 0) {
+            selection.delete(selection.length() - 2, selection.length());
+        }
         selection.append(")");
 
         if (BuildConfig.DEBUG) Log.d(TAG, "Selection query: " + selection.toString());
