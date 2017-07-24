@@ -1,6 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
-import android.support.v4.content.ContextCompat;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -65,14 +65,15 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueViewHolder> {
         // store id
         holder.musicDataHolder.musicId = music.getId();
 
-        // update background color if i am playing
+        // @TODO update background color if current position is playing
+        // @TODO change to something with better UI design later lmao
         MusicPlaybackState state = MusicUtils.getState();
         if (state != null && state.getQueuePos() == position) {
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(),
-                    R.color.colorPrimaryDark));
+            if (BuildConfig.DEBUG) Log.d(TAG, "Applying color filter");
+            holder.itemView.setBackgroundColor(Color.RED);
         } else {
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(),
-                    R.color.white));
+            if (BuildConfig.DEBUG) Log.d(TAG, "Clearing color filter");
+            holder.itemView.setBackgroundColor(Color.TRANSPARENT);
         }
     }
 
