@@ -840,16 +840,12 @@ public class MusicPlaybackService extends Service implements
             values[i] = value;
         }
 
-        for (ContentValues value : values) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "ContentValue: " + value.toString());
-        }
-
         int inserted = resolver.bulkInsert(MusicDatabaseProvider.QUEUE_CONTENT_URI, values);
         if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows inserted: " + inserted);
     }
 
     /**
-     *
+     * Updates the required table fields for playback queue
      * @param type True for insert, False for deletion
      * @param track Item of interest
      */
