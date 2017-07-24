@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 
@@ -83,13 +82,6 @@ public class MusicDatabaseProvider extends ContentProvider {
     }
 
     @Override
-    public String getType(@NonNull Uri uri) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "getType");
-
-        return null;
-    }
-
-    @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
         if (BuildConfig.DEBUG) Log.d(TAG, "insert");
 
@@ -144,14 +136,36 @@ public class MusicDatabaseProvider extends ContentProvider {
                       String[] selectionArgs) {
         if (BuildConfig.DEBUG) Log.d(TAG, "update");
 
-        // TODO: Implement this to handle requests to update one or more rows.
-        throw new UnsupportedOperationException("Not yet implemented");
+        SQLiteDatabase db = queueSQLHelper.getWritableDatabase();
+        int id = 0;
+
+        switch (uriMatcher.match(uri)) {
+            case QUEUE:
+                id = db.update(PlaybackQueueSQLHelper.PlaybackQueueColumns.NAME, values,
+                        selection, selectionArgs);
+                break;
+            default:
+                if (BuildConfig.DEBUG) Log.d(TAG, "Unsupported URI: " + uri);
+                return id;
+        }
+
+        // notify people listening to me
+        if (getContext() != null) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return id;
     }
 
     @Override
-    public
-    @NonNull
-    ContentProviderResult[] applyBatch(@NonNull ArrayList<ContentProviderOperation> operations)
+    public String getType(@NonNull Uri uri) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getType");
+
+        return null;
+    }
+
+    @Override
+    public @NonNull ContentProviderResult[] applyBatch(@NonNull ArrayList<ContentProviderOperation> operations)
             throws OperationApplicationException {
         if (BuildConfig.DEBUG) Log.d(TAG, "applyBatch");
 
