@@ -5,18 +5,27 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ContentProvider;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
+import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.provider.MediaStore;
@@ -58,6 +67,9 @@ public class MusicPlaybackService extends Service implements
     private AlarmManager alarmManager;
     private PendingIntent shutdownPendingIntent;
 
+    private HandlerThread databaseThread;
+    private Handler databaseHandler;
+
     private MediaSession mediaSession;
     private AudioManager audioManager;
     private MediaController mediaController;
@@ -72,10 +84,11 @@ public class MusicPlaybackService extends Service implements
 
     public static final String ACTION_SHUTDOWN = "SHUTDOWN";
     public static final String ACTION_EXTRA_KEYCODE = "KEYCODE";
+    public static final String THREAD_DATABASE = "DatabaseThread";
     public static final int UNKNOWN_POS = -1;
     public static final long UNKNOWN_ID = -1;
 
-
+    private static final int UPDATE_QUEUE = 0;
     private static final int MUSIC_NOTIFICATION_ID = 1;
 
     private NoisyAudioReceiver noisyAudioReceiver;
@@ -100,11 +113,18 @@ public class MusicPlaybackService extends Service implements
         setupReceivers();
         setupAlarms();
 
+        // setup threads
+        databaseThread = new HandlerThread(THREAD_DATABASE, Process.THREAD_PRIORITY_BACKGROUND);
+        databaseThread.start();
+        databaseHandler = new DatabaseHandler(this, databaseThread.getLooper());
+
+        // setup misc services
         setupMediaSession();
         setupNotification();
         mediaController = mediaSession.getController();
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
+        // setup music state
         musicPlayer = new MusicPlayer(this);
         musicPlaybackState = new MusicPlaybackState(UNKNOWN_POS, 0);
         musicQueue = new ArrayList<>();
@@ -158,7 +178,7 @@ public class MusicPlaybackService extends Service implements
         }
 
         // @TODO find out when intent can be null
-        // intent can be null (not sure when)
+        // intent can be null (called when process died since START_STICKY on app close)
         // make sure to call for a shutdown since it sits in idle
         if (intent == null) {
             if (BuildConfig.DEBUG) Log.w(TAG, "INTENT IS NULL (CHECK ME OUT)");
@@ -211,6 +231,9 @@ public class MusicPlaybackService extends Service implements
 
         // make sure to cancel lingering AlarmManager tasks
         cancelDelayedShutdown();
+
+        // stop background threads
+        databaseThread.quitSafely();
 
         // stop running as foreground service
         stopForeground(true);
@@ -389,8 +412,15 @@ public class MusicPlaybackService extends Service implements
         musicQueue.add(track);
         NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
 
-        // @TODO for now update queue in here (change to use message handling later)
-        savePlaybackQueue();
+        // @TODO for now update queue database in here (change to use message handling later)
+        //updatePlaybackQueue(true, track);
+        databaseHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                savePlaybackQueue();
+            }
+        });
+        // savePlaybackQueue();
 
         return musicQueue.indexOf(track);
     }
@@ -413,8 +443,15 @@ public class MusicPlaybackService extends Service implements
         musicQueue.remove(pos);
         NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
 
-        // @TODO for now update queue in here (change to use message handling later)
-        savePlaybackQueue();
+        // @TODO for now update queue database in here (change to use message handling later)
+        // updatePlaybackQueue(false, track);
+        databaseHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                savePlaybackQueue();
+            }
+        });
+        // savePlaybackQueue();
 
         return id;
     }
@@ -763,7 +800,8 @@ public class MusicPlaybackService extends Service implements
     private void loadPlaybackQueue() {
         if (BuildConfig.DEBUG) Log.d(TAG, "loadPlaybackQueue");
 
-        Cursor cursor = getContentResolver().query(MusicDatabaseProvider.QUEUE_CONTENT_URI, null, null, null, null);
+        Cursor cursor = getContentResolver().query(MusicDatabaseProvider.QUEUE_CONTENT_URI, null, null, null,
+                PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION + " ASC");
 
         if (cursor == null) {
             return;
@@ -795,21 +833,77 @@ public class MusicPlaybackService extends Service implements
         int deleted = resolver.delete(MusicDatabaseProvider.QUEUE_CONTENT_URI, null, null);
         if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows deleted: " + String.valueOf(deleted));
 
-        ContentValues values[] = new ContentValues[musicQueue.size()];
-        for (int i = 0; i < musicQueue.size(); i++) {
+        int queueSize = musicQueue.size();
+        ContentValues values[] = new ContentValues[queueSize];
+        // making sure to save the position to restore for later
+        for (int i = 0; i < queueSize; i++) {
+            MusicPlaybackTrack track = musicQueue.get(i);
             ContentValues value = new ContentValues();
-            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.ID, musicQueue.get(i).getId());
+            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.ID, track.getId());
             value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION, i);
 
             values[i] = value;
         }
 
-        for (ContentValues value : values) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "ContentValue: " + value.toString());
-        }
-
         int inserted = resolver.bulkInsert(MusicDatabaseProvider.QUEUE_CONTENT_URI, values);
-        if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows inserted: " + inserted);
+        if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows inserted: " + String.valueOf(inserted));
+    }
+
+    /**
+     * Updates the required table fields for playback queue
+     * @param type True for insert, False for deletion
+     * @param track Item of interest
+     */
+    private void updatePlaybackQueue(boolean type, MusicPlaybackTrack track) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updatePlaybackQueue");
+
+        ContentResolver resolver = getContentResolver();
+        ContentValues value;
+        int trackIndex = musicQueue.indexOf(track);
+
+        if (type) {
+            value = new ContentValues();
+            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.ID, track.getId());
+            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION, trackIndex);
+
+            Uri uri = resolver.insert(MusicDatabaseProvider.QUEUE_CONTENT_URI, value);
+
+            if (BuildConfig.DEBUG) Log.d(TAG, "Inserted into: " + uri);
+        } else {
+            int queueSize = musicQueue.size();
+            String[] args;
+            ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+
+            // first delete the track from the table
+            args = new String[] { String.valueOf(trackIndex) };
+
+            operations.add(ContentProviderOperation.newDelete(MusicDatabaseProvider.QUEUE_CONTENT_URI)
+                    .withSelection(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION + "=?", args)
+                    .build());
+
+            // then update the rest of the tracks where position > trackPosition
+            for (int i = trackIndex; i < queueSize; i++) {
+                args = new String[] { String.valueOf(i+1) };
+                value = new ContentValues();
+                value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION, i);
+
+                operations.add(ContentProviderOperation.newUpdate(MusicDatabaseProvider.QUEUE_CONTENT_URI)
+                        .withValues(value)
+                        .withSelection(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION + "=?", args)
+                        .build());
+            }
+
+            try {
+                ContentProviderResult[] results = resolver.applyBatch(MusicDatabaseProvider.URI_AUTHORITY, operations);
+                for (ContentProviderResult result : results) {
+                    if (BuildConfig.DEBUG) Log.d(TAG, "Result: " + result.toString());
+                }
+            } catch (RemoteException e) {
+                if (BuildConfig.DEBUG) Log.d(TAG, "RemoteException: " + e);
+            } catch (OperationApplicationException e) {
+                if (BuildConfig.DEBUG) Log.d(TAG, "OperationApplicationException: " + e);
+            }
+        }
     }
 
 
@@ -884,6 +978,32 @@ public class MusicPlaybackService extends Service implements
             if (BuildConfig.DEBUG) Log.d(TAG, "Action: " + action);
 
             musicPlaybackService.get().pause();
+        }
+    }
+
+    private static class DatabaseHandler extends Handler {
+        private static final String TAG = DatabaseHandler.class.getSimpleName();
+
+        private final WeakReference<MusicPlaybackService> musicPlaybackService;
+
+        private DatabaseHandler(MusicPlaybackService service, Looper looper) {
+            super(looper);
+            if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
+
+            musicPlaybackService = new WeakReference<>(service);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "handleMessage");
+
+            switch (msg.what) {
+                case UPDATE_QUEUE:
+                    if (BuildConfig.DEBUG) Log.d(TAG, "UPDATE_QUEUE obtained");
+                default:
+                    if (BuildConfig.DEBUG) Log.d(TAG, "Unknown message code: " + String.valueOf(msg.what));
+            }
+
         }
     }
 
