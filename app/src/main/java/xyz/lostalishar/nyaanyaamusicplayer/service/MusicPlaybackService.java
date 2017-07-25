@@ -117,16 +117,15 @@ public class MusicPlaybackService extends Service implements
         databaseThread.start();
         databaseHandler = new DatabaseHandler(this, databaseThread.getLooper());
 
-        // setup misc services
-        setupMediaSession();
-        setupNotification();
-        mediaController = mediaSession.getController();
-        audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-
         // setup music state
         musicPlayer = new MusicPlayer(this);
         musicPlaybackState = new MusicPlaybackState(UNKNOWN_POS, 0);
         musicQueue = new ArrayList<>();
+
+        // setup misc services
+        setupMediaSession();
+        setupNotification();
+        audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
         // restore previous playback state
         loadPlaybackState();
@@ -617,22 +616,8 @@ public class MusicPlaybackService extends Service implements
         mediaSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS
                 | MediaSession.FLAG_HANDLES_MEDIA_BUTTONS);
 
-        PlaybackState newState = new PlaybackState.Builder()
-                .setActions(getPlaybackStateActions())
-                .setState(PlaybackState.STATE_NONE, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 1.0f)
-                .build();
-        mediaSession.setPlaybackState(newState);
-    }
-
-    private long getPlaybackStateActions() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "getPlaybackStateActions");
-
-        return PlaybackState.ACTION_SKIP_TO_NEXT |
-                PlaybackState.ACTION_SKIP_TO_PREVIOUS |
-                PlaybackState.ACTION_PLAY |
-                PlaybackState.ACTION_PLAY_PAUSE |
-                PlaybackState.ACTION_PAUSE |
-                PlaybackState.ACTION_STOP;
+        mediaController = mediaSession.getController();
+        updateMediaSession("NONE");
     }
 
     private void setupAlarms() {
@@ -765,10 +750,20 @@ public class MusicPlaybackService extends Service implements
             if (BuildConfig.DEBUG) Log.d(TAG, "State before: " + String.valueOf(playbackState.getState()));
         }
 
+        long playbackStateActions = PlaybackState.ACTION_SKIP_TO_NEXT |
+                PlaybackState.ACTION_SKIP_TO_PREVIOUS |
+                PlaybackState.ACTION_PLAY |
+                PlaybackState.ACTION_PLAY_PAUSE |
+                PlaybackState.ACTION_PAUSE |
+                PlaybackState.ACTION_STOP;
 
         PlaybackState.Builder stateBuilder = new PlaybackState.Builder()
-                .setActions(getPlaybackStateActions())
-                .setActiveQueueItemId(musicPlaybackState.getQueuePos());
+                .setActions(playbackStateActions);
+
+        int pos = musicPlaybackState.getQueuePos();
+        if (pos != UNKNOWN_POS) {
+            stateBuilder.setActiveQueueItemId(pos);
+        }
 
         switch (state) {
             case "PLAY":
@@ -783,6 +778,7 @@ public class MusicPlaybackService extends Service implements
                 stateBuilder.setState(PlaybackState.STATE_STOPPED, musicPlayer.getCurrentPosition(),
                         1.0f);
                 break;
+            case "NONE":
             case "RESET":
                 stateBuilder.setState(PlaybackState.STATE_NONE, PlaybackState.PLAYBACK_POSITION_UNKNOWN,
                         1.0f);
