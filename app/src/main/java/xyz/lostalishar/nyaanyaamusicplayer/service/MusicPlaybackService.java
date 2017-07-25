@@ -5,7 +5,6 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ContentProvider;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentResolver;
@@ -40,7 +39,7 @@ import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
-import xyz.lostalishar.nyaanyaamusicplayer.activity.BaseActivity;
+import xyz.lostalishar.nyaanyaamusicplayer.activity.HomeActivity;
 import xyz.lostalishar.nyaanyaamusicplayer.media.MusicPlayer;
 import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
 import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackTrack;
@@ -329,12 +328,13 @@ public class MusicPlaybackService extends Service implements
             //   1. make sure the app doesn't schedule to kill itself
             //   2. update the media session to play, pause, stop etc status
             //   3. enable listening to play/pause buttons from quick settings/hardware buttons
-            //   4. don't get killed by OS
-            //   5. save current playback state
+            //   4. update the notification
+            //   5. don't get killed by OS
+            //   6. save current playback state
             cancelDelayedShutdown();
             updateMediaSession("PLAY");
             mediaSession.setActive(true);
-            startForeground(MUSIC_NOTIFICATION_ID, musicNotification);
+            startForeground(MUSIC_NOTIFICATION_ID, buildNotification());
             savePlaybackState();
         } catch (IllegalStateException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Called start in illegal state");
@@ -519,6 +519,20 @@ public class MusicPlaybackService extends Service implements
         return musicResolver.query(musicUri, projection, selection, selectionArgs, sortOrder);
     }
 
+    private Cursor makeMusicNameCursor(long musicId) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "makeMusicNameCursor");
+
+        ContentResolver musicResolver = getContentResolver();
+
+        Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = { MediaStore.Audio.Media.TITLE };
+        String selection = MediaStore.Audio.Media._ID + "=?";
+        String[] selectionArgs = { String.valueOf(musicId) };
+        String sortOrder = MediaStore.Audio.Media.DEFAULT_SORT_ORDER;
+
+        return musicResolver.query(musicUri, projection, selection, selectionArgs, sortOrder);
+    }
+
     private void setupMediaSession() {
         if (BuildConfig.DEBUG) Log.d(TAG, "setupMediaSession");
 
@@ -601,7 +615,7 @@ public class MusicPlaybackService extends Service implements
     private void setupNotification() {
         if (BuildConfig.DEBUG) Log.d(TAG, "setupNotification");
 
-        Intent activityIntent = new Intent(this, BaseActivity.class);
+        Intent activityIntent = new Intent(this, HomeActivity.class);
         PendingIntent activityPendingIntent = PendingIntent.getActivity(this, 0, activityIntent, 0);
 
         Intent serviceIntent = new Intent(this, MusicPlaybackService.class);
@@ -763,6 +777,54 @@ public class MusicPlaybackService extends Service implements
         } else {
             if (BuildConfig.DEBUG) Log.d(TAG, "State after: " + String.valueOf(playbackState.getState()));
         }
+    }
+
+    private Notification buildNotification() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "buildNotification");
+
+        // find the location from the MediaStore
+        Cursor cursor = makeMusicNameCursor(musicQueue.get(musicPlaybackState.getQueuePos()).getId());
+
+        if (cursor == null) {
+            return musicNotification;
+        }
+
+        // more than 1 item of this id --> debug me
+        if (cursor.getCount() != 1) {
+            if (BuildConfig.DEBUG) Log.w(TAG, "Found " + cursor.getCount() + " item(s)");
+            int dataColumn = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                if (BuildConfig.DEBUG) Log.w(TAG, "Item: " + cursor.getString(dataColumn));
+            }
+
+            cursor.close();
+            return musicNotification;
+        }
+
+        // success
+        cursor.moveToFirst();
+        String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
+        cursor.close();
+
+        Intent activityIntent = new Intent(this, HomeActivity.class);
+        PendingIntent activityPendingIntent = PendingIntent.getActivity(this, 0, activityIntent, 0);
+
+        Intent serviceIntent = new Intent(this, MusicPlaybackService.class);
+        serviceIntent.putExtra(ACTION_EXTRA_KEYCODE, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+
+        // @TODO apparently deprecated. fix later
+        PendingIntent servicePendingIntent = PendingIntent.getService(this, 0, serviceIntent, 0);
+        Notification.Action playPauseAction = new Notification.Action.Builder(android.R.drawable.ic_media_pause,
+                getText(R.string.service_musicplayback_notification_pause_message), servicePendingIntent)
+                .build();
+
+        return new Notification.Builder(this)
+                .setContentTitle(getText(R.string.service_musicplayback_notification_title))
+                .setContentText(name)
+                .setSmallIcon(android.R.drawable.star_on)
+                .setContentIntent(activityPendingIntent)
+                .addAction(playPauseAction)
+                .build();
     }
 
     private void savePlaybackState() {
