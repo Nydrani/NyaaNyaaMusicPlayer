@@ -10,6 +10,8 @@ interface INyaaNyaaMusicService {
     void pause();
     void stop();
     void reset();
+    void next();
+    void previous();
     MusicPlaybackState getState();
     List<MusicPlaybackTrack> getQueue();
     int addToQueue(long musicId);

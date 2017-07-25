@@ -371,7 +371,28 @@ public class MusicPlaybackService extends Service implements
         } catch (IllegalStateException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Called stop in illegal state");
         }
+    }
 
+    public void next() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "next");
+
+        int nextQueuePos = (musicPlaybackState.getQueuePos() + 1) % musicQueue.size();
+
+        reset();
+        load(nextQueuePos);
+        play();
+    }
+
+    public void previous() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "previous");
+
+        // apparently mod in java behaves as  { a % b = a - a / b * b }
+        int prevQueuePos = ((musicPlaybackState.getQueuePos() - 1) %
+                musicQueue.size() + musicQueue.size()) % musicQueue.size();
+
+        reset();
+        load(prevQueuePos);
+        play();
     }
 
     public void reset() {
@@ -564,17 +585,25 @@ public class MusicPlaybackService extends Service implements
             }
 
             @Override
+            public void onSkipToNext() {
+                if (BuildConfig.DEBUG) Log.d(TAG, "onSkipToNext");
+
+                next();
+            }
+
+            @Override
+            public void onSkipToPrevious() {
+                if (BuildConfig.DEBUG) Log.d(TAG, "onSkipToPrevious");
+
+                previous();
+            }
+
+            @Override
             public boolean onMediaButtonEvent(@NonNull Intent mediaButtonIntent) {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onMediaButtonEvent");
 
                 final KeyEvent event = mediaButtonIntent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-
-                // event should never be null --> but do sanity check just in case
-                if (event != null) {
-                    if (BuildConfig.DEBUG) Log.d(TAG, event.toString());
-                } else {
-                    if (BuildConfig.DEBUG) Log.w(TAG, "KeyEvent not found");
-                }
+                if (BuildConfig.DEBUG) Log.d(TAG, event.toString());
 
                 return super.onMediaButtonEvent(mediaButtonIntent);
             }
@@ -588,17 +617,22 @@ public class MusicPlaybackService extends Service implements
         mediaSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS
                 | MediaSession.FLAG_HANDLES_MEDIA_BUTTONS);
 
-        long playBackStateActions =
-                PlaybackState.ACTION_PLAY |
-                        PlaybackState.ACTION_PLAY_PAUSE |
-                        PlaybackState.ACTION_PLAY_FROM_MEDIA_ID |
-                        PlaybackState.ACTION_PAUSE |
-                        PlaybackState.ACTION_STOP;
         PlaybackState newState = new PlaybackState.Builder()
-                .setActions(playBackStateActions)
+                .setActions(getPlaybackStateActions())
                 .setState(PlaybackState.STATE_NONE, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 1.0f)
                 .build();
         mediaSession.setPlaybackState(newState);
+    }
+
+    private long getPlaybackStateActions() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getPlaybackStateActions");
+
+        return PlaybackState.ACTION_SKIP_TO_NEXT |
+                PlaybackState.ACTION_SKIP_TO_PREVIOUS |
+                PlaybackState.ACTION_PLAY |
+                PlaybackState.ACTION_PLAY_PAUSE |
+                PlaybackState.ACTION_PAUSE |
+                PlaybackState.ACTION_STOP;
     }
 
     private void setupAlarms() {
@@ -676,12 +710,14 @@ public class MusicPlaybackService extends Service implements
                 break;
             case KeyEvent.KEYCODE_MEDIA_NEXT:
                 if (BuildConfig.DEBUG) Log.d(TAG, KeyEvent.keyCodeToString(keyCode));
+                next();
                 break;
             case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
                 if (BuildConfig.DEBUG) Log.d(TAG, KeyEvent.keyCodeToString(keyCode));
+                previous();
                 break;
             default:
-                if (BuildConfig.DEBUG) Log.w(TAG, "Unknown keycode provided: " + KeyEvent.keyCodeToString(keyCode));
+                if (BuildConfig.DEBUG) Log.w(TAG, "Unknown KeyCode provided: " + KeyEvent.keyCodeToString(keyCode));
                 break;
         }
     }
@@ -730,15 +766,8 @@ public class MusicPlaybackService extends Service implements
         }
 
 
-        long playBackStateActions =
-                PlaybackState.ACTION_PLAY |
-                        PlaybackState.ACTION_PLAY_PAUSE |
-                        PlaybackState.ACTION_PLAY_FROM_MEDIA_ID |
-                        PlaybackState.ACTION_PAUSE |
-                        PlaybackState.ACTION_STOP;
-
         PlaybackState.Builder stateBuilder = new PlaybackState.Builder()
-                .setActions(playBackStateActions)
+                .setActions(getPlaybackStateActions())
                 .setActiveQueueItemId(musicPlaybackState.getQueuePos());
 
         switch (state) {
@@ -767,10 +796,10 @@ public class MusicPlaybackService extends Service implements
                 return;
         }
 
-        // @TODO debugging
         PlaybackState newState = stateBuilder.build();
         mediaSession.setPlaybackState(newState);
 
+        // @TODO debugging
         playbackState = mediaController.getPlaybackState();
         if (playbackState == null) {
             if (BuildConfig.DEBUG) Log.w(TAG, "No play state found");
@@ -832,7 +861,7 @@ public class MusicPlaybackService extends Service implements
 
         // check if MusicPlayer has a known musicId (initialised)
         // don't save if not
-        int pos = getCurrentQueuePos();
+        int pos = musicPlaybackState.getQueuePos();
         if (pos == UNKNOWN_POS) {
             return;
         }
@@ -1006,7 +1035,7 @@ public class MusicPlaybackService extends Service implements
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                 if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
 
-                setVolume(0.2f, 0.2f);
+                setVolume(0.4f, 0.4f);
                 break;
             default:
                 if (BuildConfig.DEBUG) Log.wtf(TAG, "VERY BAD HAPPENED");
@@ -1065,7 +1094,6 @@ public class MusicPlaybackService extends Service implements
                 default:
                     if (BuildConfig.DEBUG) Log.d(TAG, "Unknown message code: " + String.valueOf(msg.what));
             }
-
         }
     }
 
@@ -1119,6 +1147,20 @@ public class MusicPlaybackService extends Service implements
             if (BuildConfig.DEBUG) Log.d(TAG, "reset");
 
             musicPlaybackService.get().reset();
+        }
+
+        @Override
+        public void next() throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "next");
+
+            musicPlaybackService.get().next();
+        }
+
+        @Override
+        public void previous() throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "previous");
+
+            musicPlaybackService.get().previous();
         }
 
         @Override

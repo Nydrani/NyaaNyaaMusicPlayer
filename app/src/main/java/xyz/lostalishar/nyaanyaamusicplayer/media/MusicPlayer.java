@@ -5,6 +5,7 @@ import android.media.MediaPlayer;
 import android.util.Log;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
@@ -20,12 +21,12 @@ public class MusicPlayer implements
 
     private MediaPlayer mediaPlayer;
 
-    private MusicPlaybackService service;
+    private WeakReference<MusicPlaybackService> service;
 
     public MusicPlayer(MusicPlaybackService service) {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        this.service = service;
+        this.service = new WeakReference<>(service);
 
         initMediaPlayer();
     }
@@ -125,11 +126,7 @@ public class MusicPlayer implements
     public void onCompletion(MediaPlayer mp) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCompletion");
 
-        int nextQueuePos = (service.getCurrentQueuePos() + 1) % service.getQueue().size();
-
-        service.reset();
-        service.load(nextQueuePos);
-        service.play();
+        service.get().next();
     }
 
 
