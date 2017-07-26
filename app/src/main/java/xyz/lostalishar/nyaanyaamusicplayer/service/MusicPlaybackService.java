@@ -559,9 +559,6 @@ public class MusicPlaybackService extends Service implements
         mediaSession = new MediaSession(this, TAG);
 
         MediaSession.Callback mediaSessionCallback = new MediaSession.Callback() {
-            private final String TAG = MusicPlaybackService.class.getSimpleName();
-
-
             @Override
             public void onPlay() {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onPlay");

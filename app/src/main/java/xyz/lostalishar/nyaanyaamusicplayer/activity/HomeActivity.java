@@ -68,7 +68,7 @@ public class HomeActivity extends BaseActivity {
                 Toast.makeText(this, R.string.app_name, Toast.LENGTH_LONG).show();
                 return true;
             default:
-                if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item");
+                if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);
                 break;
         }
         return super.onOptionsItemSelected(item);

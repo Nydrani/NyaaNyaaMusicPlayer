@@ -110,6 +110,7 @@ public class MusicListFragment extends Fragment implements LoaderManager.LoaderC
         activity.unregisterReceiver(listRefreshListener);
     }
 
+
     //=========================================================================
     // LoaderManager.LoaderCallbacks
     //=========================================================================
