@@ -17,7 +17,6 @@ import java.util.List;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.LibraryPagerAdapter;
-import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 
 /**
@@ -30,6 +29,7 @@ public class LibraryFragment extends Fragment {
     private List<LibraryPagerAdapter.PageHolder> pageList;
     private LibraryPagerAdapter adapter;
     private ViewPager viewPager;
+    private TabLayout.OnTabSelectedListener tabSelectedListener;
     private TextView pauseBox;
 
     public static LibraryFragment newInstance() {
@@ -52,6 +52,29 @@ public class LibraryFragment extends Fragment {
 
         pageList = generatePageList();
         adapter = new LibraryPagerAdapter(activity, getChildFragmentManager(), pageList);
+
+        tabSelectedListener = new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (BuildConfig.DEBUG) Log.d(TAG, "onTabSelected");
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                if (BuildConfig.DEBUG) Log.d(TAG, "onTabUnselected");
+
+                BaseFragment frag = (BaseFragment)adapter.getItem(tab.getPosition());
+
+                if (frag.adapter.isCABOpen()) {
+                    frag.adapter.finishCAB();
+                }
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                if (BuildConfig.DEBUG) Log.d(TAG, "onTabReselected");
+            }
+        };
     }
 
     @Override
@@ -64,8 +87,9 @@ public class LibraryFragment extends Fragment {
         pauseBox = (TextView) rootView.findViewById(R.id.fragment_library_bottom_bar);
         TabLayout tabLayout = (TabLayout)viewPager.findViewById(R.id.fragment_library_tab_layout);
 
-        tabLayout.setupWithViewPager(viewPager);
         viewPager.setAdapter(adapter);
+        tabLayout.addOnTabSelectedListener(tabSelectedListener);
+        tabLayout.setupWithViewPager(viewPager);
 
         // @TODO quick code to update the pause box (fix later)
         updatePauseBox();
@@ -104,17 +128,16 @@ public class LibraryFragment extends Fragment {
         if (BuildConfig.DEBUG) Log.d(TAG, "generatePageList");
 
         List<LibraryPagerAdapter.PageHolder> pageList = new ArrayList<>();
+        Activity activity = getActivity();
 
         LibraryPagerAdapter.PageHolder page = new LibraryPagerAdapter.PageHolder();
-        page.fname = MusicListFragment.class.getName();
+        page.fragment = Fragment.instantiate(activity, MusicListFragment.class.getName());
         page.sname = getString(R.string.fragment_name_music_list);
-
         pageList.add(page);
 
         page = new LibraryPagerAdapter.PageHolder();
-        page.fname = MusicQueueFragment.class.getName();
+        page.fragment = Fragment.instantiate(activity, MusicQueueFragment.class.getName());
         page.sname = getString(R.string.fragment_name_queue);
-
         pageList.add(page);
 
         return pageList;

@@ -9,6 +9,7 @@ import android.util.Log;
 import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 
 /**
  * FragmentPager adapter used for the swipe tabs in the home screen
@@ -39,7 +40,7 @@ public class LibraryPagerAdapter extends FragmentPagerAdapter {
 
         PageHolder page = holderList.get(position);
 
-        return Fragment.instantiate(context, page.fname);
+        return page.fragment;
     }
 
     @Override
@@ -60,7 +61,7 @@ public class LibraryPagerAdapter extends FragmentPagerAdapter {
     public static class PageHolder {
         private static final String TAG = PageHolder.class.getSimpleName();
 
-        public String fname;
+        public Fragment fragment;
         public String sname;
 
         public PageHolder() {
