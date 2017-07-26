@@ -3,16 +3,15 @@ package xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.ActionMode;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.ref.WeakReference;
+
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
+import xyz.lostalishar.nyaanyaamusicplayer.adapter.BaseAdapter;
 
 /**
  * ViewHolder for music list
@@ -25,14 +24,16 @@ public abstract class BaseMusicViewHolder extends RecyclerView.ViewHolder
     public TextView musicTitle;
     public TextView musicDescription;
 
-    private ActionMode actionMode;
-    private ActionMode.Callback actionModeCallback;
+    public WeakReference<BaseAdapter<? extends BaseMusicViewHolder>> adapter;
 
     public BaseMusicDataHolder musicDataHolder;
 
-    protected BaseMusicViewHolder(View view) {
+    protected BaseMusicViewHolder(View view, BaseAdapter<? extends BaseMusicViewHolder> adapter) {
         super(view);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
+
+        // get reference to adapter
+        this.adapter = new WeakReference<BaseAdapter<? extends BaseMusicViewHolder>>(adapter);
 
         musicTitle = (TextView) view.findViewById(R.id.music_name);
         musicDescription = (TextView) view.findViewById(R.id.music_description);
@@ -44,53 +45,6 @@ public abstract class BaseMusicViewHolder extends RecyclerView.ViewHolder
         // @TODO fix this up soon lmao
         view.setOnClickListener(this);
         view.setOnLongClickListener(this);
-
-        // setup action mode callback
-        actionModeCallback = new ActionMode.Callback() {
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                if (BuildConfig.DEBUG) Log.d(TAG, "onCreateActionMode");
-
-                MenuInflater inflater = mode.getMenuInflater();
-                inflater.inflate(R.menu.context_music_list, menu);
-
-                return true;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                if (BuildConfig.DEBUG) Log.d(TAG, "onPrepareActionMode");
-
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                if (BuildConfig.DEBUG) Log.d(TAG, "onActionItemClicked");
-
-                int id = item.getItemId();
-
-                switch (id) {
-                    case R.id.actionbar_details:
-                        mode.finish(); // Action picked, so close the CAB
-                        return true;
-                    case R.id.actionbar_about:
-                        mode.finish(); // Action picked, so close the CAB
-                        return true;
-                    default:
-                        if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);
-                }
-
-                return false;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-                if (BuildConfig.DEBUG) Log.d(TAG, "onDestroyActionMode");
-
-                actionMode = null;
-            }
-        };
     }
 
 
@@ -103,10 +57,7 @@ public abstract class BaseMusicViewHolder extends RecyclerView.ViewHolder
         if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
 
         // finish action mode here
-        if (actionMode != null) {
-            actionMode.finish();
-        }
-
+        adapter.get().finishCAB();
     }
 
     @Override
@@ -122,10 +73,8 @@ public abstract class BaseMusicViewHolder extends RecyclerView.ViewHolder
                     }
                 }).show();
 
-        if (actionMode == null) {
-            v.setSelected(true);
-            actionMode = v.startActionMode(actionModeCallback);
-        }
+        // open action mode here
+        adapter.get().openCAB(v);
 
         return true;
     }

@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.View;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
+import xyz.lostalishar.nyaanyaamusicplayer.adapter.BaseAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 
 /**
@@ -13,8 +14,8 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 public class QueueViewHolder extends BaseMusicViewHolder {
     private static final String TAG = QueueViewHolder.class.getSimpleName();
 
-    public QueueViewHolder(View view) {
-        super(view);
+    public QueueViewHolder(View view, BaseAdapter<QueueViewHolder> adapter) {
+        super(view, adapter);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         // onclick for each item
@@ -29,10 +30,16 @@ public class QueueViewHolder extends BaseMusicViewHolder {
 
     @Override
     public void onClick(View v) {
-        super.onClick(v);
         if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
 
         // remove song
-        MusicUtils.removeFromQueue(getAdapterPosition());
+        if (!(adapter.get().isCABOpen())) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "removing item from queue");
+
+            MusicUtils.removeFromQueue(getAdapterPosition());
+        }
+
+        // close cab
+        super.onClick(v);
     }
 }
