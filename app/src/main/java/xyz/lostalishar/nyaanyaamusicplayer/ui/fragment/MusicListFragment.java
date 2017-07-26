@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -14,6 +15,7 @@ import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.MusicAdapter;
+import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicListLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
@@ -66,6 +68,20 @@ public class MusicListFragment extends BaseFragment {
 
         Activity activity = getActivity();
         activity.unregisterReceiver(listRefreshListener);
+    }
+
+
+    //=========================================================================
+    // LoaderManager.LoaderCallbacks
+    //=========================================================================
+
+    @Override
+    public Loader<List<Music>> onCreateLoader(int id, Bundle args) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateLoader");
+
+        Activity activity = getActivity();
+
+        return new MusicListLoader(activity);
     }
 
 

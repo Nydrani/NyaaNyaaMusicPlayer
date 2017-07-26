@@ -19,7 +19,6 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.BaseAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.BaseMusicViewHolder;
-import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicListLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 
 /**
@@ -77,15 +76,6 @@ public abstract class BaseFragment extends Fragment implements LoaderManager.Loa
     //=========================================================================
     // LoaderManager.LoaderCallbacks
     //=========================================================================
-
-    @Override
-    public Loader<List<Music>> onCreateLoader(int id, Bundle args) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateLoader");
-
-        Activity activity = getActivity();
-
-        return new MusicListLoader(activity);
-    }
 
     @Override
     public void onLoadFinished(Loader<List<Music>> loader, List<Music> data) {
