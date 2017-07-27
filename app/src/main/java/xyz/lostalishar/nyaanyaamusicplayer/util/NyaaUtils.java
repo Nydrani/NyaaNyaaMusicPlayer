@@ -24,6 +24,8 @@ public class NyaaUtils {
 
     public static final String PACKAGE_NAME = "xyz.lostalishar.nyaanyaamusicplayer";
     public static final String QUEUE_CHANGED = PACKAGE_NAME + ".queuechanged";
+    public static final String META_CHANGED = PACKAGE_NAME + ".metachanged";
+
     public static final String REFRESH = PACKAGE_NAME + ".refresh";
 
     public NyaaUtils() {

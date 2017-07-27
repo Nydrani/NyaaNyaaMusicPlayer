@@ -49,6 +49,7 @@ public class MusicQueueFragment extends BaseFragment {
 
         adapter = new QueueAdapter(queueList);
         filter = new IntentFilter(NyaaUtils.QUEUE_CHANGED);
+        filter.addAction(NyaaUtils.META_CHANGED);
         queueUpdateListener = new QueueUpdateListener(this);
     }
 
@@ -95,6 +96,12 @@ public class MusicQueueFragment extends BaseFragment {
         getLoaderManager().restartLoader(0, null, this);
     }
 
+    private void notifyMetaChanged() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "notifyMetaChanged");
+
+        adapter.notifyDataSetChanged();
+    }
+
 
     //=========================================================================
     // Internal classes
@@ -119,6 +126,8 @@ public class MusicQueueFragment extends BaseFragment {
 
             if (action.equals(NyaaUtils.QUEUE_CHANGED)) {
                 reference.get().refreshQueue();
+            } else if (action.equals(NyaaUtils.META_CHANGED)) {
+                reference.get().notifyMetaChanged();
             }
         }
     }

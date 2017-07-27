@@ -297,6 +297,7 @@ public class MusicPlaybackService extends Service implements
             // store song id on success
             // musicPlayer.musicId = musicId;
             musicPlaybackState.setQueuePos(queuePos);
+            NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
 
             updateMediaSession("STOP");
         } catch (IOException e) {
