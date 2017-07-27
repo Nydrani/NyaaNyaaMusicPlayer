@@ -101,7 +101,7 @@ public class MusicListFragment extends BaseFragment {
     //=========================================================================
 
     private static final class ListRefreshListener extends BroadcastReceiver {
-        private static final String TAG = MusicListFragment.ListRefreshListener.class.getSimpleName();
+        private static final String TAG = ListRefreshListener.class.getSimpleName();
 
         private WeakReference<MusicListFragment> reference;
 

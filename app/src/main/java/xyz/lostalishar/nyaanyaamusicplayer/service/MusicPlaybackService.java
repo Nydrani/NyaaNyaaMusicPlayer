@@ -330,11 +330,13 @@ public class MusicPlaybackService extends Service implements
             //   3. enable listening to play/pause buttons from quick settings/hardware buttons
             //   4. update the notification
             //   5. don't get killed by OS
-            //   6. save current playback state
+            //   6. send notification of meta changing to UI
+            //   7. save current playback state
             cancelDelayedShutdown();
             updateMediaSession("PLAY");
             mediaSession.setActive(true);
             startForeground(MUSIC_NOTIFICATION_ID, buildNotification());
+            NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
             savePlaybackState();
         } catch (IllegalStateException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Called start in illegal state");
@@ -350,6 +352,7 @@ public class MusicPlaybackService extends Service implements
             scheduleDelayedShutdown();
             updateMediaSession("PAUSE");
             stopForeground(true);
+            NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
             savePlaybackState();
         } catch (IllegalStateException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Called pause in illegal state");
@@ -366,6 +369,7 @@ public class MusicPlaybackService extends Service implements
             updateMediaSession("STOP");
             mediaSession.setActive(false);
             stopForeground(true);
+            NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
             savePlaybackState();
             audioManager.abandonAudioFocus(this);
         } catch (IllegalStateException e) {

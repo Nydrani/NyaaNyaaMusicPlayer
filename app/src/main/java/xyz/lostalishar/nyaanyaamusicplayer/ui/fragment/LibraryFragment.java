@@ -2,6 +2,10 @@ package xyz.lostalishar.nyaanyaamusicplayer.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -11,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +23,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.LibraryPagerAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
+import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
 /**
  * Fragment containing entire list of music on device
@@ -31,6 +37,9 @@ public class LibraryFragment extends Fragment {
     private ViewPager viewPager;
     private TabLayout.OnTabSelectedListener tabSelectedListener;
     private TextView pauseBox;
+
+    private IntentFilter filter;
+    private MetaChangedListener metaChangedListener;
 
     public static LibraryFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -75,6 +84,9 @@ public class LibraryFragment extends Fragment {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onTabReselected");
             }
         };
+
+        filter = new IntentFilter(NyaaUtils.META_CHANGED);
+        metaChangedListener = new MetaChangedListener(this);
     }
 
     @Override
@@ -91,8 +103,9 @@ public class LibraryFragment extends Fragment {
         tabLayout.addOnTabSelectedListener(tabSelectedListener);
         tabLayout.setupWithViewPager(viewPager);
 
-        // @TODO quick code to update the pause box (fix later)
-        updatePauseBox();
+        // update all meta ui components
+        updateMetaUI();
+
         pauseBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,8 +117,6 @@ public class LibraryFragment extends Fragment {
                     MusicUtils.resume();
                     // @TODO resume when already playing. start when not loaded
                 }
-
-                updatePauseBox();
             }
         });
 
@@ -113,10 +124,21 @@ public class LibraryFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onViewCreated");
+    public void onResume() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
+        super.onResume();
 
-        super.onViewCreated(view, savedInstanceState);
+        Activity activity = getActivity();
+        activity.registerReceiver(metaChangedListener, filter);
+    }
+
+    @Override
+    public void onPause() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onPause");
+        super.onPause();
+
+        Activity activity = getActivity();
+        activity.unregisterReceiver(metaChangedListener);
     }
 
 
@@ -150,6 +172,40 @@ public class LibraryFragment extends Fragment {
             pauseBox.setText(getString(R.string.fragment_library_bottom_bar_pause));
         } else {
             pauseBox.setText(getString(R.string.fragment_library_bottom_bar_play));
+        }
+    }
+
+    private void updateMetaUI() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updateMetaUI");
+
+        updatePauseBox();
+    }
+
+
+    //=========================================================================
+    // Internal classes
+    //=========================================================================
+
+    private static final class MetaChangedListener extends BroadcastReceiver {
+        private static final String TAG = MetaChangedListener.class.getSimpleName();
+
+        private WeakReference<LibraryFragment> reference;
+
+        public MetaChangedListener(LibraryFragment libraryFragment) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
+
+            reference = new WeakReference<>(libraryFragment);
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "onReceive");
+
+            final String action = intent.getAction();
+
+            if (action.equals(NyaaUtils.META_CHANGED)) {
+                reference.get().updateMetaUI();
+            }
         }
     }
 }

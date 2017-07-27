@@ -96,8 +96,8 @@ public class MusicQueueFragment extends BaseFragment {
         getLoaderManager().restartLoader(0, null, this);
     }
 
-    private void notifyMetaChanged() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "notifyMetaChanged");
+    private void updateMetaUI() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updateMetaUI");
 
         adapter.notifyDataSetChanged();
     }
@@ -127,7 +127,7 @@ public class MusicQueueFragment extends BaseFragment {
             if (action.equals(NyaaUtils.QUEUE_CHANGED)) {
                 reference.get().refreshQueue();
             } else if (action.equals(NyaaUtils.META_CHANGED)) {
-                reference.get().notifyMetaChanged();
+                reference.get().updateMetaUI();
             }
         }
     }
