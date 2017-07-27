@@ -80,6 +80,11 @@ public class LibraryFragment extends Fragment {
 
                 BaseFragment frag = (BaseFragment)adapter.getItem(tab.getPosition());
 
+                // need to check for null in case of a possible orientation change
+                if (frag.adapter == null) {
+                    return;
+                }
+
                 if (frag.adapter.isCABOpen()) {
                     frag.adapter.finishCAB();
                 }

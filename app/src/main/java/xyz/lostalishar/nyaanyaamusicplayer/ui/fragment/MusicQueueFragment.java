@@ -54,6 +54,7 @@ public class MusicQueueFragment extends BaseFragment {
         List<Music> queueList = new ArrayList<>();
 
         adapter = new QueueAdapter(queueList);
+
         filter = new IntentFilter(NyaaUtils.QUEUE_CHANGED);
         filter.addAction(NyaaUtils.META_CHANGED);
         queueUpdateListener = new QueueUpdateListener(this);
