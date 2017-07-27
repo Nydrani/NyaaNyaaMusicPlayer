@@ -8,7 +8,10 @@
     <string name="actionbar_details">Details</string>
     <string name="actionbar_refresh">Refresh</string>
     <string name="actionbar_remove">Remove</string>
-    <string name="actionbar_remove_all">Remove all</string>
+    <string name="actionbar_clear_queue">Clear queue</string>
+
+    <string name="toast_clear_x_tracks">Cleared %1$d tracks from the queue</string>
+    <string name="toast_choose_track">Choose a track from the queue</string>
 
 
     <string name="dialog_about_message">Ayyy lmaooooo</string>

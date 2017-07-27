@@ -22,6 +22,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.QueueAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicQueueLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
+import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
 /**
@@ -95,8 +96,11 @@ public class MusicQueueFragment extends BaseFragment {
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.actionbar_remove_all:
-                Toast.makeText(getActivity(), R.string.app_name, Toast.LENGTH_SHORT).show();
+            case R.id.actionbar_clear_queue:
+                int numCleared = MusicUtils.clearQueue();
+                String toastFormat = getResources().getString(R.string.toast_clear_x_tracks);
+                String toastMessage = String.format(toastFormat, numCleared);
+                Toast.makeText(getActivity(), toastMessage, Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);

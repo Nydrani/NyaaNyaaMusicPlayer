@@ -205,6 +205,22 @@ public class MusicUtils {
         return MusicPlaybackService.UNKNOWN_ID;
     }
 
+    public static int clearQueue() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "clearQueue");
+
+        if (musicService == null) {
+            return 0;
+        }
+
+        try {
+            return musicService.clearQueue();
+        } catch (RemoteException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
+        }
+
+        return 0;
+    }
+
     public static MusicPlaybackState getState() {
         if (BuildConfig.DEBUG) Log.d(TAG, "getState");
 

@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/actionbar_remove_all"
-        android:title="@string/actionbar_remove_all" />
+        android:id="@+id/actionbar_clear_queue"
+        android:title="@string/actionbar_clear_queue" />
 
 </menu>

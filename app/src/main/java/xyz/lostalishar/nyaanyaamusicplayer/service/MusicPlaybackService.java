@@ -127,11 +127,11 @@ public class MusicPlaybackService extends Service implements
         setupNotification();
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
-        // restore previous playback state
-        loadPlaybackState();
-
         // restore playback queue
         loadPlaybackQueue();
+
+        // restore previous playback state
+        loadPlaybackState();
 
         // schedule shutdown for idle service
         scheduleDelayedShutdown();
@@ -408,6 +408,7 @@ public class MusicPlaybackService extends Service implements
         updateMediaSession("RESET");
         mediaSession.setActive(false);
         stopForeground(true);
+        NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
         audioManager.abandonAudioFocus(this);
     }
 
@@ -463,9 +464,16 @@ public class MusicPlaybackService extends Service implements
             return UNKNOWN_ID;
         }
 
-        long id = musicQueue.get(pos).getId();
+        // reset music player only if chosen was currently playing
+        if (pos == musicPlaybackState.getQueuePos()) {
+            reset();
+        }
 
+        long id = musicQueue.get(pos).getId();
         musicQueue.remove(pos);
+        updatePlaybackState();
+
+
         NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
 
         // @TODO for now update queue database in here (change to use message handling later)
@@ -479,6 +487,31 @@ public class MusicPlaybackService extends Service implements
         // savePlaybackQueue();
 
         return id;
+    }
+
+    public int clearQueue() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "clearQueue");
+
+        // reset music player to unload current playing track
+        reset();
+
+        int numCleared = musicQueue.size();
+        musicQueue.clear();
+        updatePlaybackState();
+
+        NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
+
+        // @TODO for now update queue database in here (change to use message handling later)
+        // updatePlaybackQueue(false, track);
+        databaseHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                savePlaybackQueue();
+            }
+        });
+        // savePlaybackQueue();
+
+        return numCleared;
     }
 
     public boolean isPlaying() {
@@ -857,13 +890,6 @@ public class MusicPlaybackService extends Service implements
     private void savePlaybackState() {
         if (BuildConfig.DEBUG) Log.d(TAG, "savePlaybackState");
 
-        // check if MusicPlayer has a known musicId (initialised)
-        // don't save if not
-        int pos = musicPlaybackState.getQueuePos();
-        if (pos == UNKNOWN_POS) {
-            return;
-        }
-
         // update the current playback seek position
         musicPlaybackState.setSeekPos(getCurrentPosition());
         PreferenceUtils.saveCurPlaying(this, musicPlaybackState);
@@ -992,6 +1018,24 @@ public class MusicPlaybackService extends Service implements
             } catch (OperationApplicationException e) {
                 if (BuildConfig.DEBUG) Log.d(TAG, "OperationApplicationException: " + e);
             }
+        }
+    }
+
+    private void updatePlaybackState() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updatePlaybackState");
+
+        int queueSize = musicQueue.size();
+        int queuePos = musicPlaybackState.getQueuePos();
+
+        // if no items in queue: set unknown queue position
+        // else if position is >= than size of queue: set queue position to 0
+        if (queueSize == 0) {
+            musicPlaybackState.setQueuePos(UNKNOWN_POS);
+        } else if (queuePos >= queueSize) {
+            musicPlaybackState.setQueuePos(0);
+            load(0);
+        } else {
+            load(queuePos);
         }
     }
 
@@ -1187,6 +1231,13 @@ public class MusicPlaybackService extends Service implements
             if (BuildConfig.DEBUG) Log.d(TAG, "removeFromQueue");
 
             return musicPlaybackService.get().removeFromQueue(pos);
+        }
+
+        @Override
+        public int clearQueue() throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "clearQueue");
+
+            return musicPlaybackService.get().clearQueue();
         }
 
         @Override

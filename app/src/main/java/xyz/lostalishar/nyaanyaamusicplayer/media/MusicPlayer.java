@@ -46,6 +46,8 @@ public class MusicPlayer implements
     public void start() throws IllegalStateException {
         if (BuildConfig.DEBUG) Log.d(TAG, "start");
 
+        // @TODO apparently this doesnt actually throw an IllegalStateException
+        // @TODO as a result, it breaks the app. fml
         mediaPlayer.start();
     }
 
