@@ -1,7 +1,11 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -40,5 +44,40 @@ public class MusicAdapter extends BaseAdapter<MusicListViewHolder> {
         View v = inflater.inflate(R.layout.list_layout_music, parent, false);
 
         return new MusicListViewHolder(v, this);
+    }
+
+
+    // ========================================================================
+    // ActionMode.Callback overrides
+    // ========================================================================
+
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateActionMode");
+
+        MenuInflater inflater = mode.getMenuInflater();
+        inflater.inflate(R.menu.context_music_list, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onActionItemClicked");
+
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.actionbar_details:
+                mode.finish();
+                return true;
+            case R.id.actionbar_about:
+                mode.finish();
+                return true;
+            default:
+                if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);
+        }
+
+        return false;
     }
 }

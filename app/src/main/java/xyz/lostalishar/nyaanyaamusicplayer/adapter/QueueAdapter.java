@@ -2,7 +2,11 @@ package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
 import android.graphics.Color;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -63,5 +67,41 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
         } else if (holder.itemView.getBackground() != null) {
             holder.itemView.setBackground(null);
         }
+    }
+
+
+    // ========================================================================
+    // ActionMode.Callback overrides
+    // ========================================================================
+
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateActionMode");
+
+        MenuInflater inflater = mode.getMenuInflater();
+        inflater.inflate(R.menu.context_music_queue, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onActionItemClicked");
+
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.actionbar_details:
+                mode.finish();
+                return true;
+            case R.id.actionbar_remove:
+                MusicUtils.removeFromQueue(chosenItem);
+                mode.finish();
+                return true;
+            default:
+                if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);
+        }
+
+        return false;
     }
 }

@@ -74,7 +74,7 @@ public abstract class BaseMusicViewHolder extends RecyclerView.ViewHolder
                 }).show();
 
         // open action mode here
-        adapter.get().openCAB(v);
+        adapter.get().openCAB(v, getAdapterPosition());
 
         return true;
     }
