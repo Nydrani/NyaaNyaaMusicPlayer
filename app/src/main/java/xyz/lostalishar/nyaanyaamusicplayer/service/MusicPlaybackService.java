@@ -472,7 +472,7 @@ public class MusicPlaybackService extends Service implements
         long id = musicQueue.get(pos).getId();
         musicQueue.remove(pos);
         updatePlaybackState();
-
+        savePlaybackState();
 
         NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
 
@@ -498,6 +498,7 @@ public class MusicPlaybackService extends Service implements
         int numCleared = musicQueue.size();
         musicQueue.clear();
         updatePlaybackState();
+        savePlaybackState();
 
         NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
 
