@@ -15,7 +15,6 @@ import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.QueueAdapter;
-import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicListLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicQueueLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;

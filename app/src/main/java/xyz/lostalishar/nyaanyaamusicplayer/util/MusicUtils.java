@@ -61,6 +61,23 @@ public class MusicUtils {
     }
 
 
+    public static boolean load(int queuePos) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "load");
+
+        if (musicService == null) {
+            return false;
+        }
+
+        try {
+            musicService.reset();
+            return musicService.load(queuePos);
+        } catch (RemoteException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
+        }
+
+        return false;
+    }
+
     public static void play(long songId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "play");
 

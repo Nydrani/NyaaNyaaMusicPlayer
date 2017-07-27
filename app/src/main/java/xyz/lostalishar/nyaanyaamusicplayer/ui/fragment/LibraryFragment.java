@@ -101,7 +101,7 @@ public class LibraryFragment extends Fragment {
                 if (MusicUtils.isPlaying()) {
                     MusicUtils.pause();
                 } else {
-                    MusicUtils.start();
+                    MusicUtils.resume();
                     // @TODO resume when already playing. start when not loaded
                 }
 
