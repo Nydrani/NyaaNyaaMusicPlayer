@@ -54,10 +54,14 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
         // @TODO update background color if current position is playing
         // @TODO change to something with better UI design later lmao
         MusicPlaybackState state = MusicUtils.getState();
-        if (state != null && state.getQueuePos() == position) {
+        if (state == null) {
+            return;
+        }
+
+        if (state.getQueuePos() == position) {
             holder.itemView.setBackgroundColor(Color.RED);
-        } else {
-            holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+        } else if (holder.itemView.getBackground() != null) {
+            holder.itemView.setBackground(null);
         }
     }
 }
