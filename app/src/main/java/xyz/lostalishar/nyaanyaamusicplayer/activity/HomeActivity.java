@@ -12,7 +12,6 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.LibraryFragment;
-import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
 public class HomeActivity extends BaseActivity {
     private static final String TAG = HomeActivity.class.getSimpleName();
@@ -32,7 +31,7 @@ public class HomeActivity extends BaseActivity {
 
 
     //=========================================================================
-    // Activity menu callbacks
+    // Options menu callbacks
     //=========================================================================
 
     @Override
@@ -54,12 +53,6 @@ public class HomeActivity extends BaseActivity {
             case R.id.actionbar_homelink:
                 Snackbar.make(findViewById(android.R.id.content), "Replace with your own action", Snackbar.LENGTH_LONG)
                         .show();
-                return true;
-            case R.id.actionbar_refresh:
-                refreshFragments();
-                return true;
-            case R.id.actionbar_library:
-                setFragment(LibraryFragment.newInstance());
                 return true;
             case R.id.actionbar_about:
                 setDialogFragment(AboutDialogFragment.newInstance());
@@ -86,11 +79,5 @@ public class HomeActivity extends BaseActivity {
         super.initialise();
 
         setFragment(LibraryFragment.newInstance());
-    }
-
-    protected void refreshFragments() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "refreshFragments");
-
-        NyaaUtils.notifyChange(this, NyaaUtils.REFRESH);
     }
 }

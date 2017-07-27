@@ -42,6 +42,7 @@ public abstract class BaseFragment extends Fragment implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
 
         Activity activity = getActivity();
+        setHasOptionsMenu(true);
 
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
     }

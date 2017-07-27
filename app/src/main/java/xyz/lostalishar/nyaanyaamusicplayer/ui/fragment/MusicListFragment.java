@@ -1,23 +1,21 @@
 package xyz.lostalishar.nyaanyaamusicplayer.ui.fragment;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
+import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.MusicAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicListLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
-import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
 /**
  * Fragment containing entire list of music on device
@@ -25,9 +23,6 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
 public class MusicListFragment extends BaseFragment {
     private static final String TAG = MusicListFragment.class.getSimpleName();
-
-    private IntentFilter filter;
-    private ListRefreshListener listRefreshListener;
 
     public static MusicListFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -48,26 +43,35 @@ public class MusicListFragment extends BaseFragment {
         List<Music> musicList = new ArrayList<>();
 
         adapter = new MusicAdapter(musicList);
-        filter = new IntentFilter(NyaaUtils.REFRESH);
-        listRefreshListener = new ListRefreshListener(this);
+    }
+
+
+    //=========================================================================
+    // Options menu callbacks
+    //=========================================================================
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateOptionsMenu");
+
+        inflater.inflate(R.menu.list, menu);
     }
 
     @Override
-    public void onResume() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
-        super.onResume();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onOptionsItemSelected");
 
-        Activity activity = getActivity();
-        activity.registerReceiver(listRefreshListener, filter);
-    }
+        int id = item.getItemId();
 
-    @Override
-    public void onPause() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onPause");
-        super.onPause();
-
-        Activity activity = getActivity();
-        activity.unregisterReceiver(listRefreshListener);
+        switch (id) {
+            case R.id.actionbar_refresh:
+                refreshList();
+                return true;
+            default:
+                if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -93,33 +97,5 @@ public class MusicListFragment extends BaseFragment {
         if (BuildConfig.DEBUG) Log.d(TAG, "refreshList");
 
         getLoaderManager().restartLoader(0, null, this);
-    }
-
-
-    //=========================================================================
-    // Internal classes
-    //=========================================================================
-
-    private static final class ListRefreshListener extends BroadcastReceiver {
-        private static final String TAG = ListRefreshListener.class.getSimpleName();
-
-        private WeakReference<MusicListFragment> reference;
-
-        public ListRefreshListener(MusicListFragment musicListFragment) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
-
-            reference = new WeakReference<>(musicListFragment);
-        }
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "onReceive");
-
-            final String action = intent.getAction();
-
-            if (action.equals(NyaaUtils.REFRESH)) {
-                reference.get().refreshList();
-            }
-        }
     }
 }

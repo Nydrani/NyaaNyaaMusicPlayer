@@ -8,16 +8,6 @@
         android:enabled="false" />
 
     <item
-        android:id="@+id/actionbar_refresh"
-        android:icon="@android:drawable/ic_menu_help"
-        android:title="@string/actionbar_refresh"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/actionbar_library"
-        android:title="@string/actionbar_library" />
-
-    <item
         android:id="@+id/actionbar_about"
         android:title="@string/actionbar_about" />
 

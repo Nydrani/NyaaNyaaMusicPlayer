@@ -8,12 +8,17 @@ import android.content.IntentFilter;
 import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
+import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.QueueAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicQueueLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
@@ -69,6 +74,35 @@ public class MusicQueueFragment extends BaseFragment {
 
         Activity activity = getActivity();
         activity.unregisterReceiver(queueUpdateListener);
+    }
+
+
+    //=========================================================================
+    // Options menu callbacks
+    //=========================================================================
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateOptionsMenu");
+
+        inflater.inflate(R.menu.queue, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onOptionsItemSelected");
+
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.actionbar_remove_all:
+                Toast.makeText(getActivity(), R.string.app_name, Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 
