@@ -98,10 +98,7 @@ public class MusicQueueFragment extends BaseFragment {
 
         switch (id) {
             case R.id.actionbar_clear_queue:
-                int numCleared = MusicUtils.clearQueue();
-                String toastFormat = getResources().getString(R.string.toast_clear_x_tracks);
-                String toastMessage = String.format(toastFormat, numCleared);
-                Toast.makeText(getActivity(), toastMessage, Toast.LENGTH_SHORT).show();
+                clearQueue();
                 return true;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);
@@ -139,6 +136,25 @@ public class MusicQueueFragment extends BaseFragment {
         if (BuildConfig.DEBUG) Log.d(TAG, "updateMetaUI");
 
         adapter.notifyDataSetChanged();
+    }
+
+    private void clearQueue() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "clearQueue");
+
+        List<Music> musicList = adapter.getMusicList();
+        int musicListSize = musicList.size();
+
+        int[] posArray = new int[musicListSize];
+        for (int i = 0; i < musicListSize; i++) {
+            posArray[i] = i;
+        }
+
+        int numCleared = MusicUtils.dequeue(posArray, null);
+        if (BuildConfig.DEBUG) Log.d(TAG, "Number dequeued: " + numCleared);
+
+        String toastFormat = getResources().getString(R.string.toast_clear_x_tracks);
+        String toastMessage = String.format(toastFormat, numCleared);
+        Toast.makeText(getActivity(), toastMessage, Toast.LENGTH_SHORT).show();
     }
 
 
