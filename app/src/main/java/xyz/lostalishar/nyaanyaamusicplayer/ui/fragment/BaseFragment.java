@@ -82,6 +82,7 @@ public abstract class BaseFragment extends Fragment implements LoaderManager.Loa
     public void onLoadFinished(Loader<List<Music>> loader, List<Music> data) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadFinished");
 
+        adapter.finishCAB();
         adapter.swap(data);
     }
 
@@ -89,6 +90,7 @@ public abstract class BaseFragment extends Fragment implements LoaderManager.Loa
     public void onLoaderReset(Loader<List<Music>> loader) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
+        adapter.finishCAB();
         adapter.swap(null);
     }
 }
