@@ -489,6 +489,102 @@ public class MusicPlaybackService extends Service implements
         return id;
     }
 
+    public int enqueue(long[] musicIdList, int[] addedList) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "enqueue");
+
+        List<MusicPlaybackTrack> tracks = new ArrayList<>();
+
+        for (long musicId : musicIdList) {
+            MusicPlaybackTrack track = new MusicPlaybackTrack(musicId);
+
+            if (musicQueue.contains(track)) {
+                break;
+            }
+
+            tracks.add(track);
+        }
+
+        if (!musicQueue.addAll(tracks)) {
+            return UNKNOWN_POS;
+        }
+
+        // send back int[] of added tracks if success
+        if (addedList != null) {
+            for (int i = 0; i < tracks.size(); i++) {
+                addedList[i] = musicQueue.indexOf(tracks.get(i));
+            }
+        }
+
+        // update service
+        NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
+
+        // @TODO for now update queue database in here (change to use message handling later)
+        //updatePlaybackQueue(true, track);
+        databaseHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                savePlaybackQueue();
+            }
+        });
+        // savePlaybackQueue();
+
+        return tracks.size();
+    }
+
+    public int dequeue(int[] posList, long[] removedList) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "dequeue");
+
+        List<MusicPlaybackTrack> tracks = new ArrayList<>();
+
+        // early exit if there are no items in the queue
+        if (posList.length == 0) {
+            return UNKNOWN_POS;
+        }
+
+        for (int pos : posList) {
+            // reset music player only if chosen was currently playing
+            if (pos == musicPlaybackState.getQueuePos()) {
+                reset();
+            }
+
+            try {
+                MusicPlaybackTrack track = musicQueue.get(pos);
+                tracks.add(track);
+            } catch (IndexOutOfBoundsException e) {
+                if (BuildConfig.DEBUG) Log.d(TAG, "Index out of bounds exception while dequeuing");
+            }
+        }
+
+        if (!musicQueue.removeAll(tracks)) {
+            return UNKNOWN_POS;
+        }
+
+        // send back long[] of removed tracks if success
+        if (removedList != null) {
+            for (int i = 0; i < tracks.size(); i++) {
+                removedList[i] = tracks.get(i).getId();
+            }
+        }
+
+        // update service
+        updatePlaybackState();
+        savePlaybackState();
+
+        NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
+
+        // @TODO for now update queue database in here (change to use message handling later)
+        // updatePlaybackQueue(false, track);
+        databaseHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                savePlaybackQueue();
+            }
+        });
+        // savePlaybackQueue();
+
+        return tracks.size();
+    }
+
     public int clearQueue() {
         if (BuildConfig.DEBUG) Log.d(TAG, "clearQueue");
 
@@ -1232,6 +1328,20 @@ public class MusicPlaybackService extends Service implements
             if (BuildConfig.DEBUG) Log.d(TAG, "removeFromQueue");
 
             return musicPlaybackService.get().removeFromQueue(pos);
+        }
+
+        @Override
+        public int enqueue(long[] musicIdList, int[] addedList) throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "enqueue");
+
+            return musicPlaybackService.get().enqueue(musicIdList, addedList);
+        }
+
+        @Override
+        public int dequeue(int[] posList, long[] removedList) throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "dequeue");
+
+            return musicPlaybackService.get().dequeue(posList, removedList);
         }
 
         @Override

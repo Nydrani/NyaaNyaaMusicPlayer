@@ -205,6 +205,38 @@ public class MusicUtils {
         return MusicPlaybackService.UNKNOWN_ID;
     }
 
+    public static int enqueue(long[] musicIdList, int[] addedList) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "enqueue");
+
+        if (musicService == null) {
+            return MusicPlaybackService.UNKNOWN_POS;
+        }
+
+        try {
+            return musicService.enqueue(musicIdList, addedList);
+        } catch (RemoteException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
+        }
+
+        return MusicPlaybackService.UNKNOWN_POS;
+    }
+
+    public static int dequeue(int[] posList, long[] removedList) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "dequeue");
+
+        if (musicService == null) {
+            return MusicPlaybackService.UNKNOWN_POS;
+        }
+
+        try {
+            return musicService.dequeue(posList, removedList);
+        } catch (RemoteException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
+        }
+
+        return MusicPlaybackService.UNKNOWN_POS;
+    }
+
     public static int clearQueue() {
         if (BuildConfig.DEBUG) Log.d(TAG, "clearQueue");
 

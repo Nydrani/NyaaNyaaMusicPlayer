@@ -16,6 +16,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.MusicAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicListLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
+import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 
 /**
  * Fragment containing entire list of music on device
@@ -40,9 +41,7 @@ public class MusicListFragment extends BaseFragment {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
-        List<Music> musicList = new ArrayList<>();
-
-        adapter = new MusicAdapter(musicList);
+        adapter = new MusicAdapter(new ArrayList<Music>());
     }
 
 
@@ -66,6 +65,9 @@ public class MusicListFragment extends BaseFragment {
         switch (id) {
             case R.id.actionbar_refresh:
                 refreshList();
+                return true;
+            case R.id.actionbar_add_all:
+                addAll();
                 return true;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);
@@ -97,5 +99,20 @@ public class MusicListFragment extends BaseFragment {
         if (BuildConfig.DEBUG) Log.d(TAG, "refreshList");
 
         getLoaderManager().restartLoader(0, null, this);
+    }
+
+    private void addAll() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "addAll");
+
+        List<Music> musicList = adapter.getMusicList();
+        int musicListSize = musicList.size();
+
+        long[] musicIdArray = new long[musicListSize];
+        for (int i = 0; i < musicListSize; i++) {
+            musicIdArray[i] = musicList.get(i).getId();
+        }
+
+        int numAdded = MusicUtils.enqueue(musicIdArray, null);
+        if (BuildConfig.DEBUG) Log.d(TAG, "Number enqueued: " + numAdded);
     }
 }
