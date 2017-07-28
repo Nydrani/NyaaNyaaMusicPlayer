@@ -433,6 +433,11 @@ public class MusicPlaybackService extends Service implements
         for (int i = 0; i < musicIdList.length; i++) {
             MusicPlaybackTrack track = new MusicPlaybackTrack(musicIdList[i]);
 
+            // check for items already in the queue
+            if (musicQueue.contains(track)) {
+                break;
+            }
+
             if (musicQueue.add(track)) {
                 addedCount++;
                 // update added list
@@ -924,6 +929,29 @@ public class MusicPlaybackService extends Service implements
         seekTo(state.getSeekPos());
     }
 
+    private void savePlaybackQueue() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "savePlaybackQueue");
+
+        ContentResolver resolver = getContentResolver();
+        int deleted = resolver.delete(MusicDatabaseProvider.QUEUE_CONTENT_URI, null, null);
+        if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows deleted: " + String.valueOf(deleted));
+
+        int queueSize = musicQueue.size();
+        ContentValues values[] = new ContentValues[queueSize];
+        // making sure to save the position to restore for later
+        for (int i = 0; i < queueSize; i++) {
+            MusicPlaybackTrack track = musicQueue.get(i);
+            ContentValues value = new ContentValues();
+            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.ID, track.getId());
+            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION, i);
+
+            values[i] = value;
+        }
+
+        int inserted = resolver.bulkInsert(MusicDatabaseProvider.QUEUE_CONTENT_URI, values);
+        if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows inserted: " + String.valueOf(inserted));
+    }
+
     private void loadPlaybackQueue() {
         if (BuildConfig.DEBUG) Log.d(TAG, "loadPlaybackQueue");
 
@@ -951,29 +979,6 @@ public class MusicPlaybackService extends Service implements
         }
 
         cursor.close();
-    }
-
-    private void savePlaybackQueue() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "savePlaybackQueue");
-
-        ContentResolver resolver = getContentResolver();
-        int deleted = resolver.delete(MusicDatabaseProvider.QUEUE_CONTENT_URI, null, null);
-        if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows deleted: " + String.valueOf(deleted));
-
-        int queueSize = musicQueue.size();
-        ContentValues values[] = new ContentValues[queueSize];
-        // making sure to save the position to restore for later
-        for (int i = 0; i < queueSize; i++) {
-            MusicPlaybackTrack track = musicQueue.get(i);
-            ContentValues value = new ContentValues();
-            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.ID, track.getId());
-            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION, i);
-
-            values[i] = value;
-        }
-
-        int inserted = resolver.bulkInsert(MusicDatabaseProvider.QUEUE_CONTENT_URI, values);
-        if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows inserted: " + String.valueOf(inserted));
     }
 
     /**
