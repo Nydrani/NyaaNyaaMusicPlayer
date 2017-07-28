@@ -424,71 +424,6 @@ public class MusicPlaybackService extends Service implements
         return musicPlaybackState;
     }
 
-    public int addToQueue(long musicId) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "addToQueue");
-
-        // @TODO for now only allow item in queue when it doesn't already exist (return old pos)
-        for (int i = 0; i < musicQueue.size(); i++) {
-            if (musicQueue.get(i).getId() == musicId) {
-                return i;
-            }
-        }
-
-        MusicPlaybackTrack track = new MusicPlaybackTrack(musicId);
-        musicQueue.add(track);
-        NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
-
-        // @TODO for now update queue database in here (change to use message handling later)
-        //updatePlaybackQueue(true, track);
-        databaseHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                savePlaybackQueue();
-            }
-        });
-        // savePlaybackQueue();
-
-        return musicQueue.indexOf(track);
-    }
-
-    public long removeFromQueue(int pos) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "removeFromQueue");
-
-        // early exit if out of bounds queue position
-        if (pos <= UNKNOWN_POS || pos >= musicQueue.size()) {
-            return UNKNOWN_ID;
-        }
-
-        // early exit if there are no items in the queue
-        if (musicQueue.size() == 0) {
-            return UNKNOWN_ID;
-        }
-
-        // reset music player only if chosen was currently playing
-        if (pos == musicPlaybackState.getQueuePos()) {
-            reset();
-        }
-
-        long id = musicQueue.get(pos).getId();
-        musicQueue.remove(pos);
-        updatePlaybackState();
-        savePlaybackState();
-
-        NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
-
-        // @TODO for now update queue database in here (change to use message handling later)
-        // updatePlaybackQueue(false, track);
-        databaseHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                savePlaybackQueue();
-            }
-        });
-        // savePlaybackQueue();
-
-        return id;
-    }
-
     public int enqueue(long[] musicIdList, int[] addedList) {
         if (BuildConfig.DEBUG) Log.d(TAG, "enqueue");
 
@@ -578,32 +513,6 @@ public class MusicPlaybackService extends Service implements
         });
 
         return removedCount;
-    }
-
-    public int clearQueue() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "clearQueue");
-
-        // reset music player to unload current playing track
-        reset();
-
-        int numCleared = musicQueue.size();
-        musicQueue.clear();
-        updatePlaybackState();
-        savePlaybackState();
-
-        NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
-
-        // @TODO for now update queue database in here (change to use message handling later)
-        // updatePlaybackQueue(false, track);
-        databaseHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                savePlaybackQueue();
-            }
-        });
-        // savePlaybackQueue();
-
-        return numCleared;
     }
 
     public boolean isPlaying() {
@@ -1323,20 +1232,6 @@ public class MusicPlaybackService extends Service implements
         }
 
         @Override
-        public int addToQueue(long musicId) throws RemoteException {
-            if (BuildConfig.DEBUG) Log.d(TAG, "addToQueue");
-
-            return musicPlaybackService.get().addToQueue(musicId);
-        }
-
-        @Override
-        public long removeFromQueue(int pos) throws RemoteException {
-            if (BuildConfig.DEBUG) Log.d(TAG, "removeFromQueue");
-
-            return musicPlaybackService.get().removeFromQueue(pos);
-        }
-
-        @Override
         public int enqueue(long[] musicIdList, int[] addedList) throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "enqueue");
 
@@ -1348,13 +1243,6 @@ public class MusicPlaybackService extends Service implements
             if (BuildConfig.DEBUG) Log.d(TAG, "dequeue");
 
             return musicPlaybackService.get().dequeue(musicIdList, removedList);
-        }
-
-        @Override
-        public int clearQueue() throws RemoteException {
-            if (BuildConfig.DEBUG) Log.d(TAG, "clearQueue");
-
-            return musicPlaybackService.get().clearQueue();
         }
 
         @Override

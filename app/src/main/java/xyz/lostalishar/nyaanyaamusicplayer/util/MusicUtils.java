@@ -87,7 +87,7 @@ public class MusicUtils {
 
         try {
             musicService.reset();
-            int pos = musicService.addToQueue(songId);
+            int pos = musicService.enqueue(new long[] { songId }, null);
             if (musicService.load(pos)) {
                 musicService.play();
             }
@@ -173,38 +173,6 @@ public class MusicUtils {
         return new ArrayList<>();
     }
 
-    public static int addToQueue(long musicId) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "addToQueue");
-
-        if (musicService == null) {
-            return MusicPlaybackService.UNKNOWN_POS;
-        }
-
-        try {
-            return musicService.addToQueue(musicId);
-        } catch (RemoteException e) {
-            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
-        }
-
-        return MusicPlaybackService.UNKNOWN_POS;
-    }
-
-    public static long removeFromQueue(int pos) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "removeFromQueue");
-
-        if (musicService == null) {
-            return MusicPlaybackService.UNKNOWN_ID;
-        }
-
-        try {
-            return musicService.removeFromQueue(pos);
-        } catch (RemoteException e) {
-            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
-        }
-
-        return MusicPlaybackService.UNKNOWN_ID;
-    }
-
     public static int enqueue(long[] musicIdList, int[] addedList) {
         if (BuildConfig.DEBUG) Log.d(TAG, "enqueue");
 
@@ -235,22 +203,6 @@ public class MusicUtils {
         }
 
         return MusicPlaybackService.UNKNOWN_POS;
-    }
-
-    public static int clearQueue() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "clearQueue");
-
-        if (musicService == null) {
-            return 0;
-        }
-
-        try {
-            return musicService.clearQueue();
-        } catch (RemoteException e) {
-            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
-        }
-
-        return 0;
     }
 
     public static MusicPlaybackState getState() {

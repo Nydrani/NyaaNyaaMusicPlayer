@@ -32,7 +32,7 @@ public class MusicListViewHolder extends BaseMusicViewHolder {
     public void onClick(View v) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
 
-        // play song here
+        // add song here
         if (!(adapter.get().isCABOpen())) {
             MusicUtils.enqueue(new long[] { musicDataHolder.musicId }, null);
         }

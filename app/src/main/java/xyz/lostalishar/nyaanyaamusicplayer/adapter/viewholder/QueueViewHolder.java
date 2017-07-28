@@ -32,7 +32,7 @@ public class QueueViewHolder extends BaseMusicViewHolder {
     public void onClick(View v) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
 
-        // remove song
+        // load song to play
         if (!(adapter.get().isCABOpen())) {
             if (!MusicUtils.load(getAdapterPosition())) {
                 MusicUtils.load(0);
