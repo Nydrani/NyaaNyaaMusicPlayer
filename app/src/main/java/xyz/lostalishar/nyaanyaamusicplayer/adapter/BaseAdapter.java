@@ -72,6 +72,15 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
 
 
     // ========================================================================
+    // Exposed functions
+    // ========================================================================
+
+    public List<Music> getMusicList() {
+        return musicList;
+    }
+
+
+    // ========================================================================
     // ActionMode.Callback overrides
     // ========================================================================
 
