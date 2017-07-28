@@ -95,7 +95,7 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
                 mode.finish();
                 return true;
             case R.id.actionbar_remove:
-                MusicUtils.removeFromQueue(chosenItem);
+                MusicUtils.dequeue(new long[] { chosenItem.getId() }, null);
                 mode.finish();
                 return true;
             default:

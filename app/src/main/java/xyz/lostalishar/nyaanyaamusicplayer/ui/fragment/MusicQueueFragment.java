@@ -144,12 +144,12 @@ public class MusicQueueFragment extends BaseFragment {
         List<Music> musicList = adapter.getMusicList();
         int musicListSize = musicList.size();
 
-        int[] posArray = new int[musicListSize];
+        long[] musicIdArray = new long[musicListSize];
         for (int i = 0; i < musicListSize; i++) {
-            posArray[i] = i;
+            musicIdArray[i] = musicList.get(i).getId();
         }
 
-        int numCleared = MusicUtils.dequeue(posArray, null);
+        int numCleared = MusicUtils.dequeue(musicIdArray, null);
         if (BuildConfig.DEBUG) Log.d(TAG, "Number dequeued: " + numCleared);
 
         String toastFormat = getResources().getString(R.string.toast_clear_x_tracks);

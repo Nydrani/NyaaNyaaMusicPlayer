@@ -221,7 +221,7 @@ public class MusicUtils {
         return MusicPlaybackService.UNKNOWN_POS;
     }
 
-    public static int dequeue(int[] posList, long[] removedList) {
+    public static int dequeue(long[] musicIdList, long[] removedList) {
         if (BuildConfig.DEBUG) Log.d(TAG, "dequeue");
 
         if (musicService == null) {
@@ -229,7 +229,7 @@ public class MusicUtils {
         }
 
         try {
-            return musicService.dequeue(posList, removedList);
+            return musicService.dequeue(musicIdList, removedList);
         } catch (RemoteException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
         }

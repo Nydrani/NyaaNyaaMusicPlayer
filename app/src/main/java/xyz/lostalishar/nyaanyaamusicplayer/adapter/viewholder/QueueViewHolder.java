@@ -34,8 +34,6 @@ public class QueueViewHolder extends BaseMusicViewHolder {
 
         // remove song
         if (!(adapter.get().isCABOpen())) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "removing item from queue");
-
             if (!MusicUtils.load(getAdapterPosition())) {
                 MusicUtils.load(0);
             }

@@ -24,7 +24,7 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
     private static final String TAG = BaseAdapter.class.getSimpleName();
 
     private List<Music> musicList;
-    protected Integer chosenItem;
+    protected Music chosenItem;
 
     private ActionMode actionMode;
 
@@ -106,7 +106,7 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
     public void openCAB(View v, Integer position) {
         if (BuildConfig.DEBUG) Log.d(TAG, "openCAB");
 
-        chosenItem = position;
+        chosenItem = musicList.get(position);
 
         if (actionMode == null) {
             actionMode = v.startActionMode(this);
@@ -118,6 +118,7 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
 
         if (actionMode != null) {
             actionMode.finish();
+            chosenItem = null;
         }
     }
 

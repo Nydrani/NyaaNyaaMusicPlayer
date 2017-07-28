@@ -492,27 +492,25 @@ public class MusicPlaybackService extends Service implements
     public int enqueue(long[] musicIdList, int[] addedList) {
         if (BuildConfig.DEBUG) Log.d(TAG, "enqueue");
 
-        List<MusicPlaybackTrack> tracks = new ArrayList<>();
+        int addedCount = 0;
+        boolean sendAddedList = addedList != null;
 
-        for (long musicId : musicIdList) {
-            MusicPlaybackTrack track = new MusicPlaybackTrack(musicId);
+        for (int i = 0; i < musicIdList.length; i++) {
+            MusicPlaybackTrack track = new MusicPlaybackTrack(musicIdList[i]);
 
-            if (musicQueue.contains(track)) {
-                break;
+            if (musicQueue.add(track)) {
+                addedCount++;
+                // update added list
+                if (sendAddedList) {
+                    addedList[i] = musicQueue.indexOf(track);
+                }
             }
 
-            tracks.add(track);
         }
 
-        if (!musicQueue.addAll(tracks)) {
-            return UNKNOWN_POS;
-        }
-
-        // send back int[] of added tracks if success
-        if (addedList != null) {
-            for (int i = 0; i < tracks.size(); i++) {
-                addedList[i] = musicQueue.indexOf(tracks.get(i));
-            }
+        // on nothing removed, just return 0
+        if (addedCount == 0) {
+            return 0;
         }
 
         // update service
@@ -526,44 +524,42 @@ public class MusicPlaybackService extends Service implements
                 savePlaybackQueue();
             }
         });
-        // savePlaybackQueue();
 
-        return tracks.size();
+        return addedCount;
     }
 
-    public int dequeue(int[] posList, long[] removedList) {
+    public int dequeue(long[] musicIdList, long[] removedList) {
         if (BuildConfig.DEBUG) Log.d(TAG, "dequeue");
 
-        List<MusicPlaybackTrack> tracks = new ArrayList<>();
+        MusicPlaybackTrack currentPlayingTrack = getCurrentPlaying();
+        long currentPlayingId = UNKNOWN_POS;
+        int removedCount = 0;
+        boolean sendRemovedList = removedList != null;
 
-        // early exit if there are no items in the queue
-        if (posList.length == 0) {
-            return UNKNOWN_POS;
+        // set the current playing
+        if (currentPlayingTrack != null) {
+            currentPlayingId = currentPlayingTrack.getId();
         }
 
-        for (int pos : posList) {
+        for (int i = 0; i < musicIdList.length; i++) {
             // reset music player only if chosen was currently playing
-            if (pos == musicPlaybackState.getQueuePos()) {
+            if (musicIdList[i] == currentPlayingId) {
                 reset();
             }
 
-            try {
-                MusicPlaybackTrack track = musicQueue.get(pos);
-                tracks.add(track);
-            } catch (IndexOutOfBoundsException e) {
-                if (BuildConfig.DEBUG) Log.d(TAG, "Index out of bounds exception while dequeuing");
+            MusicPlaybackTrack track = new MusicPlaybackTrack(musicIdList[i]);
+            if (musicQueue.remove(track)) {
+                removedCount++;
+                // update removed list
+                if (sendRemovedList) {
+                    removedList[i] = musicIdList[i];
+                }
             }
         }
 
-        if (!musicQueue.removeAll(tracks)) {
-            return UNKNOWN_POS;
-        }
-
-        // send back long[] of removed tracks if success
-        if (removedList != null) {
-            for (int i = 0; i < tracks.size(); i++) {
-                removedList[i] = tracks.get(i).getId();
-            }
+        // on nothing removed, just return 0
+        if (removedCount == 0) {
+            return 0;
         }
 
         // update service
@@ -580,9 +576,8 @@ public class MusicPlaybackService extends Service implements
                 savePlaybackQueue();
             }
         });
-        // savePlaybackQueue();
 
-        return tracks.size();
+        return removedCount;
     }
 
     public int clearQueue() {
@@ -653,6 +648,17 @@ public class MusicPlaybackService extends Service implements
         if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentQueuePos");
 
         return musicPlaybackState.getQueuePos();
+    }
+
+    public MusicPlaybackTrack getCurrentPlaying() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentPlaying");
+
+        // no track if unknown position
+        if (musicPlaybackState.getQueuePos() == UNKNOWN_POS) {
+            return null;
+        }
+
+        return musicQueue.get(musicPlaybackState.getQueuePos());
     }
 
 
@@ -1338,10 +1344,10 @@ public class MusicPlaybackService extends Service implements
         }
 
         @Override
-        public int dequeue(int[] posList, long[] removedList) throws RemoteException {
+        public int dequeue(long[] musicIdList, long[] removedList) throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "dequeue");
 
-            return musicPlaybackService.get().dequeue(posList, removedList);
+            return musicPlaybackService.get().dequeue(musicIdList, removedList);
         }
 
         @Override

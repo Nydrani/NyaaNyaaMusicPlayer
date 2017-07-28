@@ -34,9 +34,7 @@ public class MusicListViewHolder extends BaseMusicViewHolder {
 
         // play song here
         if (!(adapter.get().isCABOpen())) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "adding item to queue");
-
-            MusicUtils.addToQueue(musicDataHolder.musicId);
+            MusicUtils.enqueue(new long[] { musicDataHolder.musicId }, null);
         }
 
         // close cab
