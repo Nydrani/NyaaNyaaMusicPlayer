@@ -22,6 +22,15 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".activity.SlidingUpActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MUSIC_PLAYER" />
+
+                <category android:name="android.intent.category.APP_MUSIC" />
+            </intent-filter>
+        </activity>
+
         <service
             android:name=".service.MusicPlaybackService"
             android:enabled="true"

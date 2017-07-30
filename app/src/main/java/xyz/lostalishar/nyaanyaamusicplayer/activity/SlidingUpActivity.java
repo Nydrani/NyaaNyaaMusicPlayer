@@ -3,7 +3,6 @@ package xyz.lostalishar.nyaanyaamusicplayer.activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -17,8 +16,8 @@ import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.LibraryFragment;
 
-public class HomeActivity extends BaseActivity {
-    private static final String TAG = HomeActivity.class.getSimpleName();
+public class SlidingUpActivity extends BaseActivity {
+    private static final String TAG = SlidingUpActivity.class.getSimpleName();
 
 
     //=========================================================================
@@ -30,7 +29,7 @@ public class HomeActivity extends BaseActivity {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_base);
+        setContentView(R.layout.activity_layout_sliding_up_panel);
     }
 
 
@@ -57,9 +56,6 @@ public class HomeActivity extends BaseActivity {
             case R.id.actionbar_homelink:
                 Snackbar.make(findViewById(android.R.id.content), "Replace with your own action", Snackbar.LENGTH_LONG)
                         .show();
-                return true;
-            case R.id.actionbar_sliding_up_panel:
-                startActivity(new Intent(this, SlidingUpActivity.class));
                 return true;
             case R.id.actionbar_about:
                 setDialogFragment(AboutDialogFragment.newInstance());
