@@ -15,6 +15,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.LibraryFragment;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicQueueFragment;
 
 public class SlidingUpActivity extends BaseActivity {
     private static final String TAG = SlidingUpActivity.class.getSimpleName();
@@ -81,7 +82,8 @@ public class SlidingUpActivity extends BaseActivity {
         if (BuildConfig.DEBUG) Log.d(TAG, "initialise");
         super.initialise();
 
-        setFragment(LibraryFragment.newInstance());
+        setBaseFragment(LibraryFragment.newInstance());
+        setSlidingFragment(MusicQueueFragment.newInstance());
     }
 
     /*
@@ -89,11 +91,11 @@ public class SlidingUpActivity extends BaseActivity {
      * If fragment == null : remove "all" from fragment     <---- all is assuming only 1
      * If fragment != null : replace with new fragment
      */
-    protected void setFragment(Fragment fragment) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "setFragment");
+    private void setBaseFragment(Fragment fragment) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setBaseFragment");
 
         FragmentManager fm = getFragmentManager();
-        Fragment element = getFragment(fm);
+        Fragment element = getBaseFragment(fm);
 
         // check for "remove fragment" and null fragment in container
         if (fragment == null && element == null) {
@@ -109,10 +111,42 @@ public class SlidingUpActivity extends BaseActivity {
         ft.commit();
     }
 
+    /*
+ * Replaces the fragment in the FrameLayout container
+ * If fragment == null : remove "all" from fragment     <---- all is assuming only 1
+ * If fragment != null : replace with new fragment
+ */
+    private void setSlidingFragment(Fragment fragment) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setSlidingFragment");
+
+        FragmentManager fm = getFragmentManager();
+        Fragment element = getSlidingFragment(fm);
+
+        // check for "remove fragment" and null fragment in container
+        if (fragment == null && element == null) {
+            return;
+        }
+
+        FragmentTransaction ft = fm.beginTransaction();
+        if (fragment == null) {
+            ft.remove(element);
+        } else {
+            ft.replace(R.id.activity_sliding_content, fragment);
+        }
+        ft.commit();
+    }
+
     // Gets the current fragment being shown
-    protected Fragment getFragment(FragmentManager fm) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "getFragment");
+    private Fragment getBaseFragment(FragmentManager fm) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getBaseFragment");
 
         return fm.findFragmentById(R.id.activity_base_content);
+    }
+
+    // Gets the current fragment being shown
+    private Fragment getSlidingFragment(FragmentManager fm) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getBaseFragment");
+
+        return fm.findFragmentById(R.id.activity_sliding_content);
     }
 }
