@@ -27,7 +27,7 @@
     <string name="fragment_name_music_list">Music</string>
     <string name="fragment_name_queue">Queue</string>
 
-    <string name="fragment_library_bottom_bar_play">Play</string>
-    <string name="fragment_library_bottom_bar_pause">Pause</string>
+    <string name="fragment_bottom_bar_play">Play</string>
+    <string name="fragment_bottom_bar_pause">Pause</string>
 
 </resources>

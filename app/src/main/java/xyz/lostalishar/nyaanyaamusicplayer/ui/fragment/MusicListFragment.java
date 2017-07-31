@@ -3,10 +3,16 @@ package xyz.lostalishar.nyaanyaamusicplayer.ui.fragment;
 import android.app.Activity;
 import android.content.Loader;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +31,8 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 public class MusicListFragment extends BaseFragment {
     private static final String TAG = MusicListFragment.class.getSimpleName();
 
+    private RecyclerView.LayoutManager layout;
+
     public static MusicListFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
 
@@ -41,7 +49,28 @@ public class MusicListFragment extends BaseFragment {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
+        Activity activity = getActivity();
         adapter = new MusicAdapter(new ArrayList<Music>());
+
+        layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
+
+        Activity activity = getActivity();
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(activity,
+                DividerItemDecoration.VERTICAL);
+        View rootView = inflater.inflate(R.layout.list_base, container, false);
+        RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.list_base_view);
+
+        recyclerView.addItemDecoration(dividerItemDecoration);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(layout);
+
+        return rootView;
     }
 
 
