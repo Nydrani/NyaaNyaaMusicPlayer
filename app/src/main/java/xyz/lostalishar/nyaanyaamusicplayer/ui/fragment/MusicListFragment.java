@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -143,5 +144,9 @@ public class MusicListFragment extends BaseFragment {
 
         int numAdded = MusicUtils.enqueue(musicIdArray, null);
         if (BuildConfig.DEBUG) Log.d(TAG, "Number enqueued: " + numAdded);
+
+        String toastFormat = getResources().getString(R.string.toast_add_x_tracks);
+        String toastMessage = String.format(toastFormat, numAdded);
+        Toast.makeText(getActivity(), toastMessage, Toast.LENGTH_SHORT).show();
     }
 }
