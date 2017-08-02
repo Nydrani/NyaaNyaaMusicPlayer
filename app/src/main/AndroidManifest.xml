@@ -11,7 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activity.HomeActivity">
+            android:name=".activity.SlidingUpActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.MUSIC_PLAYER" />
@@ -23,7 +23,7 @@
         </activity>
 
         <activity
-            android:name=".activity.SlidingUpActivity">
+            android:name=".activity.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MUSIC_PLAYER" />
 

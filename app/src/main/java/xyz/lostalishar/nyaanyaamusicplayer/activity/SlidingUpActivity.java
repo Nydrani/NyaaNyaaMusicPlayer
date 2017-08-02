@@ -5,11 +5,15 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
+
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
@@ -17,7 +21,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.LibraryFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicQueueFragment;
 
-public class SlidingUpActivity extends BaseActivity {
+public class SlidingUpActivity extends BaseActivity implements MusicQueueFragment.OnViewInflatedListener {
     private static final String TAG = SlidingUpActivity.class.getSimpleName();
 
 
@@ -31,6 +35,13 @@ public class SlidingUpActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_layout_sliding_up_panel);
+    }
+
+
+    @Override
+    protected void onResume() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
+        super.onResume();
     }
 
 
@@ -68,7 +79,23 @@ public class SlidingUpActivity extends BaseActivity {
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);
                 break;
         }
+
         return super.onOptionsItemSelected(item);
+    }
+
+
+    //=========================================================================
+    // Fragment view inflated callback
+    //=========================================================================
+
+    @Override
+    public void onViewInflated(View view) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onViewInflated");
+
+        SlidingUpPanelLayout rootView = (SlidingUpPanelLayout)findViewById(R.id.activity_sliding_up_layout);
+        RecyclerView scrollableView = (RecyclerView)view.findViewById(R.id.list_base_view);
+
+        rootView.setScrollableView(scrollableView);
     }
 
 

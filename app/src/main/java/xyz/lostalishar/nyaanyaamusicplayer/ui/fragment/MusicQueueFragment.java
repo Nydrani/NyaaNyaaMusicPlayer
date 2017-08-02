@@ -47,6 +47,8 @@ public class MusicQueueFragment extends BaseFragment {
     private IntentFilter filter;
     private QueueUpdateListener queueUpdateListener;
 
+    private OnViewInflatedListener viewInflatedListener;
+
     public static MusicQueueFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
 
@@ -57,6 +59,26 @@ public class MusicQueueFragment extends BaseFragment {
     //=========================================================================
     // Fragment lifecycle
     //=========================================================================
+
+    @Override
+    public void onAttach(Context context) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onAttach");
+        super.onAttach(context);
+
+        Activity activity;
+
+        if (context instanceof Activity){
+            activity = (Activity) context;
+
+            try {
+                viewInflatedListener = (OnViewInflatedListener) activity;
+            } catch (ClassCastException e) {
+                if (BuildConfig.DEBUG) Log.e(TAG, e.getMessage());
+                throw new ClassCastException(activity.toString() +
+                        " must implement OnViewCreatedListener");
+            }
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -109,12 +131,22 @@ public class MusicQueueFragment extends BaseFragment {
                     Toast.makeText(v.getContext(), R.string.toast_choose_track, Toast.LENGTH_SHORT).show();
                 } else {
                     MusicUtils.resume();
-                    // @TODO resume when already playing. start when not loaded
                 }
             }
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onViewCreated");
+        super.onViewCreated(view, savedInstanceState);
+
+        // notify listener
+        if (viewInflatedListener != null) {
+            viewInflatedListener.onViewInflated(view);
+        }
     }
 
     @Override
@@ -256,5 +288,9 @@ public class MusicQueueFragment extends BaseFragment {
                 reference.get().updateMetaUI();
             }
         }
+    }
+
+    public interface OnViewInflatedListener {
+        void onViewInflated(View view);
     }
 }

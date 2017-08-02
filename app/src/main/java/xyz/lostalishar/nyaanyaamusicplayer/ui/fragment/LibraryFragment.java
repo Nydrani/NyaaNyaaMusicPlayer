@@ -145,7 +145,7 @@ public class LibraryFragment extends Fragment {
         pageList.add(page);
 
         page = new LibraryPagerAdapter.PageHolder();
-        page.fragment = Fragment.instantiate(activity, MusicQueueFragment.class.getName());
+        page.fragment = Fragment.instantiate(activity, MusicListFragment.class.getName());
         page.sname = getString(R.string.fragment_name_queue);
         pageList.add(page);
 
