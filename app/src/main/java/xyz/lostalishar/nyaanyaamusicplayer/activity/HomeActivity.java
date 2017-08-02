@@ -3,21 +3,25 @@ package xyz.lostalishar.nyaanyaamusicplayer.activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
+
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.LibraryFragment;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicQueueFragment;
 
-public class HomeActivity extends BaseActivity {
+public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnViewInflatedListener {
     private static final String TAG = HomeActivity.class.getSimpleName();
 
 
@@ -30,7 +34,14 @@ public class HomeActivity extends BaseActivity {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_base);
+        setContentView(R.layout.activity_layout_home);
+    }
+
+
+    @Override
+    protected void onResume() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
+        super.onResume();
     }
 
 
@@ -68,7 +79,23 @@ public class HomeActivity extends BaseActivity {
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);
                 break;
         }
+
         return super.onOptionsItemSelected(item);
+    }
+
+
+    //=========================================================================
+    // Fragment view inflated callback
+    //=========================================================================
+
+    @Override
+    public void onViewInflated(View view) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onViewInflated");
+
+        SlidingUpPanelLayout rootView = (SlidingUpPanelLayout)findViewById(R.id.activity_sliding_up_layout);
+        RecyclerView scrollableView = (RecyclerView)view.findViewById(R.id.list_base_view);
+
+        rootView.setScrollableView(scrollableView);
     }
 
 
@@ -82,7 +109,8 @@ public class HomeActivity extends BaseActivity {
         if (BuildConfig.DEBUG) Log.d(TAG, "initialise");
         super.initialise();
 
-        setFragment(LibraryFragment.newInstance());
+        setBaseFragment(LibraryFragment.newInstance());
+        setSlidingFragment(MusicQueueFragment.newInstance());
     }
 
     /*
@@ -90,11 +118,11 @@ public class HomeActivity extends BaseActivity {
      * If fragment == null : remove "all" from fragment     <---- all is assuming only 1
      * If fragment != null : replace with new fragment
      */
-    protected void setFragment(Fragment fragment) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "setFragment");
+    private void setBaseFragment(Fragment fragment) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setBaseFragment");
 
         FragmentManager fm = getFragmentManager();
-        Fragment element = getFragment(fm);
+        Fragment element = getBaseFragment(fm);
 
         // check for "remove fragment" and null fragment in container
         if (fragment == null && element == null) {
@@ -110,10 +138,42 @@ public class HomeActivity extends BaseActivity {
         ft.commit();
     }
 
+    /*
+ * Replaces the fragment in the FrameLayout container
+ * If fragment == null : remove "all" from fragment     <---- all is assuming only 1
+ * If fragment != null : replace with new fragment
+ */
+    private void setSlidingFragment(Fragment fragment) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setSlidingFragment");
+
+        FragmentManager fm = getFragmentManager();
+        Fragment element = getSlidingFragment(fm);
+
+        // check for "remove fragment" and null fragment in container
+        if (fragment == null && element == null) {
+            return;
+        }
+
+        FragmentTransaction ft = fm.beginTransaction();
+        if (fragment == null) {
+            ft.remove(element);
+        } else {
+            ft.replace(R.id.activity_sliding_content, fragment);
+        }
+        ft.commit();
+    }
+
     // Gets the current fragment being shown
-    protected Fragment getFragment(FragmentManager fm) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "getFragment");
+    private Fragment getBaseFragment(FragmentManager fm) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getBaseFragment");
 
         return fm.findFragmentById(R.id.activity_base_content);
+    }
+
+    // Gets the current fragment being shown
+    private Fragment getSlidingFragment(FragmentManager fm) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getBaseFragment");
+
+        return fm.findFragmentById(R.id.activity_sliding_content);
     }
 }

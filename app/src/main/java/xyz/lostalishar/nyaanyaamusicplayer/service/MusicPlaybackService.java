@@ -49,7 +49,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.receiver.MediaButtonIntentReceiver;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.PreferenceUtils;
 
-/*
+/**
  * MusicPlaybackService is the main service behind the app background audio playback.
  * It must be run with the preconditions:
  *   1. It has READ_EXTERNAL_STORE permissions. (otherwise all entrances to the app are barred)
