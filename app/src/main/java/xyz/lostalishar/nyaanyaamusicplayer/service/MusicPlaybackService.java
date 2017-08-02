@@ -435,7 +435,7 @@ public class MusicPlaybackService extends Service implements
 
             // check for items already in the queue
             if (musicQueue.contains(track)) {
-                break;
+                continue;
             }
 
             if (musicQueue.add(track)) {
