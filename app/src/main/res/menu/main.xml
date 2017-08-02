@@ -8,10 +8,6 @@
         android:enabled="false" />
 
     <item
-        android:id="@+id/actionbar_sliding_up_panel"
-        android:title="@string/actionbar_sliding_up_panel" />
-
-    <item
         android:id="@+id/actionbar_about"
         android:title="@string/actionbar_about" />
 

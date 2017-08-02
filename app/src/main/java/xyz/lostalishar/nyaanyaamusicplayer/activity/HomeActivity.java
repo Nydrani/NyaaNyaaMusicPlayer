@@ -58,9 +58,6 @@ public class HomeActivity extends BaseActivity {
                 Snackbar.make(findViewById(android.R.id.content), "Replace with your own action", Snackbar.LENGTH_LONG)
                         .show();
                 return true;
-            case R.id.actionbar_sliding_up_panel:
-                startActivity(new Intent(this, SlidingUpActivity.class));
-                return true;
             case R.id.actionbar_about:
                 setDialogFragment(AboutDialogFragment.newInstance());
                 return true;
