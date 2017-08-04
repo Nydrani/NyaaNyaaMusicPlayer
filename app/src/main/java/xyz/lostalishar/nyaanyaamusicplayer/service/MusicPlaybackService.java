@@ -361,6 +361,7 @@ public class MusicPlaybackService extends Service implements
             stopForeground(true);
             NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
             savePlaybackState();
+            audioManager.abandonAudioFocus(this);
         } catch (IllegalStateException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Called pause in illegal state");
         }
