@@ -172,7 +172,7 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
 
     // Gets the current fragment being shown
     private Fragment getSlidingFragment(FragmentManager fm) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "getBaseFragment");
+        if (BuildConfig.DEBUG) Log.d(TAG, "getSlidingFragment");
 
         return fm.findFragmentById(R.id.activity_sliding_content);
     }

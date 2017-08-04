@@ -45,11 +45,15 @@ public class LibraryPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getCount");
+
         return holderList.size();
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getPageTitle");
+
         return holderList.get(position).sname;
     }
 
