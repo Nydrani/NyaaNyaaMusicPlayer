@@ -35,14 +35,6 @@ public abstract class BaseFragment extends Fragment implements LoaderManager.Loa
         setHasOptionsMenu(true);
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onActivityCreated");
-        super.onActivityCreated(savedInstanceState);
-
-        getLoaderManager().initLoader(0, null, this);
-    }
-
 
     //=========================================================================
     // LoaderManager.LoaderCallbacks

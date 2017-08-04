@@ -74,6 +74,14 @@ public class MusicListFragment extends BaseFragment {
         return rootView;
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onActivityCreated");
+        super.onActivityCreated(savedInstanceState);
+
+        getLoaderManager().initLoader(0, null, this);
+    }
+
 
     //=========================================================================
     // Options menu callbacks
@@ -136,6 +144,7 @@ public class MusicListFragment extends BaseFragment {
 
         List<Music> musicList = adapter.getMusicList();
         int musicListSize = musicList.size();
+        if (BuildConfig.DEBUG) Log.d(TAG, "Music list size: " + musicListSize);
 
         long[] musicIdArray = new long[musicListSize];
         for (int i = 0; i < musicListSize; i++) {

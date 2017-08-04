@@ -108,6 +108,7 @@ public class MusicQueueLoader extends CachedAsyncTaskLoader<List<Music>> {
     }
 
     // override this to change query
+    // this will always attempt to return a cursor even with an empty queue
     public static Cursor makeMusicCursor(Context context) {
         if (BuildConfig.DEBUG) Log.d(TAG, "makeMusicCursor");
 

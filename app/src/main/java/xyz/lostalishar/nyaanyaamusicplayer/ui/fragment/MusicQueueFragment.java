@@ -92,8 +92,10 @@ public class MusicQueueFragment extends BaseFragment {
         Activity activity = getActivity();
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
 
-        filter = new IntentFilter(NyaaUtils.QUEUE_CHANGED);
+        filter = new IntentFilter();
+        filter.addAction(NyaaUtils.QUEUE_CHANGED);
         filter.addAction(NyaaUtils.META_CHANGED);
+        filter.addAction(NyaaUtils.SERVICE_READY);
         queueUpdateListener = new QueueUpdateListener(this);
     }
 
@@ -286,6 +288,8 @@ public class MusicQueueFragment extends BaseFragment {
                 reference.get().refreshQueue();
             } else if (action.equals(NyaaUtils.META_CHANGED)) {
                 reference.get().updateMetaUI();
+            } else if (action.equals(NyaaUtils.SERVICE_READY)) {
+                reference.get().refreshQueue();
             }
         }
     }

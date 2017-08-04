@@ -149,6 +149,10 @@ public class MusicPlaybackService extends Service implements
         }
 
         cancelDelayedShutdown();
+
+        // send ready intent to ui
+        NyaaUtils.notifyChange(this, NyaaUtils.SERVICE_READY);
+
         return binder;
     }
 
@@ -162,6 +166,9 @@ public class MusicPlaybackService extends Service implements
         }
 
         cancelDelayedShutdown();
+
+        // send ready intent to ui
+        NyaaUtils.notifyChange(this, NyaaUtils.SERVICE_READY);
     }
 
     @Override
