@@ -39,7 +39,7 @@ public class LibraryFragment extends Fragment {
     private MetaChangedListener metaChangedListener;
 
     public static final int LIST_FRAGMENT = 0;
-    public static final int QUEUE_FRAGMENT = 1;
+    public static final int ALBUM_FRAGMENT = 1;
 
     public static LibraryFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -145,8 +145,8 @@ public class LibraryFragment extends Fragment {
         pageList.add(page);
 
         page = new LibraryPagerAdapter.PageHolder();
-        page.fragment = Fragment.instantiate(activity, MusicListFragment.class.getName());
-        page.sname = getString(R.string.fragment_name_queue);
+        page.fragment = Fragment.instantiate(activity, AlbumFragment.class.getName());
+        page.sname = getString(R.string.fragment_name_album);
         pageList.add(page);
 
         return pageList;
