@@ -10,19 +10,13 @@
     android:paddingStart="?android:attr/listPreferredItemPaddingStart">
 
     <TextView
-        android:id="@+id/music_name"
+        android:id="@+id/album_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
     <TextView
-        android:id="@+id/music_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
-
-    <TextView
-        android:id="@+id/music_album"
+        android:id="@+id/album_num_songs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />

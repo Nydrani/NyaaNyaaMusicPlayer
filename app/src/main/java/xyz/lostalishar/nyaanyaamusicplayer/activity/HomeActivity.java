@@ -108,9 +108,9 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         // @TODO update CAB to be located it the fragment (UI) instead of adapter
         // @TODO pass CAB into the adapter so single cab entry
         BaseFragment frag1 = (BaseFragment)baseFragment.pageList.get(LibraryFragment.LIST_FRAGMENT).fragment;
-        BaseFragment frag2 = (BaseFragment)baseFragment.pageList.get(LibraryFragment.ALBUM_FRAGMENT).fragment;
+        //BaseFragment frag2 = (BaseFragment)baseFragment.pageList.get(LibraryFragment.ALBUM_FRAGMENT).fragment;
         frag1.adapter.finishCAB();
-        frag2.adapter.finishCAB();
+        //frag2.adapter.finishCAB();
         slidingFragment.adapter.finishCAB();
     }
 

@@ -1,6 +1,8 @@
 package xyz.lostalishar.nyaanyaamusicplayer.ui.fragment;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.LoaderManager;
 import android.content.Loader;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -21,16 +23,20 @@ import java.util.List;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.AlbumAdapter;
+import xyz.lostalishar.nyaanyaamusicplayer.adapter.BaseAdapter;
+import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.BaseMusicViewHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.AlbumLoader;
-import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
+import xyz.lostalishar.nyaanyaamusicplayer.model.Album;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 
 /**
  * Fragment containing entire list of music on device
  */
 
-public class AlbumFragment extends BaseFragment {
+public class AlbumFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Album>> {
     private static final String TAG = AlbumFragment.class.getSimpleName();
+
+    public AlbumAdapter adapter;
 
     private RecyclerView.LayoutManager layout;
 
@@ -51,7 +57,7 @@ public class AlbumFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
 
         Activity activity = getActivity();
-        adapter = new AlbumAdapter(new ArrayList<Music>());
+        adapter = new AlbumAdapter(new ArrayList<Album>());
 
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
     }
@@ -105,7 +111,6 @@ public class AlbumFragment extends BaseFragment {
                 refreshList();
                 return true;
             case R.id.actionbar_add_all:
-                addAll();
                 return true;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);
@@ -120,7 +125,7 @@ public class AlbumFragment extends BaseFragment {
     //=========================================================================
 
     @Override
-    public Loader<List<Music>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<Album>> onCreateLoader(int id, Bundle args) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateLoader");
 
         Activity activity = getActivity();
@@ -128,6 +133,21 @@ public class AlbumFragment extends BaseFragment {
         return new AlbumLoader(activity);
     }
 
+    @Override
+    public void onLoadFinished(Loader<List<Album>> loader, List<Album> data) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onLoadFinished");
+
+        adapter.finishCAB();
+        adapter.swap(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Album>> loader) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
+
+        adapter.finishCAB();
+        adapter.swap(null);
+    }
 
     //=========================================================================
     // Helper functions
@@ -137,25 +157,5 @@ public class AlbumFragment extends BaseFragment {
         if (BuildConfig.DEBUG) Log.d(TAG, "refreshList");
 
         getLoaderManager().restartLoader(0, null, this);
-    }
-
-    private void addAll() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "addAll");
-
-        List<Music> musicList = adapter.getMusicList();
-        int musicListSize = musicList.size();
-        if (BuildConfig.DEBUG) Log.d(TAG, "Music list size: " + musicListSize);
-
-        long[] musicIdArray = new long[musicListSize];
-        for (int i = 0; i < musicListSize; i++) {
-            musicIdArray[i] = musicList.get(i).getId();
-        }
-
-        int numAdded = MusicUtils.enqueue(musicIdArray, null);
-        if (BuildConfig.DEBUG) Log.d(TAG, "Number enqueued: " + numAdded);
-
-        String toastFormat = getResources().getString(R.string.toast_add_x_tracks);
-        String toastMessage = String.format(toastFormat, numAdded);
-        Toast.makeText(getActivity(), toastMessage, Toast.LENGTH_SHORT).show();
     }
 }

@@ -1,5 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -14,7 +15,7 @@ import java.util.List;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.AlbumViewHolder;
-import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
+import xyz.lostalishar.nyaanyaamusicplayer.model.Album;
 
 /**
  * Currently not implementing a List rather than Cursor due to:
@@ -23,12 +24,23 @@ import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
  *     3. cbf doing benchmarks
  */
 
-public class AlbumAdapter extends BaseAdapter<AlbumViewHolder> {
+public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>
+        implements ActionMode.Callback {
     private static final String TAG = AlbumAdapter.class.getSimpleName();
 
-    public AlbumAdapter(List<Music> musicList) {
-        super(musicList);
+    private List<Album> albumList;
+    protected Album chosenItem;
+
+    private ActionMode actionMode;
+
+    public AlbumAdapter(List<Album> albumList) {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
+
+        this.albumList = albumList;
+
+        // @TODO check if ids are stable
+        // ids are stable. at least i would hope (pls be stable MediaStore)
+        setHasStableIds(true);
     }
 
 
@@ -50,14 +62,27 @@ public class AlbumAdapter extends BaseAdapter<AlbumViewHolder> {
     public void onBindViewHolder(AlbumViewHolder holder, int position) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onBindViewHolder");
 
-        Music music = getMusicList().get(position);
+        Album album = getAlbumList().get(position);
 
-        holder.musicTitle.setText(music.getName());
-        holder.musicDescription.setText(music.getArtistName());
-        holder.musicAlbum.setText(music.getAlbumName());
+        holder.albumTitle.setText(album.getName());
+        holder.numSongs.setText(String.valueOf(album.getNumSongs()));
 
         // store id
-        holder.musicDataHolder.musicId = music.getId();
+        holder.albumDataHolder.albumId = album.getId();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getItemId");
+
+        return albumList.get(position).getId();
+    }
+
+    @Override
+    public int getItemCount() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getItemCount");
+
+        return albumList.size();
     }
 
 
@@ -93,5 +118,74 @@ public class AlbumAdapter extends BaseAdapter<AlbumViewHolder> {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onPrepareActionMode");
+
+        return false;
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onDestroyActionMode");
+
+        actionMode = null;
+    }
+
+
+    // ========================================================================
+    // Helper functions
+    // ========================================================================
+
+    public void openCAB(View v, Integer position) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "openCAB");
+
+        chosenItem = albumList.get(position);
+
+        if (actionMode == null) {
+            actionMode = v.startActionMode(this);
+        }
+    }
+
+    public void finishCAB() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "finishCAB");
+
+        if (actionMode != null) {
+            actionMode.finish();
+            chosenItem = null;
+        }
+    }
+
+    public boolean isCABOpen() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "isCABOpen");
+
+        return actionMode != null;
+    }
+
+
+    // ========================================================================
+    // Exposed functions
+    // ========================================================================
+
+    public List<Album> getAlbumList() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getAlbumList");
+
+        return albumList;
+    }
+
+    // ========================================================================
+    // Useful cursor functions
+    // ========================================================================
+
+    public void swap(List<Album> newList){
+        if (BuildConfig.DEBUG) Log.d(TAG, "swap");
+
+        albumList.clear();
+        if (newList != null) {
+            albumList.addAll(newList);
+        }
+        notifyDataSetChanged();
     }
 }
