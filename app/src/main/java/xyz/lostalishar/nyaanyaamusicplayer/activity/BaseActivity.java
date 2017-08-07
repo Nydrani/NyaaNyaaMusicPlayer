@@ -1,7 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.activity;
 
 import android.app.DialogFragment;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ComponentName;
@@ -13,7 +12,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
-import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
@@ -48,7 +46,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         // if i don't have permissions, don't start service
         if (NyaaUtils.needsPermissions(this)) {
-            setFragment(null);
             return;
         }
 
@@ -147,37 +144,5 @@ public abstract class BaseActivity extends AppCompatActivity {
         ft.addToBackStack(null);
 
         dialog.show(ft, null);
-    }
-
-    /*
-     * Replaces the fragment in the FrameLayout container
-     * If fragment == null : remove "all" from fragment     <---- all is assuming only 1
-     * If fragment != null : replace with new fragment
-     */
-    protected void setFragment(Fragment fragment) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "setFragment");
-
-        FragmentManager fm = getFragmentManager();
-        Fragment element = getFragment(fm);
-
-        // check for "remove fragment" and null fragment in container
-        if (fragment == null && element == null) {
-            return;
-        }
-
-        FragmentTransaction ft = fm.beginTransaction();
-        if (fragment == null) {
-            ft.remove(element);
-        } else {
-            ft.replace(R.id.activity_base_content, fragment);
-        }
-        ft.commit();
-    }
-
-    // Gets the current fragment being shown
-    protected Fragment getFragment(FragmentManager fm) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "getFragment");
-
-        return fm.findFragmentById(R.id.activity_base_content);
     }
 }

@@ -49,7 +49,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.receiver.MediaButtonIntentReceiver;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.PreferenceUtils;
 
-/*
+/**
  * MusicPlaybackService is the main service behind the app background audio playback.
  * It must be run with the preconditions:
  *   1. It has READ_EXTERNAL_STORE permissions. (otherwise all entrances to the app are barred)
@@ -149,6 +149,10 @@ public class MusicPlaybackService extends Service implements
         }
 
         cancelDelayedShutdown();
+
+        // send ready intent to ui
+        NyaaUtils.notifyChange(this, NyaaUtils.SERVICE_READY);
+
         return binder;
     }
 
@@ -162,6 +166,9 @@ public class MusicPlaybackService extends Service implements
         }
 
         cancelDelayedShutdown();
+
+        // send ready intent to ui
+        NyaaUtils.notifyChange(this, NyaaUtils.SERVICE_READY);
     }
 
     @Override
@@ -354,6 +361,7 @@ public class MusicPlaybackService extends Service implements
             stopForeground(true);
             NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
             savePlaybackState();
+            audioManager.abandonAudioFocus(this);
         } catch (IllegalStateException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Called pause in illegal state");
         }

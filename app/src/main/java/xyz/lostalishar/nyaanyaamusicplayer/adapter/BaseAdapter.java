@@ -76,6 +76,8 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
     // ========================================================================
 
     public List<Music> getMusicList() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getMusicList");
+
         return musicList;
     }
 

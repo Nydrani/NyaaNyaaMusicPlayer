@@ -7,10 +7,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
@@ -22,6 +29,8 @@ import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.QueueAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicQueueLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
+import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
+import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
@@ -32,8 +41,13 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 public class MusicQueueFragment extends BaseFragment {
     private static final String TAG = MusicQueueFragment.class.getSimpleName();
 
+    private RecyclerView.LayoutManager layout;
+    private TextView pauseBox;
+
     private IntentFilter filter;
     private QueueUpdateListener queueUpdateListener;
+
+    private OnViewInflatedListener viewInflatedListener;
 
     public static MusicQueueFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -47,6 +61,26 @@ public class MusicQueueFragment extends BaseFragment {
     //=========================================================================
 
     @Override
+    public void onAttach(Context context) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onAttach");
+        super.onAttach(context);
+
+        Activity activity;
+
+        if (context instanceof Activity){
+            activity = (Activity) context;
+
+            try {
+                viewInflatedListener = (OnViewInflatedListener) activity;
+            } catch (ClassCastException e) {
+                if (BuildConfig.DEBUG) Log.e(TAG, e.getMessage());
+                throw new ClassCastException(activity.toString() +
+                        " must implement OnViewCreatedListener");
+            }
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
@@ -55,9 +89,66 @@ public class MusicQueueFragment extends BaseFragment {
 
         adapter = new QueueAdapter(queueList);
 
-        filter = new IntentFilter(NyaaUtils.QUEUE_CHANGED);
+        Activity activity = getActivity();
+        layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
+
+        filter = new IntentFilter();
+        filter.addAction(NyaaUtils.QUEUE_CHANGED);
         filter.addAction(NyaaUtils.META_CHANGED);
+        filter.addAction(NyaaUtils.SERVICE_READY);
         queueUpdateListener = new QueueUpdateListener(this);
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
+
+        Activity activity = getActivity();
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(activity,
+                DividerItemDecoration.VERTICAL);
+        View rootView = inflater.inflate(R.layout.fragment_queue, container, false);
+        RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.list_base_view);
+        pauseBox = (TextView)rootView.findViewById(R.id.fragment_bottom_bar);
+
+        recyclerView.addItemDecoration(dividerItemDecoration);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(layout);
+
+        pauseBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
+
+                MusicPlaybackState state = MusicUtils.getState();
+                // do nothing on unknown state
+                if (state == null) {
+                    return;
+                }
+
+                if (MusicUtils.isPlaying()) {
+                    MusicUtils.pause();
+                } else if (state.getQueuePos() == MusicPlaybackService.UNKNOWN_POS) {
+                    Toast.makeText(v.getContext(), R.string.toast_choose_track, Toast.LENGTH_SHORT).show();
+                } else {
+                    MusicUtils.resume();
+                }
+            }
+        });
+
+        return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onViewCreated");
+        super.onViewCreated(view, savedInstanceState);
+
+        // notify listener
+        if (viewInflatedListener != null) {
+            viewInflatedListener.onViewInflated(view);
+        }
     }
 
     @Override
@@ -67,6 +158,9 @@ public class MusicQueueFragment extends BaseFragment {
 
         Activity activity = getActivity();
         activity.registerReceiver(queueUpdateListener, filter);
+
+        // update ui on resume
+        updateMetaUI();
     }
 
     @Override
@@ -132,9 +226,20 @@ public class MusicQueueFragment extends BaseFragment {
         getLoaderManager().restartLoader(0, null, this);
     }
 
+    private void updatePauseBox() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updatePauseBox");
+
+        if (MusicUtils.isPlaying()) {
+            pauseBox.setText(getString(R.string.fragment_bottom_bar_pause));
+        } else {
+            pauseBox.setText(getString(R.string.fragment_bottom_bar_play));
+        }
+    }
+
     private void updateMetaUI() {
         if (BuildConfig.DEBUG) Log.d(TAG, "updateMetaUI");
 
+        updatePauseBox();
         adapter.notifyDataSetChanged();
     }
 
@@ -183,7 +288,13 @@ public class MusicQueueFragment extends BaseFragment {
                 reference.get().refreshQueue();
             } else if (action.equals(NyaaUtils.META_CHANGED)) {
                 reference.get().updateMetaUI();
+            } else if (action.equals(NyaaUtils.SERVICE_READY)) {
+                reference.get().refreshQueue();
             }
         }
+    }
+
+    public interface OnViewInflatedListener {
+        void onViewInflated(View view);
     }
 }

@@ -13,8 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -23,9 +21,6 @@ import java.util.List;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.LibraryPagerAdapter;
-import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
-import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
-import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
 /**
@@ -35,17 +30,16 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 public class LibraryFragment extends Fragment {
     private static final String TAG = LibraryFragment.class.getSimpleName();
 
-    private List<LibraryPagerAdapter.PageHolder> pageList;
+    public List<LibraryPagerAdapter.PageHolder> pageList;
     private LibraryPagerAdapter adapter;
     private ViewPager viewPager;
     private TabLayout.OnTabSelectedListener tabSelectedListener;
-    private TextView pauseBox;
 
     private IntentFilter filter;
     private MetaChangedListener metaChangedListener;
 
-    private static final int LIST_FRAGMENT = 0;
-    private static final int QUEUE_FRAGMENT = 1;
+    public static final int LIST_FRAGMENT = 0;
+    public static final int QUEUE_FRAGMENT = 1;
 
     public static LibraryFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -107,38 +101,11 @@ public class LibraryFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_library, container, false);
         viewPager = (ViewPager)rootView.findViewById(R.id.fragment_library_view_pager);
-        pauseBox = (TextView) rootView.findViewById(R.id.fragment_library_bottom_bar);
         final TabLayout tabLayout = (TabLayout)viewPager.findViewById(R.id.fragment_library_tab_layout);
 
         viewPager.setAdapter(adapter);
         tabLayout.addOnTabSelectedListener(tabSelectedListener);
         tabLayout.setupWithViewPager(viewPager);
-
-        // update all meta ui components
-        updateMetaUI();
-
-        pauseBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
-
-                MusicPlaybackState state = MusicUtils.getState();
-                // do nothing on unknown state
-                if (state == null) {
-                    return;
-                }
-
-                if (MusicUtils.isPlaying()) {
-                    MusicUtils.pause();
-                } else if (state.getQueuePos() == MusicPlaybackService.UNKNOWN_POS) {
-                    Toast.makeText(v.getContext(), R.string.toast_choose_track, Toast.LENGTH_SHORT).show();
-                    viewPager.setCurrentItem(QUEUE_FRAGMENT);
-                } else {
-                    MusicUtils.resume();
-                    // @TODO resume when already playing. start when not loaded
-                }
-            }
-        });
 
         return rootView;
     }
@@ -178,27 +145,11 @@ public class LibraryFragment extends Fragment {
         pageList.add(page);
 
         page = new LibraryPagerAdapter.PageHolder();
-        page.fragment = Fragment.instantiate(activity, MusicQueueFragment.class.getName());
+        page.fragment = Fragment.instantiate(activity, MusicListFragment.class.getName());
         page.sname = getString(R.string.fragment_name_queue);
         pageList.add(page);
 
         return pageList;
-    }
-
-    private void updatePauseBox() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "updatePauseBox");
-
-        if (MusicUtils.isPlaying()) {
-            pauseBox.setText(getString(R.string.fragment_library_bottom_bar_pause));
-        } else {
-            pauseBox.setText(getString(R.string.fragment_library_bottom_bar_play));
-        }
-    }
-
-    private void updateMetaUI() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "updateMetaUI");
-
-        updatePauseBox();
     }
 
 
@@ -224,7 +175,7 @@ public class LibraryFragment extends Fragment {
             final String action = intent.getAction();
 
             if (action.equals(NyaaUtils.META_CHANGED)) {
-                reference.get().updateMetaUI();
+                // reference.get().updateMetaUI();
             }
         }
     }
