@@ -1,12 +1,14 @@
 package xyz.lostalishar.nyaanyaamusicplayer.ui.fragment;
 
 import android.app.Activity;
+import android.app.LoaderManager;
 import android.content.Loader;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,7 +22,9 @@ import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
+import xyz.lostalishar.nyaanyaamusicplayer.adapter.BaseAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.MusicAdapter;
+import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.BaseMusicViewHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicListLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
@@ -29,9 +33,10 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
  * Fragment containing entire list of music on device
  */
 
-public class MusicListFragment extends BaseFragment {
+public class MusicListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Music>> {
     private static final String TAG = MusicListFragment.class.getSimpleName();
 
+    public BaseAdapter<? extends BaseMusicViewHolder> adapter;
     private RecyclerView.LayoutManager layout;
 
     public static MusicListFragment newInstance() {
@@ -51,7 +56,7 @@ public class MusicListFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
 
         Activity activity = getActivity();
-        adapter = new MusicAdapter(new ArrayList<Music>());
+        adapter = new MusicAdapter(new ArrayList<Music>(), actionMode);
 
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
     }
@@ -126,6 +131,22 @@ public class MusicListFragment extends BaseFragment {
         Activity activity = getActivity();
 
         return new MusicListLoader(activity);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<Music>> loader, List<Music> data) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onLoadFinished");
+
+        adapter.finishCAB();
+        adapter.swap(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Music>> loader) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
+
+        adapter.finishCAB();
+        adapter.swap(null);
     }
 
 

@@ -28,9 +28,10 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
 
     private ActionMode actionMode;
 
-    protected BaseAdapter(List<Music> musicList) {
+    protected BaseAdapter(List<Music> musicList, ActionMode actionMode) {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
+        this.actionMode = actionMode;
         this.musicList = musicList;
 
         // @TODO check if ids are stable

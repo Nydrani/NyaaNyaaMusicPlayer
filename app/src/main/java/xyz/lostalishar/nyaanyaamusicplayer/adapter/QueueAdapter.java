@@ -29,8 +29,8 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
     private static final String TAG = QueueAdapter.class.getSimpleName();
 
-    public QueueAdapter(List<Music> musicList) {
-        super(musicList);
+    public QueueAdapter(List<Music> musicList, ActionMode actionMode) {
+        super(musicList, actionMode);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
     }
 

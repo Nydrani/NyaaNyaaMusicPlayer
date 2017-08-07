@@ -5,6 +5,9 @@ import android.app.LoaderManager;
 import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.View;
 
 import java.util.List;
 
@@ -17,11 +20,10 @@ import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
  * BaseFragment containing list of music provided by adapter
  */
 
-public abstract class BaseFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Music>> {
+public abstract class BaseFragment extends Fragment {
     private static final String TAG = BaseFragment.class.getSimpleName();
 
-    public BaseAdapter<? extends BaseMusicViewHolder> adapter;
-
+    public ActionMode actionMode;
 
     //=========================================================================
     // Fragment lifecycle
@@ -33,26 +35,5 @@ public abstract class BaseFragment extends Fragment implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
-    }
-
-
-    //=========================================================================
-    // LoaderManager.LoaderCallbacks
-    //=========================================================================
-
-    @Override
-    public void onLoadFinished(Loader<List<Music>> loader, List<Music> data) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onLoadFinished");
-
-        adapter.finishCAB();
-        adapter.swap(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<List<Music>> loader) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
-
-        adapter.finishCAB();
-        adapter.swap(null);
     }
 }

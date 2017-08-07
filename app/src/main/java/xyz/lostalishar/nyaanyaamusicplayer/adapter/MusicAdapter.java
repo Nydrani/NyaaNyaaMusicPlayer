@@ -26,8 +26,8 @@ import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 public class MusicAdapter extends BaseAdapter<MusicListViewHolder> {
     private static final String TAG = MusicAdapter.class.getSimpleName();
 
-    public MusicAdapter(List<Music> musicList) {
-        super(musicList);
+    public MusicAdapter(List<Music> musicList, ActionMode actionMode) {
+        super(musicList, actionMode);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
     }
 

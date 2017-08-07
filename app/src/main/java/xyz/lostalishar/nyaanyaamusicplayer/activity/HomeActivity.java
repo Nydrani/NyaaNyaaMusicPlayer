@@ -97,7 +97,7 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
 
         FragmentManager fm = getFragmentManager();
         BaseFragment slidingFragment = (BaseFragment)getSlidingFragment(fm);
-        LibraryFragment baseFragment = (LibraryFragment)getBaseFragment(fm);
+        //LibraryFragment baseFragment = (LibraryFragment)getBaseFragment(fm);
 
         if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
             slidingFragment.setHasOptionsMenu(false);
@@ -107,11 +107,11 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
 
         // @TODO update CAB to be located it the fragment (UI) instead of adapter
         // @TODO pass CAB into the adapter so single cab entry
-        BaseFragment frag1 = (BaseFragment)baseFragment.pageList.get(LibraryFragment.LIST_FRAGMENT).fragment;
+        //BaseFragment frag1 = (BaseFragment)baseFragment.pageList.get(LibraryFragment.LIST_FRAGMENT).fragment;
         //BaseFragment frag2 = (BaseFragment)baseFragment.pageList.get(LibraryFragment.ALBUM_FRAGMENT).fragment;
-        frag1.adapter.finishCAB();
+        //frag1.adapter.finishCAB();
         //frag2.adapter.finishCAB();
-        slidingFragment.adapter.finishCAB();
+        //slidingFragment.adapter.finishCAB();
     }
 
     @Override
