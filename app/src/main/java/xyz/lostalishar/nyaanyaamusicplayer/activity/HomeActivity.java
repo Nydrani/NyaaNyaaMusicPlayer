@@ -18,10 +18,12 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.LibraryFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicQueueFragment;
 
-public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnViewInflatedListener {
+public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnViewInflatedListener,
+        SlidingUpPanelLayout.PanelSlideListener {
     private static final String TAG = HomeActivity.class.getSimpleName();
 
 
@@ -85,6 +87,38 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
 
 
     //=========================================================================
+    // Panel slide listener callback
+    //=========================================================================
+
+    @Override
+    public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState,
+                                    SlidingUpPanelLayout.PanelState newState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onPanelStateChanged");
+
+        FragmentManager fm = getFragmentManager();
+        BaseFragment slidingFragment = (BaseFragment)getSlidingFragment(fm);
+        LibraryFragment baseFragment = (LibraryFragment)getBaseFragment(fm);
+
+        if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+            slidingFragment.setHasOptionsMenu(false);
+        } else {
+            slidingFragment.setHasOptionsMenu(true);
+        }
+
+        BaseFragment frag1 = (BaseFragment)baseFragment.pageList.get(LibraryFragment.LIST_FRAGMENT).fragment;
+        BaseFragment frag2 = (BaseFragment)baseFragment.pageList.get(LibraryFragment.QUEUE_FRAGMENT).fragment;
+        frag1.adapter.finishCAB();
+        frag2.adapter.finishCAB();
+        slidingFragment.adapter.finishCAB();
+    }
+
+    @Override
+    public void onPanelSlide(View panel, float slideOffset) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onPanelSlide");
+    }
+
+
+    //=========================================================================
     // Fragment view inflated callback
     //=========================================================================
 
@@ -96,6 +130,7 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         RecyclerView scrollableView = (RecyclerView)view.findViewById(R.id.list_base_view);
 
         rootView.setScrollableView(scrollableView);
+        rootView.addPanelSlideListener(this);
     }
 
 

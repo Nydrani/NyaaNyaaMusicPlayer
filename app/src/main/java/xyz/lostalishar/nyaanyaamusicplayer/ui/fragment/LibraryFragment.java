@@ -30,7 +30,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 public class LibraryFragment extends Fragment {
     private static final String TAG = LibraryFragment.class.getSimpleName();
 
-    private List<LibraryPagerAdapter.PageHolder> pageList;
+    public List<LibraryPagerAdapter.PageHolder> pageList;
     private LibraryPagerAdapter adapter;
     private ViewPager viewPager;
     private TabLayout.OnTabSelectedListener tabSelectedListener;
@@ -38,8 +38,8 @@ public class LibraryFragment extends Fragment {
     private IntentFilter filter;
     private MetaChangedListener metaChangedListener;
 
-    private static final int LIST_FRAGMENT = 0;
-    private static final int QUEUE_FRAGMENT = 1;
+    public static final int LIST_FRAGMENT = 0;
+    public static final int QUEUE_FRAGMENT = 1;
 
     public static LibraryFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
