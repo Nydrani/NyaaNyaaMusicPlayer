@@ -41,9 +41,23 @@ public class AlbumAdapter extends BaseAdapter<AlbumViewHolder> {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateViewHolder");
 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View v = inflater.inflate(R.layout.list_layout_music, parent, false);
+        View v = inflater.inflate(R.layout.list_layout_album, parent, false);
 
         return new AlbumViewHolder(v, this);
+    }
+
+    @Override
+    public void onBindViewHolder(AlbumViewHolder holder, int position) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onBindViewHolder");
+
+        Music music = getMusicList().get(position);
+
+        holder.musicTitle.setText(music.getName());
+        holder.musicDescription.setText(music.getArtistName());
+        holder.musicAlbum.setText(music.getAlbumName());
+
+        // store id
+        holder.musicDataHolder.musicId = music.getId();
     }
 
 

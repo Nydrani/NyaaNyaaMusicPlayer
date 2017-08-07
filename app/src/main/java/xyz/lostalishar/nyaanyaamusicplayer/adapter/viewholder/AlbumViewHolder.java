@@ -2,8 +2,10 @@ package xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
+import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.BaseAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 
@@ -14,6 +16,8 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 public class AlbumViewHolder extends BaseMusicViewHolder {
     private static final String TAG = AlbumViewHolder.class.getSimpleName();
 
+    public TextView musicAlbum;
+
     public AlbumViewHolder(View view, BaseAdapter<AlbumViewHolder> adapter) {
         super(view, adapter);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
@@ -21,6 +25,9 @@ public class AlbumViewHolder extends BaseMusicViewHolder {
         // onclick for each item
         // @TODO fix this up soon lmao
         view.setOnClickListener(this);
+
+        // extra field for album
+        musicAlbum = (TextView) view.findViewById(R.id.music_album);
     }
 
 
