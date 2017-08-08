@@ -1173,12 +1173,12 @@ public class MusicPlaybackService extends Service implements
     private static class NyaaNyaaMusicServiceStub extends INyaaNyaaMusicService.Stub {
         private static final String TAG = NyaaNyaaMusicServiceStub.class.getSimpleName();
 
-        private final WeakReference<MusicPlaybackService> musicPlaybackService;
+        private final WeakReference<MusicPlaybackService> serviceReference;
 
         private NyaaNyaaMusicServiceStub(MusicPlaybackService service) {
             if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-            musicPlaybackService = new WeakReference<>(service);
+            serviceReference = new WeakReference<>(service);
         }
 
 
@@ -1186,84 +1186,132 @@ public class MusicPlaybackService extends Service implements
         public boolean load(int queuePos) throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "load");
 
-            return musicPlaybackService.get().load(queuePos);
+            MusicPlaybackService service = serviceReference.get();
+
+            return service != null && service.load(queuePos);
         }
 
         @Override
         public void play() throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "start");
 
-            musicPlaybackService.get().play();
+            MusicPlaybackService service = serviceReference.get();
+
+            if (service != null) {
+                service.play();
+            }
         }
 
         @Override
         public void pause() throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "pause");
 
-            musicPlaybackService.get().pause();
+            MusicPlaybackService service = serviceReference.get();
+
+            if (service != null) {
+                service.pause();
+            }
         }
 
         @Override
         public void stop() throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "stop");
 
-            musicPlaybackService.get().stop();
+            MusicPlaybackService service = serviceReference.get();
+
+            if (service != null) {
+                service.stop();
+            }
         }
 
         @Override
         public void reset() throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "reset");
 
-            musicPlaybackService.get().reset();
+            MusicPlaybackService service = serviceReference.get();
+
+            if (service != null) {
+                service.reset();
+            }
         }
 
         @Override
         public void next() throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "next");
 
-            musicPlaybackService.get().next();
+            MusicPlaybackService service = serviceReference.get();
+
+            if (service != null) {
+                service.next();
+            }
         }
 
         @Override
         public void previous() throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "previous");
 
-            musicPlaybackService.get().previous();
+            MusicPlaybackService service = serviceReference.get();
+
+            if (service != null) {
+                service.previous();
+            }
         }
 
         @Override
         public MusicPlaybackState getState() throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "getState");
 
-            return musicPlaybackService.get().getState();
+            MusicPlaybackService service = serviceReference.get();
+            if (service != null) {
+                return service.getState();
+            }
+
+            return null;
         }
 
         @Override
         public List<MusicPlaybackTrack> getQueue() throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "getQueue");
 
-            return musicPlaybackService.get().getQueue();
+            MusicPlaybackService service = serviceReference.get();
+            if (service != null) {
+                return service.getQueue();
+            }
+
+            return new ArrayList<>();
         }
 
         @Override
         public int enqueue(long[] musicIdList, int[] addedList) throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "enqueue");
 
-            return musicPlaybackService.get().enqueue(musicIdList, addedList);
+            MusicPlaybackService service = serviceReference.get();
+            if (service != null) {
+                return service.enqueue(musicIdList, addedList);
+            }
+
+            return UNKNOWN_POS;
         }
 
         @Override
         public int dequeue(long[] musicIdList, long[] removedList) throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "dequeue");
 
-            return musicPlaybackService.get().dequeue(musicIdList, removedList);
+            MusicPlaybackService service = serviceReference.get();
+            if (service != null) {
+                return service.dequeue(musicIdList, removedList);
+            }
+
+            return UNKNOWN_POS;
         }
 
         @Override
         public boolean isPlaying() throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "isPlaying");
 
-            return musicPlaybackService.get().isPlaying();
+            MusicPlaybackService service = serviceReference.get();
+
+            return service != null && service.isPlaying();
         }
     }
 }
