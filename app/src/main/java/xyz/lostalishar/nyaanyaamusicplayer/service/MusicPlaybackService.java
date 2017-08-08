@@ -1169,7 +1169,7 @@ public class MusicPlaybackService extends Service implements
     // AIDL music playback service implementation for binder
     // ========================================================================
 
-    // @TODO might have to check for null on refernce.get() if service dies
+    // @TODO might have to check for null on reference.get() if service dies
     private static class NyaaNyaaMusicServiceStub extends INyaaNyaaMusicService.Stub {
         private static final String TAG = NyaaNyaaMusicServiceStub.class.getSimpleName();
 
