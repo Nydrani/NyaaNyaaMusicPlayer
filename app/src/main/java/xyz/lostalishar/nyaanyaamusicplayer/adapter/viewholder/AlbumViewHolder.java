@@ -1,39 +1,30 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder;
 
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.ref.WeakReference;
-
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
-import xyz.lostalishar.nyaanyaamusicplayer.adapter.AlbumAdapter;
-import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
+import xyz.lostalishar.nyaanyaamusicplayer.adapter.BaseAdapter;
 
 /**
  * ViewHolder for album list
  */
 
-public class AlbumViewHolder extends RecyclerView.ViewHolder
-        implements View.OnClickListener, View.OnLongClickListener {
+public class AlbumViewHolder extends BaseMusicViewHolder {
     private static final String TAG = AlbumViewHolder.class.getSimpleName();
 
     public TextView albumTitle;
     public TextView numSongs;
 
-    public WeakReference<AlbumAdapter> adapter;
-
     public AlbumDataHolder albumDataHolder;
 
-    public AlbumViewHolder(View view, AlbumAdapter adapter) {
-        super(view);
+    public AlbumViewHolder(View view, BaseAdapter<AlbumViewHolder> adapter) {
+        super(view, adapter);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
-
-        this.adapter = new WeakReference<>(adapter);
 
         // extra field for album
         albumTitle = (TextView) view.findViewById(R.id.album_title);
@@ -44,7 +35,6 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder
 
         // onclick for each item
         // @TODO fix this up soon lmao
-        view.setOnClickListener(this);
         view.setOnLongClickListener(this);
     }
 
@@ -54,14 +44,6 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder
     // ========================================================================
 
     @Override
-    public void onClick(View v) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
-
-        // finish action mode here
-        adapter.get().finishCAB();
-    }
-
-    @Override
     public boolean onLongClick(View v) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLongClick");
 
@@ -69,15 +51,13 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder
                 .setAction("Description", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(v.getContext(), albumTitle.getText(), Toast.LENGTH_LONG)
+                        Toast.makeText(v.getContext(), numSongs.getText(), Toast.LENGTH_LONG)
                                 .show();
                     }
                 }).show();
 
-        // open action mode here
-        adapter.get().openCAB(v, getAdapterPosition());
-
-        return true;
+        // open action mode
+        return super.onLongClick(v);
     }
 
 

@@ -8,7 +8,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,9 +21,7 @@ import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
-import xyz.lostalishar.nyaanyaamusicplayer.adapter.BaseAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.MusicAdapter;
-import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.BaseMusicViewHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicListLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
@@ -36,7 +33,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 public class MusicListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Music>> {
     private static final String TAG = MusicListFragment.class.getSimpleName();
 
-    public BaseAdapter<? extends BaseMusicViewHolder> adapter;
+    public MusicAdapter adapter;
     private RecyclerView.LayoutManager layout;
 
     public static MusicListFragment newInstance() {

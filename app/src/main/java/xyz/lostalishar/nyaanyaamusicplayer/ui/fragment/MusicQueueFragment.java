@@ -12,7 +12,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,9 +27,7 @@ import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
-import xyz.lostalishar.nyaanyaamusicplayer.adapter.BaseAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.QueueAdapter;
-import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.BaseMusicViewHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicQueueLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
@@ -45,7 +42,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 public class MusicQueueFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Music>> {
     private static final String TAG = MusicQueueFragment.class.getSimpleName();
 
-    public BaseAdapter<? extends BaseMusicViewHolder> adapter;
+    public QueueAdapter adapter;
     private RecyclerView.LayoutManager layout;
     private TextView pauseBox;
 
@@ -90,6 +87,9 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
+        // no options menu on startup
+        setHasOptionsMenu(false);
+
         List<Music> queueList = new ArrayList<>();
 
         adapter = new QueueAdapter(queueList, actionMode);
@@ -103,7 +103,6 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
         filter.addAction(NyaaUtils.SERVICE_READY);
         queueUpdateListener = new QueueUpdateListener(this);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

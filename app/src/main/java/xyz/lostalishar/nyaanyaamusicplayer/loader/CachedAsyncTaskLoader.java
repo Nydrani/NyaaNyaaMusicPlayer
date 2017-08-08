@@ -15,7 +15,7 @@ public abstract class CachedAsyncTaskLoader<D> extends AsyncTaskLoader<D> {
     private static final String TAG = CachedAsyncTaskLoader.class.getSimpleName();
     private D mData;
 
-    public CachedAsyncTaskLoader(Context context) {
+    protected CachedAsyncTaskLoader(Context context) {
         super(context);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
     }

@@ -1,6 +1,5 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -24,8 +23,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.model.Album;
  *     3. cbf doing benchmarks
  */
 
-public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>
-        implements ActionMode.Callback {
+public class AlbumAdapter extends BaseAdapter<AlbumViewHolder> {
     private static final String TAG = AlbumAdapter.class.getSimpleName();
 
     private List<Album> albumList;
@@ -33,7 +31,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>
 
     private ActionMode actionMode;
 
-    public AlbumAdapter(List<Album> albumList) {
+    public AlbumAdapter(List<Album> albumList, ActionMode actionMode) {
+        super(actionMode);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         this.albumList = albumList;
@@ -174,6 +173,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>
 
         return albumList;
     }
+
 
     // ========================================================================
     // Useful cursor functions

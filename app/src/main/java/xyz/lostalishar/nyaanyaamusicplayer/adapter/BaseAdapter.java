@@ -6,11 +6,8 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.View;
 
-import java.util.List;
-
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.BaseMusicViewHolder;
-import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 
 /**
  * Currently not implementing a List rather than Cursor due to:
@@ -23,63 +20,18 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
         implements ActionMode.Callback {
     private static final String TAG = BaseAdapter.class.getSimpleName();
 
-    private List<Music> musicList;
-    protected Music chosenItem;
+    protected int chosenItem;
 
     private ActionMode actionMode;
 
-    protected BaseAdapter(List<Music> musicList, ActionMode actionMode) {
+    protected BaseAdapter(ActionMode actionMode) {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         this.actionMode = actionMode;
-        this.musicList = musicList;
 
         // @TODO check if ids are stable
         // ids are stable. at least i would hope (pls be stable MediaStore)
         setHasStableIds(true);
-    }
-
-
-    // ========================================================================
-    // RecyclerView.Adapter overrides
-    // ========================================================================
-
-    @Override
-    public void onBindViewHolder(VH holder, int position) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onBindViewHolder");
-
-        Music music = musicList.get(position);
-
-        holder.musicTitle.setText(music.getName());
-        holder.musicDescription.setText(music.getArtistName());
-
-        // store id
-        holder.musicDataHolder.musicId = music.getId();
-    }
-
-    @Override
-    public long getItemId(int position) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "getItemId");
-
-        return musicList.get(position).getId();
-    }
-
-    @Override
-    public int getItemCount() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "getItemCount");
-
-        return musicList.size();
-    }
-
-
-    // ========================================================================
-    // Exposed functions
-    // ========================================================================
-
-    public List<Music> getMusicList() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "getMusicList");
-
-        return musicList;
     }
 
 
@@ -109,7 +61,7 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
     public void openCAB(View v, Integer position) {
         if (BuildConfig.DEBUG) Log.d(TAG, "openCAB");
 
-        chosenItem = musicList.get(position);
+        chosenItem = position;
 
         if (actionMode == null) {
             actionMode = v.startActionMode(this);
@@ -121,7 +73,7 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
 
         if (actionMode != null) {
             actionMode.finish();
-            chosenItem = null;
+            chosenItem = -1;
         }
     }
 
@@ -129,20 +81,5 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
         if (BuildConfig.DEBUG) Log.d(TAG, "isCABOpen");
 
         return actionMode != null;
-    }
-
-
-    // ========================================================================
-    // Useful cursor functions
-    // ========================================================================
-
-    public void swap(List<Music> newList){
-        if (BuildConfig.DEBUG) Log.d(TAG, "swap");
-
-        musicList.clear();
-        if (newList != null) {
-            musicList.addAll(newList);
-        }
-        notifyDataSetChanged();
     }
 }

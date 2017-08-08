@@ -26,11 +26,57 @@ import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 public class MusicAdapter extends BaseAdapter<MusicListViewHolder> {
     private static final String TAG = MusicAdapter.class.getSimpleName();
 
+    private List<Music> musicList;
+
     public MusicAdapter(List<Music> musicList, ActionMode actionMode) {
-        super(musicList, actionMode);
+        super(actionMode);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
+
+        this.musicList = musicList;
     }
 
+
+    // ========================================================================
+    // RecyclerView.Adapter overrides
+    // ========================================================================
+
+    @Override
+    public void onBindViewHolder(MusicListViewHolder holder, int position) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onBindViewHolder");
+
+        Music music = musicList.get(position);
+
+        holder.musicTitle.setText(music.getName());
+        holder.musicDescription.setText(music.getArtistName());
+
+        // store id
+        holder.musicDataHolder.musicId = music.getId();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getItemId");
+
+        return musicList.get(position).getId();
+    }
+
+    @Override
+    public int getItemCount() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getItemCount");
+
+        return musicList.size();
+    }
+
+
+    // ========================================================================
+    // Exposed functions
+    // ========================================================================
+
+    public List<Music> getMusicList() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getMusicList");
+
+        return musicList;
+    }
 
     // ========================================================================
     // RecyclerView.Adapter overrides
@@ -79,5 +125,20 @@ public class MusicAdapter extends BaseAdapter<MusicListViewHolder> {
         }
 
         return false;
+    }
+
+
+    // ========================================================================
+    // Useful cursor functions
+    // ========================================================================
+
+    public void swap(List<Music> newList){
+        if (BuildConfig.DEBUG) Log.d(TAG, "swap");
+
+        musicList.clear();
+        if (newList != null) {
+            musicList.addAll(newList);
+        }
+        notifyDataSetChanged();
     }
 }

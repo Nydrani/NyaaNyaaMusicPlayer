@@ -1,7 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.ui.fragment;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Loader;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,17 +21,14 @@ import java.util.List;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.AlbumAdapter;
-import xyz.lostalishar.nyaanyaamusicplayer.adapter.BaseAdapter;
-import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.BaseMusicViewHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.AlbumLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Album;
-import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 
 /**
  * Fragment containing entire list of music on device
  */
 
-public class AlbumFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Album>> {
+public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Album>> {
     private static final String TAG = AlbumFragment.class.getSimpleName();
 
     public AlbumAdapter adapter;
@@ -57,7 +52,7 @@ public class AlbumFragment extends Fragment implements LoaderManager.LoaderCallb
         super.onCreate(savedInstanceState);
 
         Activity activity = getActivity();
-        adapter = new AlbumAdapter(new ArrayList<Album>());
+        adapter = new AlbumAdapter(new ArrayList<Album>(), actionMode);
 
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
     }
@@ -148,6 +143,7 @@ public class AlbumFragment extends Fragment implements LoaderManager.LoaderCallb
         adapter.finishCAB();
         adapter.swap(null);
     }
+
 
     //=========================================================================
     // Helper functions

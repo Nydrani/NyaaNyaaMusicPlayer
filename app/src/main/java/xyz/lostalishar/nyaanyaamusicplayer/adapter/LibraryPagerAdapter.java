@@ -9,7 +9,6 @@ import android.util.Log;
 import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
-import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 
 /**
  * FragmentPager adapter used for the swipe tabs in the home screen

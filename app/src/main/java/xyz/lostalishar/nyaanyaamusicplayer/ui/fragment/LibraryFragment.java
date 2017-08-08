@@ -72,18 +72,12 @@ public class LibraryFragment extends Fragment {
             public void onTabUnselected(TabLayout.Tab tab) {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onTabUnselected");
 
-                /*
                 BaseFragment frag = (BaseFragment)adapter.getItem(tab.getPosition());
 
                 // need to check for null in case of a possible orientation change
-                if (frag.adapter == null) {
-                    return;
+                if (frag.actionMode != null) {
+                    frag.actionMode.finish();
                 }
-
-                if (frag.adapter.isCABOpen()) {
-                    frag.adapter.finishCAB();
-                }
-                */
             }
 
             @Override
@@ -103,7 +97,7 @@ public class LibraryFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_library, container, false);
         viewPager = (ViewPager)rootView.findViewById(R.id.fragment_library_view_pager);
-        final TabLayout tabLayout = (TabLayout)viewPager.findViewById(R.id.fragment_library_tab_layout);
+        TabLayout tabLayout = (TabLayout)viewPager.findViewById(R.id.fragment_library_tab_layout);
 
         viewPager.setAdapter(adapter);
         tabLayout.addOnTabSelectedListener(tabSelectedListener);
