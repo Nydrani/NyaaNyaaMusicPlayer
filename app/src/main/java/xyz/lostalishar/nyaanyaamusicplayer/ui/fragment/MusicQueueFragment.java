@@ -304,12 +304,18 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
 
             final String action = intent.getAction();
 
-            if (action.equals(NyaaUtils.QUEUE_CHANGED)) {
-                reference.get().refreshQueue();
-            } else if (action.equals(NyaaUtils.META_CHANGED)) {
-                reference.get().updateMetaUI();
-            } else if (action.equals(NyaaUtils.SERVICE_READY)) {
-                reference.get().refreshQueue();
+            switch (action) {
+                case NyaaUtils.QUEUE_CHANGED:
+                    reference.get().refreshQueue();
+                    break;
+                case NyaaUtils.META_CHANGED:
+                    reference.get().updateMetaUI();
+                    break;
+                case NyaaUtils.SERVICE_READY:
+                    reference.get().refreshQueue();
+                    break;
+                default:
+                    if (BuildConfig.DEBUG) Log.e(TAG, "Unknown action: " + action);
             }
         }
     }
