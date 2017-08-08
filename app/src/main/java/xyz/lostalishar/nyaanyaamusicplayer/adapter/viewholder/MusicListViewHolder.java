@@ -6,8 +6,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.ref.WeakReference;
-
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.BaseAdapter;
@@ -51,7 +49,7 @@ public class MusicListViewHolder extends BaseMusicViewHolder {
         if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
 
         // add song here
-        if (!(adapter.get().isCABOpen())) {
+        if (!(adapter.get().fragment.get().isCABOpen())) {
             MusicUtils.enqueue(new long[] { musicDataHolder.musicId }, null);
         }
 

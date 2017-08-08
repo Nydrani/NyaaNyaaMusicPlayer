@@ -49,7 +49,7 @@ public abstract class BaseMusicViewHolder extends RecyclerView.ViewHolder
         if (BuildConfig.DEBUG) Log.d(TAG, "onLongClick");
 
         // open action mode here
-        adapter.get().openCAB(v, getAdapterPosition());
+        adapter.get().toggleCAB(v, adapter.get(), getAdapterPosition());
 
         return true;
     }

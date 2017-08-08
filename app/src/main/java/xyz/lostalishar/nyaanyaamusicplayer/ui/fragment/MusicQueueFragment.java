@@ -92,7 +92,7 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
 
         List<Music> queueList = new ArrayList<>();
 
-        adapter = new QueueAdapter(queueList, actionMode);
+        adapter = new QueueAdapter(queueList, this);
 
         Activity activity = getActivity();
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);

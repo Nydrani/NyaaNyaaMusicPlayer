@@ -73,11 +73,7 @@ public class LibraryFragment extends Fragment {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onTabUnselected");
 
                 BaseFragment frag = (BaseFragment)adapter.getItem(tab.getPosition());
-
-                // need to check for null in case of a possible orientation change
-                if (frag.actionMode != null) {
-                    frag.actionMode.finish();
-                }
+                frag.closeCAB();
             }
 
             @Override

@@ -15,6 +15,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.AlbumViewHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Album;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 
 /**
  * Currently not implementing a List rather than Cursor due to:
@@ -27,12 +28,9 @@ public class AlbumAdapter extends BaseAdapter<AlbumViewHolder> {
     private static final String TAG = AlbumAdapter.class.getSimpleName();
 
     private List<Album> albumList;
-    protected Album chosenItem;
 
-    private ActionMode actionMode;
-
-    public AlbumAdapter(List<Album> albumList, ActionMode actionMode) {
-        super(actionMode);
+    public AlbumAdapter(List<Album> albumList, BaseFragment fragment) {
+        super(fragment);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         this.albumList = albumList;
@@ -117,50 +115,6 @@ public class AlbumAdapter extends BaseAdapter<AlbumViewHolder> {
         }
 
         return false;
-    }
-
-    @Override
-    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onPrepareActionMode");
-
-        return false;
-    }
-
-    @Override
-    public void onDestroyActionMode(ActionMode mode) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onDestroyActionMode");
-
-        actionMode = null;
-    }
-
-
-    // ========================================================================
-    // Helper functions
-    // ========================================================================
-
-    public void openCAB(View v, Integer position) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "openCAB");
-
-        chosenItem = albumList.get(position);
-
-        if (actionMode == null) {
-            actionMode = v.startActionMode(this);
-        }
-    }
-
-    public void finishCAB() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "finishCAB");
-
-        if (actionMode != null) {
-            actionMode.finish();
-            chosenItem = null;
-        }
-    }
-
-    public boolean isCABOpen() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "isCABOpen");
-
-        return actionMode != null;
     }
 
 

@@ -6,8 +6,12 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.View;
 
+import java.lang.ref.WeakReference;
+
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.BaseMusicViewHolder;
+import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 
 /**
  * Currently not implementing a List rather than Cursor due to:
@@ -20,14 +24,13 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
         implements ActionMode.Callback {
     private static final String TAG = BaseAdapter.class.getSimpleName();
 
-    protected int chosenItem;
+    public int chosenItem;
+    public WeakReference<BaseFragment> fragment;
 
-    private ActionMode actionMode;
-
-    protected BaseAdapter(ActionMode actionMode) {
+    protected BaseAdapter(BaseFragment fragment) {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        this.actionMode = actionMode;
+        this.fragment = new WeakReference<>(fragment);
 
         // @TODO check if ids are stable
         // ids are stable. at least i would hope (pls be stable MediaStore)
@@ -50,36 +53,20 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
     public void onDestroyActionMode(ActionMode mode) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onDestroyActionMode");
 
-        actionMode = null;
+        fragment.get().actionMode = null;
+        chosenItem = MusicPlaybackService.UNKNOWN_POS;
     }
 
-
     // ========================================================================
-    // Helper functions
+    // Multi item toggle CAB
     // ========================================================================
 
-    public void openCAB(View v, Integer position) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "openCAB");
-
-        chosenItem = position;
-
-        if (actionMode == null) {
-            actionMode = v.startActionMode(this);
-        }
+    public void toggleCAB(View v, ActionMode.Callback callback, int position) {
+        fragment.get().openCAB(v, callback);
     }
 
     public void finishCAB() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "finishCAB");
-
-        if (actionMode != null) {
-            actionMode.finish();
-            chosenItem = -1;
-        }
-    }
-
-    public boolean isCABOpen() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "isCABOpen");
-
-        return actionMode != null;
+        fragment.get().closeCAB();
+        chosenItem = MusicPlaybackService.UNKNOWN_POS;
     }
 }

@@ -109,15 +109,9 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         // @TODO pass CAB into the adapter so single cab entry
         BaseFragment frag1 = (BaseFragment)baseFragment.pageList.get(LibraryFragment.LIST_FRAGMENT).fragment;
         BaseFragment frag2 = (BaseFragment)baseFragment.pageList.get(LibraryFragment.ALBUM_FRAGMENT).fragment;
-        if (frag1.actionMode != null) {
-            frag1.actionMode.finish();
-        }
-        if (frag2.actionMode != null) {
-            frag2.actionMode.finish();
-        }
-        if (slidingFragment.actionMode != null) {
-            slidingFragment.actionMode.finish();
-        }
+        frag1.closeCAB();
+        frag2.closeCAB();
+        slidingFragment.closeCAB();
     }
 
     @Override

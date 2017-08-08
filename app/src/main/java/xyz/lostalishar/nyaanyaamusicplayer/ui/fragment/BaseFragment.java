@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ActionMode;
+import android.view.View;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 
@@ -27,5 +28,32 @@ public abstract class BaseFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
+    }
+
+
+    // ========================================================================
+    // Helper functions
+    // ========================================================================
+
+    public void openCAB(View v, ActionMode.Callback callback) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "openCAB");
+
+        if (actionMode == null) {
+            actionMode = v.startActionMode(callback);
+        }
+    }
+
+    public void closeCAB() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "finishCAB");
+
+        if (actionMode != null) {
+            actionMode.finish();
+        }
+    }
+
+    public boolean isCABOpen() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "isCABOpen");
+
+        return actionMode != null;
     }
 }

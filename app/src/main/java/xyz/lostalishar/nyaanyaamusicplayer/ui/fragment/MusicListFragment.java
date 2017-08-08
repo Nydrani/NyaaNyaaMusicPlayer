@@ -53,7 +53,7 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
 
         Activity activity = getActivity();
-        adapter = new MusicAdapter(new ArrayList<Music>(), actionMode);
+        adapter = new MusicAdapter(new ArrayList<Music>(), this);
 
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
     }

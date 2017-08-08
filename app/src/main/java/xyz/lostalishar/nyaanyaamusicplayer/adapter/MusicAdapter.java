@@ -15,6 +15,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.MusicListViewHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 
 /**
  * Currently not implementing a List rather than Cursor due to:
@@ -28,8 +29,8 @@ public class MusicAdapter extends BaseAdapter<MusicListViewHolder> {
 
     private List<Music> musicList;
 
-    public MusicAdapter(List<Music> musicList, ActionMode actionMode) {
-        super(actionMode);
+    public MusicAdapter(List<Music> musicList, BaseFragment fragment) {
+        super(fragment);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         this.musicList = musicList;

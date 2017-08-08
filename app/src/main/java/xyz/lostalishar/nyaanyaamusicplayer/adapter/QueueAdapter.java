@@ -17,6 +17,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.QueueViewHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 
 /**
@@ -31,8 +32,8 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
 
     private List<Music> musicList;
 
-    public QueueAdapter(List<Music> musicList, ActionMode actionMode) {
-        super(actionMode);
+    public QueueAdapter(List<Music> musicList, BaseFragment fragment) {
+        super(fragment);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         this.musicList = musicList;

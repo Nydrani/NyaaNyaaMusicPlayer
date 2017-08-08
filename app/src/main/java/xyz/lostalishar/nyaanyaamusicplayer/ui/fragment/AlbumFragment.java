@@ -52,7 +52,7 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
         super.onCreate(savedInstanceState);
 
         Activity activity = getActivity();
-        adapter = new AlbumAdapter(new ArrayList<Album>(), actionMode);
+        adapter = new AlbumAdapter(new ArrayList<Album>(), this);
 
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
     }
