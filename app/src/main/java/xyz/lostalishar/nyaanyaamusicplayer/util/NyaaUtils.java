@@ -12,14 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
-import xyz.lostalishar.nyaanyaamusicplayer.activity.BaseActivity;
 
 /**
  * Utilities for general use
  */
 
 public class NyaaUtils {
-    private static final String TAG = BaseActivity.class.getSimpleName();
+    private static final String TAG = NyaaUtils.class.getSimpleName();
     public static final int PERMISSION_REQUEST_CODE = 0;
 
     public static final String PACKAGE_NAME = "xyz.lostalishar.nyaanyaamusicplayer";

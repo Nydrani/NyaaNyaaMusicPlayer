@@ -13,7 +13,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
  */
 
 public class PreferenceUtils {
-    private static final String TAG = MusicUtils.class.getSimpleName();
+    private static final String TAG = PreferenceUtils.class.getSimpleName();
     private static final String SETTINGS_PREFERENCES = "Settings";
     private static final String SERVICE_PREFERENCES = "Service";
 
