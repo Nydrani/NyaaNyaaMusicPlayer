@@ -90,6 +90,8 @@ public class MusicPlaybackService extends Service implements
     private static final int UPDATE_QUEUE = 0;
     private static final int MUSIC_NOTIFICATION_ID = 1;
 
+    private boolean transientPause = false;
+
     private NoisyAudioReceiver noisyAudioReceiver;
 
 
@@ -353,6 +355,8 @@ public class MusicPlaybackService extends Service implements
     public void pause() {
         if (BuildConfig.DEBUG) Log.d(TAG, "pause");
 
+        transientPause = false;
+
         try {
             musicPlayer.pause();
 
@@ -361,7 +365,6 @@ public class MusicPlaybackService extends Service implements
             stopForeground(true);
             NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
             savePlaybackState();
-            audioManager.abandonAudioFocus(this);
         } catch (IllegalStateException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Called pause in illegal state");
         }
@@ -1078,7 +1081,10 @@ public class MusicPlaybackService extends Service implements
                 if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_GAIN");
 
                 setVolume(1.0f, 1.0f);
-                play();
+                if (transientPause) {
+                    play();
+                    transientPause = false;
+                }
                 break;
             case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
                 if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_GAIN_TRANSIENT");
@@ -1097,7 +1103,9 @@ public class MusicPlaybackService extends Service implements
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                 if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_LOSS_TRANSIENT");
 
+                boolean wasPlaying = isPlaying();
                 pause();
+                transientPause = wasPlaying;
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                 if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
