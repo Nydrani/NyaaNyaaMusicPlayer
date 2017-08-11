@@ -26,6 +26,8 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         SlidingUpPanelLayout.PanelSlideListener {
     private static final String TAG = HomeActivity.class.getSimpleName();
 
+    private SlidingUpPanelLayout slidingUpPanelLayout;
+
 
     //=========================================================================
     // Activity lifecycle
@@ -37,6 +39,8 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_layout_home);
+        slidingUpPanelLayout = (SlidingUpPanelLayout)findViewById(R.id.activity_sliding_up_layout);
+
     }
 
 
@@ -44,6 +48,15 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
     protected void onResume() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
         super.onResume();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onBackPressed");
+
+        if (!handleBackPressed()) {
+            super.onBackPressed();
+        }
     }
 
 
@@ -212,5 +225,27 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         if (BuildConfig.DEBUG) Log.d(TAG, "getSlidingFragment");
 
         return fm.findFragmentById(R.id.activity_sliding_content);
+    }
+
+    private boolean handleBackPressed() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "handleBackPressed");
+
+        if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+            collapsePanel();
+            return true;
+        }
+        return false;
+    }
+
+    private void collapsePanel() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "collapsePanel");
+
+        slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+    }
+
+    private void expandPanel() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "expandPanel");
+
+        slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
     }
 }
