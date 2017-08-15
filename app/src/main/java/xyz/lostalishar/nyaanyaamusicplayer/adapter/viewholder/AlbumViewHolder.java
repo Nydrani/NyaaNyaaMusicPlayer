@@ -1,5 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder;
 
+import android.app.Activity;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
@@ -51,7 +52,7 @@ public class AlbumViewHolder extends BaseMusicViewHolder {
 
         // add song here
         if (!(adapter.get().fragment.get().isCABOpen())) {
-            NyaaUtils.openAlbumList(v.getContext(), albumDataHolder.albumId);
+            NyaaUtils.openAlbumList((Activity)v.getContext(), albumDataHolder.albumId);
         }
 
         // close cab

@@ -82,12 +82,12 @@ public class NyaaUtils {
     /**
      * Start up the AlbumListActivity
      */
-    public static void openAlbumList(Context context, long albumId) {
+    public static void openAlbumList(Activity activity, long albumId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "openAlbumList");
 
-        Intent intent = new Intent(context, AlbumListActivity.class);
+        Intent intent = new Intent(activity, AlbumListActivity.class);
         intent.putExtra("albumId", albumId);
-        context.startActivity(intent);
+        activity.startActivity(intent);
     }
 
 

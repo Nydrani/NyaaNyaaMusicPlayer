@@ -38,12 +38,12 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
+
+        chosenId = getIntent().getExtras().getLong("albumId");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_layout_home);
         slidingUpPanelLayout = (SlidingUpPanelLayout)findViewById(R.id.activity_sliding_up_layout);
-
-        chosenId = getIntent().getExtras().getLong("albumId");
     }
 
 
