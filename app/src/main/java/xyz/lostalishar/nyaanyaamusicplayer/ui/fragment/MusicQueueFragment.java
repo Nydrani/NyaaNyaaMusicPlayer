@@ -156,6 +156,14 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
     }
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onActivityCreated");
+        super.onActivityCreated(savedInstanceState);
+
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
     public void onResume() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
         super.onResume();
