@@ -86,7 +86,7 @@ public class MusicListLoader extends CachedAsyncTaskLoader<List<Music>> {
     }
 
     // override this to change query
-    public static Cursor makeMusicCursor(Context context) {
+    public Cursor makeMusicCursor(Context context) {
         if (BuildConfig.DEBUG) Log.d(TAG, "makeMusicCursor");
 
         ContentResolver musicResolver = context.getContentResolver();

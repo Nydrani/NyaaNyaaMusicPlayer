@@ -9,6 +9,7 @@ import android.widget.Toast;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.BaseAdapter;
+import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
 /**
  * ViewHolder for album list
@@ -35,6 +36,7 @@ public class AlbumViewHolder extends BaseMusicViewHolder {
 
         // onclick for each item
         // @TODO fix this up soon lmao
+        view.setOnClickListener(this);
         view.setOnLongClickListener(this);
     }
 
@@ -42,6 +44,19 @@ public class AlbumViewHolder extends BaseMusicViewHolder {
     // ========================================================================
     // Internal OnClickListener overrides
     // ========================================================================
+
+    @Override
+    public void onClick(View v) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
+
+        // add song here
+        if (!(adapter.get().fragment.get().isCABOpen())) {
+            NyaaUtils.openAlbumList(v.getContext(), albumDataHolder.albumId);
+        }
+
+        // close cab
+        super.onClick(v);
+    }
 
     @Override
     public boolean onLongClick(View v) {

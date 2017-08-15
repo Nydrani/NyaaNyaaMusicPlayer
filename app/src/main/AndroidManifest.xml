@@ -22,6 +22,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".activity.AlbumListActivity">
+        </activity>
+
         <service
             android:name=".service.MusicPlaybackService"
             android:enabled="true"

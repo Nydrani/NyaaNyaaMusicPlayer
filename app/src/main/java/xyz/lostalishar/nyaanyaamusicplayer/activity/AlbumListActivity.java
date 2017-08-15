@@ -17,15 +17,17 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
+import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.AlbumListFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
-import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.LibraryFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicQueueFragment;
 
-public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnViewInflatedListener,
+public class AlbumListActivity extends BaseActivity implements MusicQueueFragment.OnViewInflatedListener,
         SlidingUpPanelLayout.PanelSlideListener {
-    private static final String TAG = HomeActivity.class.getSimpleName();
+    private static final String TAG = AlbumListActivity.class.getSimpleName();
 
+    private long chosenId = MusicPlaybackService.UNKNOWN_ID;
     private SlidingUpPanelLayout slidingUpPanelLayout;
 
 
@@ -40,6 +42,8 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
 
         setContentView(R.layout.activity_layout_home);
         slidingUpPanelLayout = (SlidingUpPanelLayout)findViewById(R.id.activity_sliding_up_layout);
+
+        chosenId = getIntent().getExtras().getLong("albumId");
     }
 
 
@@ -68,7 +72,7 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateOptionsMenu");
 
         MenuInflater mi = getMenuInflater();
-        mi.inflate(R.menu.main, menu);
+        mi.inflate(R.menu.album_list, menu);
         return true;
     }
 
@@ -109,7 +113,7 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
 
         FragmentManager fm = getFragmentManager();
         BaseFragment slidingFragment = (BaseFragment)getSlidingFragment(fm);
-        LibraryFragment baseFragment = (LibraryFragment)getBaseFragment(fm);
+        BaseFragment baseFragment = (BaseFragment)getBaseFragment(fm);
 
         if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
             slidingFragment.setHasOptionsMenu(false);
@@ -119,10 +123,7 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
 
         // @TODO update CAB to be located it the fragment (UI) instead of adapter
         // @TODO pass CAB into the adapter so single cab entry
-        BaseFragment frag1 = (BaseFragment)baseFragment.pageList.get(LibraryFragment.LIST_FRAGMENT).fragment;
-        BaseFragment frag2 = (BaseFragment)baseFragment.pageList.get(LibraryFragment.ALBUM_FRAGMENT).fragment;
-        frag1.closeCAB();
-        frag2.closeCAB();
+        baseFragment.closeCAB();
         slidingFragment.closeCAB();
     }
 
@@ -158,7 +159,7 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         if (BuildConfig.DEBUG) Log.d(TAG, "initialise");
         super.initialise();
 
-        setBaseFragment(LibraryFragment.newInstance());
+        setBaseFragment(AlbumListFragment.newInstance(chosenId));
         setSlidingFragment(MusicQueueFragment.newInstance());
     }
 

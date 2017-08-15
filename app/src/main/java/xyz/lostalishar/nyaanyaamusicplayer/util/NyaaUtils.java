@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
+import xyz.lostalishar.nyaanyaamusicplayer.activity.AlbumListActivity;
 
 /**
  * Utilities for general use
@@ -76,6 +77,17 @@ public class NyaaUtils {
 
         Intent intent = new Intent(what);
         context.sendBroadcast(intent);
+    }
+
+    /**
+     * Start up the AlbumListActivity
+     */
+    public static void openAlbumList(Context context, long albumId) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "openAlbumList");
+
+        Intent intent = new Intent(context, AlbumListActivity.class);
+        intent.putExtra("albumId", albumId);
+        context.startActivity(intent);
     }
 
 
