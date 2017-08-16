@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,7 +39,8 @@ public class MiniPlayerFragment extends Fragment {
     private MetaChangedListener metaChangedListener;
 
     private TextView musicTitleView;
-    private Button playPauseButton;
+    private TextView musicArtistView;
+    private TextView playPauseButton;
 
     public static MiniPlayerFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -68,25 +68,33 @@ public class MiniPlayerFragment extends Fragment {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
 
         View rootView = inflater.inflate(R.layout.fragment_mini_player, container, false);
-        Button prev = (Button)rootView.findViewById(R.id.prev_button);
-        Button next = (Button)rootView.findViewById(R.id.next_button);
-        View playerDetailsContainer = rootView.findViewById(R.id.player_details_container);
+        musicTitleView = (TextView)rootView.findViewById(R.id.mini_player_title);
+        musicArtistView = (TextView)rootView.findViewById(R.id.mini_player_artist);
 
-        musicTitleView = (TextView)playerDetailsContainer.findViewById(R.id.mini_player_title);
-        playPauseButton = (Button)playerDetailsContainer.findViewById(R.id.play_pause_button);
+        TextView prev = (TextView)rootView.findViewById(R.id.prev_button);
+        TextView next = (TextView)rootView.findViewById(R.id.next_button);
+        playPauseButton = (TextView)rootView.findViewById(R.id.play_pause_button);
 
 
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                boolean wasPlaying = MusicUtils.isPlaying();
                 MusicUtils.previous();
+                if (wasPlaying) {
+                    MusicUtils.start();
+                }
             }
         });
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                boolean wasPlaying = MusicUtils.isPlaying();
                 MusicUtils.next();
+                if (wasPlaying) {
+                    MusicUtils.start();
+                }
             }
         });
 
@@ -175,9 +183,11 @@ public class MiniPlayerFragment extends Fragment {
         // more than 1 item of this id --> debug me
         if (cursor.getCount() != 1) {
             if (BuildConfig.DEBUG) Log.w(TAG, "Found " + cursor.getCount() + " item(s)");
-            int dataColumn = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int titleColumn = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int artistColumn = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                if (BuildConfig.DEBUG) Log.w(TAG, "Item: " + cursor.getString(dataColumn));
+                if (BuildConfig.DEBUG) Log.w(TAG, "Item: " + cursor.getString(titleColumn) +
+                        " " + cursor.getString(artistColumn));
             }
 
             cursor.close();
@@ -188,9 +198,11 @@ public class MiniPlayerFragment extends Fragment {
         // success
         cursor.moveToFirst();
         String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
+        String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
         cursor.close();
 
         musicTitleView.setText(name);
+        musicArtistView.setText(artist);
     }
 
     private Cursor makeMusicNameCursor(long musicId) {
@@ -199,7 +211,7 @@ public class MiniPlayerFragment extends Fragment {
         ContentResolver musicResolver = getActivity().getContentResolver();
 
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        String[] projection = { MediaStore.Audio.Media.TITLE };
+        String[] projection = { MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ARTIST };
         String selection = MediaStore.Audio.Media._ID + "=?";
         String[] selectionArgs = { String.valueOf(musicId) };
         String sortOrder = MediaStore.Audio.Media.DEFAULT_SORT_ORDER;

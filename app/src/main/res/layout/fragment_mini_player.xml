@@ -1,43 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/fragment_mini_player_container"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center">
-
-    <Button
-        android:id="@+id/prev_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:text="@string/fragment_player_bar_prev"/>
+    android:layout_height="@dimen/mini_player_height"
+    android:orientation="horizontal">
 
     <LinearLayout
         android:id="@+id/player_details_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_toStartOf="@+id/player_buttons_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
 
         <TextView
             android:id="@+id/mini_player_title"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
-        <Button
-            android:id="@+id/play_pause_button"
+        <View
+            android:layout_width="@dimen/mini_player_divider"
+            android:layout_height="1px"
+            android:background="@color/dividerColor" />
+
+        <TextView
+            android:id="@+id/mini_player_artist"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/next_button"
+    <LinearLayout
+        android:id="@id/player_buttons_container"
+        android:layout_alignParentEnd="true"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:text="@string/fragment_player_bar_next"/>
+        android:layout_height="match_parent">
 
-</LinearLayout>
+        <View
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:background="@color/dividerColor" />
+
+        <TextView
+            android:id="@+id/prev_button"
+            android:layout_width="@dimen/mini_player_button_width"
+            android:layout_height="match_parent"
+            android:background="@color/buttonLight"
+            android:gravity="center"
+            android:text="@string/fragment_player_bar_prev" />
+
+        <TextView
+            android:id="@+id/play_pause_button"
+            android:layout_width="@dimen/mini_player_button_width"
+            android:layout_height="match_parent"
+            android:background="@color/buttonPrimary"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/next_button"
+            android:layout_width="@dimen/mini_player_button_width"
+            android:layout_height="match_parent"
+            android:background="@color/buttonLight"
+            android:gravity="center"
+            android:text="@string/fragment_player_bar_next"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

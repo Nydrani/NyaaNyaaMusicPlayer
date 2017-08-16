@@ -395,7 +395,6 @@ public class MusicPlaybackService extends Service implements
 
         reset();
         load(nextQueuePos);
-        play();
     }
 
     public void previous() {
@@ -407,7 +406,6 @@ public class MusicPlaybackService extends Service implements
 
         reset();
         load(prevQueuePos);
-        play();
     }
 
     public void reset() {
@@ -568,13 +566,6 @@ public class MusicPlaybackService extends Service implements
         return musicPlayer.getCurrentPosition();
     }
 
-    // @TODO make private since not exposed function
-    public int getCurrentQueuePos() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentQueuePos");
-
-        return musicPlaybackState.getQueuePos();
-    }
-
     public MusicPlaybackTrack getCurrentPlaying() {
         if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentPlaying");
 
@@ -650,14 +641,22 @@ public class MusicPlaybackService extends Service implements
             public void onSkipToNext() {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onSkipToNext");
 
+                boolean wasPlaying = isPlaying();
                 next();
+                if (wasPlaying) {
+                    play();
+                }
             }
 
             @Override
             public void onSkipToPrevious() {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onSkipToPrevious");
 
+                boolean wasPlaying = isPlaying();
                 previous();
+                if (wasPlaying) {
+                    play();
+                }
             }
 
             @Override
@@ -738,6 +737,7 @@ public class MusicPlaybackService extends Service implements
         if (BuildConfig.DEBUG) Log.d(TAG, "handleCommand");
 
         final int keyCode = intent.getIntExtra(ACTION_EXTRA_KEYCODE, 0);
+        boolean wasPlaying = isPlaying();
 
         switch (keyCode) {
             case KeyEvent.KEYCODE_MEDIA_PLAY:
@@ -759,10 +759,16 @@ public class MusicPlaybackService extends Service implements
             case KeyEvent.KEYCODE_MEDIA_NEXT:
                 if (BuildConfig.DEBUG) Log.d(TAG, KeyEvent.keyCodeToString(keyCode));
                 next();
+                if (wasPlaying) {
+                    play();
+                }
                 break;
             case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
                 if (BuildConfig.DEBUG) Log.d(TAG, KeyEvent.keyCodeToString(keyCode));
                 previous();
+                if (wasPlaying) {
+                    play();
+                }
                 break;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown KeyCode provided: " + KeyEvent.keyCodeToString(keyCode));

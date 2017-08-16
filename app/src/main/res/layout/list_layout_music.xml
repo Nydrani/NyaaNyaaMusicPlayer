@@ -6,8 +6,8 @@
     android:foreground="?android:attr/selectableItemBackground"
     android:orientation="vertical"
     android:minHeight="?android:attr/listPreferredItemHeightSmall"
-    android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-    android:paddingStart="?android:attr/listPreferredItemPaddingStart">
+    android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+    android:paddingEnd="?android:attr/listPreferredItemPaddingEnd">
 
     <TextView
         android:id="@+id/music_name"
