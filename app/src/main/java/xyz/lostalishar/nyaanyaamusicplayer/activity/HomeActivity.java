@@ -20,6 +20,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.LibraryFragment;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MiniPlayerFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicQueueFragment;
 
 public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnViewInflatedListener,
@@ -30,6 +31,7 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
 
     private Fragment libraryFragment;
     private Fragment musicQueueFragment;
+    private Fragment miniPlayerFragment;
 
 
     //=========================================================================
@@ -51,6 +53,13 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
             libraryFragment = getFragmentManager().getFragment(savedInstanceState, "libraryFragment");
         }
         musicQueueFragment = MusicQueueFragment.newInstance();
+        miniPlayerFragment = MiniPlayerFragment.newInstance();
+
+        // hide queue on start
+        View musicQueueView = musicQueueFragment.getView();
+        if (musicQueueView != null) {
+            musicQueueView.setAlpha(0.0f);
+        }
     }
 
 
@@ -128,7 +137,7 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         if (BuildConfig.DEBUG) Log.d(TAG, "onPanelStateChanged");
 
         FragmentManager fm = getFragmentManager();
-        BaseFragment slidingFragment = (BaseFragment)getSlidingFragment(fm);
+        BaseFragment slidingFragment = (BaseFragment)musicQueueFragment;
         LibraryFragment baseFragment = (LibraryFragment)getBaseFragment(fm);
 
         if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
@@ -149,6 +158,17 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
     @Override
     public void onPanelSlide(View panel, float slideOffset) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onPanelSlide");
+
+        View musicQueueView = musicQueueFragment.getView();
+        View miniPlayerView = miniPlayerFragment.getView();
+
+        if (musicQueueView != null) {
+            musicQueueView.setAlpha(slideOffset);
+        }
+
+        if (miniPlayerView != null) {
+            miniPlayerView.setAlpha(1.0f - slideOffset);
+        }
     }
 
 
@@ -180,9 +200,10 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
 
         setBaseFragment(libraryFragment);
         setSlidingFragment(musicQueueFragment);
+        setMiniPlayerFragment(miniPlayerFragment);
     }
 
-    /*
+    /**
      * Replaces the fragment in the FrameLayout container
      * If fragment == null : remove "all" from fragment     <---- all is assuming only 1
      * If fragment != null : replace with new fragment
@@ -207,11 +228,11 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         ft.commit();
     }
 
-    /*
- * Replaces the fragment in the FrameLayout container
- * If fragment == null : remove "all" from fragment     <---- all is assuming only 1
- * If fragment != null : replace with new fragment
- */
+    /**
+     * Replaces the fragment in the FrameLayout container
+     * If fragment == null : remove "all" from fragment     <---- all is assuming only 1
+     * If fragment != null : replace with new fragment
+     */
     private void setSlidingFragment(Fragment fragment) {
         if (BuildConfig.DEBUG) Log.d(TAG, "setSlidingFragment");
 
@@ -232,6 +253,31 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         ft.commit();
     }
 
+    /**
+     * Replaces the fragment in the FrameLayout container
+     * If fragment == null : remove "all" from fragment     <---- all is assuming only 1
+     * If fragment != null : replace with new fragment
+     */
+    private void setMiniPlayerFragment(Fragment fragment) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setMiniPlayerFragment");
+
+        FragmentManager fm = getFragmentManager();
+        Fragment element = getMiniPlayerFragment(fm);
+
+        // check for "remove fragment" and null fragment in container
+        if (fragment == null && element == null) {
+            return;
+        }
+
+        FragmentTransaction ft = fm.beginTransaction();
+        if (fragment == null) {
+            ft.remove(element);
+        } else {
+            ft.replace(R.id.activity_mini_player, fragment);
+        }
+        ft.commit();
+    }
+
     // Gets the current fragment being shown
     private Fragment getBaseFragment(FragmentManager fm) {
         if (BuildConfig.DEBUG) Log.d(TAG, "getBaseFragment");
@@ -239,11 +285,18 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         return fm.findFragmentById(R.id.activity_base_content);
     }
 
-    // Gets the current fragment being shown
+    // Gets the slider fragment
     private Fragment getSlidingFragment(FragmentManager fm) {
         if (BuildConfig.DEBUG) Log.d(TAG, "getSlidingFragment");
 
         return fm.findFragmentById(R.id.activity_sliding_content);
+    }
+
+    // Gets the mini player fragment
+    private Fragment getMiniPlayerFragment(FragmentManager fm) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getMiniFragment");
+
+        return fm.findFragmentById(R.id.activity_mini_player);
     }
 
     private boolean handleBackPressed() {
@@ -255,6 +308,7 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         }
         return false;
     }
+
 
     private void collapsePanel() {
         if (BuildConfig.DEBUG) Log.d(TAG, "collapsePanel");

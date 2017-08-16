@@ -21,6 +21,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.AlbumListFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MiniPlayerFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicQueueFragment;
 
 public class AlbumListActivity extends BaseActivity implements MusicQueueFragment.OnViewInflatedListener,
@@ -29,8 +30,9 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
 
     private SlidingUpPanelLayout slidingUpPanelLayout;
 
-    private MusicQueueFragment musicQueueFragment;
-    private AlbumListFragment albumListFragment;
+    private Fragment musicQueueFragment;
+    private Fragment albumListFragment;
+    private Fragment miniPlayerFragment;
 
 
     //=========================================================================
@@ -53,6 +55,13 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
         }
         albumListFragment = AlbumListFragment.newInstance(chosenId);
         musicQueueFragment = MusicQueueFragment.newInstance();
+        miniPlayerFragment = MiniPlayerFragment.newInstance();
+
+        // hide queue on start
+        View musicQueueView = musicQueueFragment.getView();
+        if (musicQueueView != null) {
+            musicQueueView.setAlpha(0.0f);
+        }
     }
 
 
@@ -139,6 +148,17 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
     @Override
     public void onPanelSlide(View panel, float slideOffset) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onPanelSlide");
+
+        View musicQueueView = musicQueueFragment.getView();
+        View miniPlayerView = miniPlayerFragment.getView();
+
+        if (musicQueueView != null) {
+            musicQueueView.setAlpha(slideOffset);
+        }
+
+        if (miniPlayerView != null) {
+            miniPlayerView.setAlpha(1.0f - slideOffset);
+        }
     }
 
 
@@ -170,6 +190,7 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
 
         setBaseFragment(albumListFragment);
         setSlidingFragment(musicQueueFragment);
+        setMiniPlayerFragment(miniPlayerFragment);
     }
 
     /*
@@ -222,6 +243,31 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
         ft.commit();
     }
 
+    /**
+     * Replaces the fragment in the FrameLayout container
+     * If fragment == null : remove "all" from fragment     <---- all is assuming only 1
+     * If fragment != null : replace with new fragment
+     */
+    private void setMiniPlayerFragment(Fragment fragment) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setMiniPlayerFragment");
+
+        FragmentManager fm = getFragmentManager();
+        Fragment element = getMiniPlayerFragment(fm);
+
+        // check for "remove fragment" and null fragment in container
+        if (fragment == null && element == null) {
+            return;
+        }
+
+        FragmentTransaction ft = fm.beginTransaction();
+        if (fragment == null) {
+            ft.remove(element);
+        } else {
+            ft.replace(R.id.activity_mini_player, fragment);
+        }
+        ft.commit();
+    }
+
     // Gets the current fragment being shown
     private Fragment getBaseFragment(FragmentManager fm) {
         if (BuildConfig.DEBUG) Log.d(TAG, "getBaseFragment");
@@ -234,6 +280,13 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
         if (BuildConfig.DEBUG) Log.d(TAG, "getSlidingFragment");
 
         return fm.findFragmentById(R.id.activity_sliding_content);
+    }
+
+    // Gets the mini player fragment
+    private Fragment getMiniPlayerFragment(FragmentManager fm) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getMiniFragment");
+
+        return fm.findFragmentById(R.id.activity_mini_player);
     }
 
     private boolean handleBackPressed() {

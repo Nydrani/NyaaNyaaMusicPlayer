@@ -143,6 +143,34 @@ public class MusicUtils {
         }
     }
 
+    public static void previous() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "previous");
+
+        if (musicService == null) {
+            return;
+        }
+
+        try {
+            musicService.previous();
+        } catch (RemoteException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
+        }
+    }
+
+    public static void next() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "next");
+
+        if (musicService == null) {
+            return;
+        }
+
+        try {
+            musicService.next();
+        } catch (RemoteException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
+        }
+    }
+
     public static void stop() {
         if (BuildConfig.DEBUG) Log.d(TAG, "stop");
 

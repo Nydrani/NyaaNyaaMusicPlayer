@@ -258,9 +258,9 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
         if (BuildConfig.DEBUG) Log.d(TAG, "updatePauseBox");
 
         if (MusicUtils.isPlaying()) {
-            pauseBox.setText(getString(R.string.fragment_bottom_bar_pause));
+            pauseBox.setText(getString(R.string.fragment_player_bar_pause));
         } else {
-            pauseBox.setText(getString(R.string.fragment_bottom_bar_play));
+            pauseBox.setText(getString(R.string.fragment_player_bar_play));
         }
     }
 

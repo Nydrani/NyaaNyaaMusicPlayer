@@ -28,7 +28,10 @@
     <string name="fragment_name_queue">Queue</string>
     <string name="fragment_name_album">Album</string>
 
-    <string name="fragment_bottom_bar_play">Play</string>
-    <string name="fragment_bottom_bar_pause">Pause</string>
+    <string name="fragment_player_bar_play">Play</string>
+    <string name="fragment_player_bar_pause">Pause</string>
+    <string name="fragment_player_bar_next">Next</string>
+    <string name="fragment_player_bar_prev">Prev</string>
+
 
 </resources>
