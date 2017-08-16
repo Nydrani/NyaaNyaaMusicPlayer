@@ -38,6 +38,7 @@ public class LibraryFragment extends Fragment {
     private IntentFilter filter;
     private MetaChangedListener metaChangedListener;
 
+
     public static final int LIST_FRAGMENT = 0;
     public static final int ALBUM_FRAGMENT = 1;
 
@@ -118,6 +119,25 @@ public class LibraryFragment extends Fragment {
 
         Activity activity = getActivity();
         activity.unregisterReceiver(metaChangedListener);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onSaveInstanceState");
+        super.onSaveInstanceState(outState);
+
+        outState.putInt("currentPos", viewPager.getCurrentItem());
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onActivityCreated");
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            return;
+        }
+        viewPager.setCurrentItem(savedInstanceState.getInt("currentPos"));
     }
 
 

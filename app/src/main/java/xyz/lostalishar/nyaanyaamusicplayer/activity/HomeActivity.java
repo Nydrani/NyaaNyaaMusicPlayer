@@ -28,6 +28,9 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
 
     private SlidingUpPanelLayout slidingUpPanelLayout;
 
+    private Fragment libraryFragment;
+    private Fragment musicQueueFragment;
+
 
     //=========================================================================
     // Activity lifecycle
@@ -40,6 +43,14 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
 
         setContentView(R.layout.activity_layout_home);
         slidingUpPanelLayout = (SlidingUpPanelLayout)findViewById(R.id.activity_sliding_up_layout);
+
+        // setup the fragments
+        if (savedInstanceState == null) {
+            libraryFragment = LibraryFragment.newInstance();
+        } else {
+            libraryFragment = getFragmentManager().getFragment(savedInstanceState, "libraryFragment");
+        }
+        musicQueueFragment = MusicQueueFragment.newInstance();
     }
 
 
@@ -57,6 +68,15 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
             super.onBackPressed();
         }
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        //Save the fragment's instance
+        getFragmentManager().putFragment(outState, "libraryFragment", libraryFragment);
+    }
+
 
 
     //=========================================================================
@@ -158,8 +178,8 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         if (BuildConfig.DEBUG) Log.d(TAG, "initialise");
         super.initialise();
 
-        setBaseFragment(LibraryFragment.newInstance());
-        setSlidingFragment(MusicQueueFragment.newInstance());
+        setBaseFragment(libraryFragment);
+        setSlidingFragment(musicQueueFragment);
     }
 
     /*

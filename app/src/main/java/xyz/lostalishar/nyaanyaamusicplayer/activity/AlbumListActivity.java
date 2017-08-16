@@ -27,8 +27,10 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
         SlidingUpPanelLayout.PanelSlideListener {
     private static final String TAG = AlbumListActivity.class.getSimpleName();
 
-    private long chosenId = MusicPlaybackService.UNKNOWN_ID;
     private SlidingUpPanelLayout slidingUpPanelLayout;
+
+    private MusicQueueFragment musicQueueFragment;
+    private AlbumListFragment albumListFragment;
 
 
     //=========================================================================
@@ -38,12 +40,19 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
-
-        chosenId = getIntent().getExtras().getLong("albumId");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_layout_home);
         slidingUpPanelLayout = (SlidingUpPanelLayout)findViewById(R.id.activity_sliding_up_layout);
+
+        // setup fragments
+        long chosenId = MusicPlaybackService.UNKNOWN_ID;
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            chosenId = extras.getLong("albumId");
+        }
+        albumListFragment = AlbumListFragment.newInstance(chosenId);
+        musicQueueFragment = MusicQueueFragment.newInstance();
     }
 
 
@@ -159,8 +168,8 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
         if (BuildConfig.DEBUG) Log.d(TAG, "initialise");
         super.initialise();
 
-        setBaseFragment(AlbumListFragment.newInstance(chosenId));
-        setSlidingFragment(MusicQueueFragment.newInstance());
+        setBaseFragment(albumListFragment);
+        setSlidingFragment(musicQueueFragment);
     }
 
     /*

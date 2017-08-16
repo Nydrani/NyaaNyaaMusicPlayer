@@ -36,16 +36,20 @@ public abstract class BaseActivity extends AppCompatActivity {
         // check if app has all the necessary permissions
         if (NyaaUtils.needsPermissions(this)) {
             NyaaUtils.requestMissingPermissions(this);
-            return;
         }
-
-        initialise();
     }
 
     @Override
     protected void onStart() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onStart");
         super.onStart();
+
+        // check if app has all the necessary permissions
+        if (NyaaUtils.needsPermissions(this)) {
+            return;
+        }
+
+        initialise();
     }
 
     @Override
@@ -64,14 +68,14 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onStop() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onStop");
         super.onStop();
+
+        deinitialise();
     }
 
     @Override
     protected void onDestroy() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
         super.onDestroy();
-
-        deinitialise();
     }
 
 
