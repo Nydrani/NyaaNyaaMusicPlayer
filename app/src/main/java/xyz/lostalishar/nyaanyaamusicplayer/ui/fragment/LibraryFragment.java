@@ -149,15 +149,14 @@ public class LibraryFragment extends Fragment {
         if (BuildConfig.DEBUG) Log.d(TAG, "generatePageList");
 
         List<LibraryPagerAdapter.PageHolder> pageList = new ArrayList<>();
-        Activity activity = getActivity();
 
         LibraryPagerAdapter.PageHolder page = new LibraryPagerAdapter.PageHolder();
-        page.fragment = Fragment.instantiate(activity, MusicListFragment.class.getName());
+        page.fragment = MusicListFragment.newInstance();
         page.sname = getString(R.string.fragment_name_music_list);
         pageList.add(page);
 
         page = new LibraryPagerAdapter.PageHolder();
-        page.fragment = Fragment.instantiate(activity, AlbumFragment.class.getName());
+        page.fragment = AlbumFragment.newInstance();
         page.sname = getString(R.string.fragment_name_album);
         pageList.add(page);
 

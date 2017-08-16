@@ -92,7 +92,7 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateOptionsMenu");
 
-        inflater.inflate(R.menu.list, menu);
+        inflater.inflate(R.menu.album_list, menu);
     }
 
     @Override
@@ -104,8 +104,6 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
         switch (id) {
             case R.id.actionbar_refresh:
                 refreshList();
-                return true;
-            case R.id.actionbar_add_all:
                 return true;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);
