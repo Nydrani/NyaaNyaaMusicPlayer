@@ -38,6 +38,8 @@ public class MiniPlayerFragment extends Fragment {
     private IntentFilter filter;
     private MetaChangedListener metaChangedListener;
 
+    private OnMiniPlayerTouchedListener miniPlayerTouchedListener;
+
     private TextView musicTitleView;
     private TextView musicArtistView;
     private TextView playPauseButton;
@@ -51,6 +53,26 @@ public class MiniPlayerFragment extends Fragment {
     //=========================================================================
     // Fragment lifecycle
     //=========================================================================
+
+    @Override
+    public void onAttach(Context context) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onAttach");
+        super.onAttach(context);
+
+        Activity activity;
+
+        if (context instanceof Activity){
+            activity = (Activity) context;
+
+            try {
+                miniPlayerTouchedListener = (OnMiniPlayerTouchedListener) activity;
+            } catch (ClassCastException e) {
+                if (BuildConfig.DEBUG) Log.e(TAG, e.getMessage());
+                throw new ClassCastException(activity.toString() +
+                        " must implement OnMiniPlayerTouchedListener");
+            }
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,6 +97,12 @@ public class MiniPlayerFragment extends Fragment {
         TextView next = (TextView)rootView.findViewById(R.id.next_button);
         playPauseButton = (TextView)rootView.findViewById(R.id.play_pause_button);
 
+        rootView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                miniPlayerTouchedListener.onMiniPlayerTouched(v);
+            }
+        });
 
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -249,5 +277,9 @@ public class MiniPlayerFragment extends Fragment {
                     if (BuildConfig.DEBUG) Log.e(TAG, "Unknown action: " + action);
             }
         }
+    }
+
+    public interface OnMiniPlayerTouchedListener {
+        void onMiniPlayerTouched(View view);
     }
 }

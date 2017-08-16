@@ -25,7 +25,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MiniPlayerFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicQueueFragment;
 
 public class AlbumListActivity extends BaseActivity implements MusicQueueFragment.OnViewInflatedListener,
-        SlidingUpPanelLayout.PanelSlideListener {
+        MiniPlayerFragment.OnMiniPlayerTouchedListener, SlidingUpPanelLayout.PanelSlideListener {
     private static final String TAG = AlbumListActivity.class.getSimpleName();
 
     private SlidingUpPanelLayout slidingUpPanelLayout;
@@ -174,7 +174,15 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
         View musicQueueView = musicQueueFragment.getView();
         if (musicQueueView != null) {
             musicQueueView.setAlpha(0.0f);
+            musicQueueView.setClickable(false);
         }
+    }
+
+    @Override
+    public void onMiniPlayerTouched(View view) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onMiniPlayerTouched");
+
+        expandPanel();
     }
 
 

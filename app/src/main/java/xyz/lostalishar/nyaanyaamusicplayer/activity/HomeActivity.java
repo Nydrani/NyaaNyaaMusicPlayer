@@ -24,7 +24,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MiniPlayerFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicQueueFragment;
 
 public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnViewInflatedListener,
-        SlidingUpPanelLayout.PanelSlideListener {
+        MiniPlayerFragment.OnMiniPlayerTouchedListener, SlidingUpPanelLayout.PanelSlideListener {
     private static final String TAG = HomeActivity.class.getSimpleName();
 
     private SlidingUpPanelLayout slidingUpPanelLayout;
@@ -133,11 +133,18 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         FragmentManager fm = getFragmentManager();
         BaseFragment slidingFragment = (BaseFragment)musicQueueFragment;
         LibraryFragment baseFragment = (LibraryFragment)getBaseFragment(fm);
+        View musicQueueView = musicQueueFragment.getView();
 
         if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
             slidingFragment.setHasOptionsMenu(false);
+            if (musicQueueView != null) {
+                musicQueueView.setClickable(false);
+            }
         } else {
             slidingFragment.setHasOptionsMenu(true);
+            if (musicQueueView != null) {
+                //musicQueueView.setClickable(true);
+            }
         }
 
         // @TODO update CAB to be located it the fragment (UI) instead of adapter
@@ -185,6 +192,13 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         if (musicQueueView != null) {
             musicQueueView.setAlpha(0.0f);
         }
+    }
+
+    @Override
+    public void onMiniPlayerTouched(View view) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onMiniPlayerTouched");
+
+        expandPanel();
     }
 
 
