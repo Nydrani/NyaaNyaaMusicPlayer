@@ -20,8 +20,8 @@
 
     <string name="dialog_about_message">Ayyy lmaooooo</string>
 
-    <string name="service_musicplayback_notification_title">Music</string>
-    <string name="service_musicplayback_notification_message">Playing music</string>
+    <string name="service_musicplayback_notification_title">Nyaa Nyaa Music Player</string>
+    <string name="service_musicplayback_notification_message">Unknown music playing</string>
     <string name="service_musicplayback_notification_pause_message">Pause</string>
 
     <string name="fragment_name_music_list">Music</string>

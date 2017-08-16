@@ -3,10 +3,14 @@ package xyz.lostalishar.nyaanyaamusicplayer.ui.fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +24,7 @@ import java.lang.ref.WeakReference;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
+import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackTrack;
 import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
@@ -137,18 +142,69 @@ public class MiniPlayerFragment extends Fragment {
         if (BuildConfig.DEBUG) Log.d(TAG, "updateMetaUI");
 
         updatePlayPauseButton();
+        updateCurrentPlayingTitle();
     }
 
     private void updatePlayPauseButton() {
         if (BuildConfig.DEBUG) Log.d(TAG, "updatePlayPauseButton");
 
         if (MusicUtils.isPlaying()) {
-            musicTitleView.setText("ayyylemao");
             playPauseButton.setText(R.string.fragment_player_bar_pause);
         } else {
-            musicTitleView.setText("weeeooooo");
             playPauseButton.setText(R.string.fragment_player_bar_play);
         }
+    }
+
+    private void updateCurrentPlayingTitle() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updateCurrentPlayingTitle");
+
+        MusicPlaybackTrack track = MusicUtils.getCurrentPlaying();
+        if (track == null) {
+            musicTitleView.setText(R.string.service_musicplayback_notification_message);
+            return;
+        }
+
+        // find the location from the MediaStore
+        Cursor cursor = makeMusicNameCursor(track.getId());
+
+        if (cursor == null) {
+            musicTitleView.setText(R.string.service_musicplayback_notification_message);
+            return;
+        }
+
+        // more than 1 item of this id --> debug me
+        if (cursor.getCount() != 1) {
+            if (BuildConfig.DEBUG) Log.w(TAG, "Found " + cursor.getCount() + " item(s)");
+            int dataColumn = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                if (BuildConfig.DEBUG) Log.w(TAG, "Item: " + cursor.getString(dataColumn));
+            }
+
+            cursor.close();
+            musicTitleView.setText(R.string.service_musicplayback_notification_message);
+            return;
+        }
+
+        // success
+        cursor.moveToFirst();
+        String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
+        cursor.close();
+
+        musicTitleView.setText(name);
+    }
+
+    private Cursor makeMusicNameCursor(long musicId) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "makeMusicNameCursor");
+
+        ContentResolver musicResolver = getActivity().getContentResolver();
+
+        Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = { MediaStore.Audio.Media.TITLE };
+        String selection = MediaStore.Audio.Media._ID + "=?";
+        String[] selectionArgs = { String.valueOf(musicId) };
+        String sortOrder = MediaStore.Audio.Media.DEFAULT_SORT_ORDER;
+
+        return musicResolver.query(musicUri, projection, selection, selectionArgs, sortOrder);
     }
 
 

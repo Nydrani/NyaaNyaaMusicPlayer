@@ -1290,6 +1290,18 @@ public class MusicPlaybackService extends Service implements
         }
 
         @Override
+        public MusicPlaybackTrack getCurrentPlaying() throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentPlaying");
+
+            MusicPlaybackService service = serviceReference.get();
+            if (service != null) {
+                return service.getCurrentPlaying();
+            }
+
+            return null;
+        }
+
+        @Override
         public int enqueue(long[] musicIdList, int[] addedList) throws RemoteException {
             if (BuildConfig.DEBUG) Log.d(TAG, "enqueue");
 

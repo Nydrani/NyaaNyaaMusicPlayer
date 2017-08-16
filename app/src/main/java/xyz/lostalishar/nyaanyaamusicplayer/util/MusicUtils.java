@@ -201,6 +201,22 @@ public class MusicUtils {
         return new ArrayList<>();
     }
 
+    public static MusicPlaybackTrack getCurrentPlaying() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentPlaying");
+
+        if (musicService == null) {
+            return null;
+        }
+
+        try {
+            return musicService.getCurrentPlaying();
+        } catch (RemoteException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
+        }
+
+        return null;
+    }
+
     public static int enqueue(long[] musicIdList, int[] addedList) {
         if (BuildConfig.DEBUG) Log.d(TAG, "enqueue");
 
