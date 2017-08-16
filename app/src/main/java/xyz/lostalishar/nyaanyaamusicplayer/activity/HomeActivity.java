@@ -54,12 +54,6 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         }
         musicQueueFragment = MusicQueueFragment.newInstance();
         miniPlayerFragment = MiniPlayerFragment.newInstance();
-
-        // hide queue on start
-        View musicQueueView = musicQueueFragment.getView();
-        if (musicQueueView != null) {
-            musicQueueView.setAlpha(0.0f);
-        }
     }
 
 
@@ -185,6 +179,12 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
 
         rootView.setScrollableView(scrollableView);
         rootView.addPanelSlideListener(this);
+
+        // hide queue on start
+        View musicQueueView = musicQueueFragment.getView();
+        if (musicQueueView != null) {
+            musicQueueView.setAlpha(0.0f);
+        }
     }
 
 
