@@ -129,6 +129,7 @@ public class MusicPlayer implements
         if (BuildConfig.DEBUG) Log.d(TAG, "onCompletion");
 
         service.get().next();
+        service.get().play();
     }
 
 
