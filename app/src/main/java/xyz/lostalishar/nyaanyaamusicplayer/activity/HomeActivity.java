@@ -133,19 +133,24 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
         FragmentManager fm = getFragmentManager();
         BaseFragment slidingFragment = (BaseFragment)musicQueueFragment;
         LibraryFragment baseFragment = (LibraryFragment)getBaseFragment(fm);
-        View musicQueueView = musicQueueFragment.getView();
+        View miniPlayerView = miniPlayerFragment.getView();
 
         if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
             slidingFragment.setHasOptionsMenu(false);
-            if (musicQueueView != null) {
-                musicQueueView.setClickable(false);
+            if (miniPlayerView != null) {
+                miniPlayerView.setVisibility(View.VISIBLE);
+            }
+        } else if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+            if (miniPlayerView != null) {
+                miniPlayerView.setVisibility(View.GONE);
             }
         } else {
             slidingFragment.setHasOptionsMenu(true);
-            if (musicQueueView != null) {
-                //musicQueueView.setClickable(true);
+            if (miniPlayerView != null) {
+                miniPlayerView.setVisibility(View.VISIBLE);
             }
         }
+
 
         // @TODO update CAB to be located it the fragment (UI) instead of adapter
         // @TODO pass CAB into the adapter so single cab entry
@@ -162,12 +167,7 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
     public void onPanelSlide(View panel, float slideOffset) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onPanelSlide");
 
-        View musicQueueView = musicQueueFragment.getView();
         View miniPlayerView = miniPlayerFragment.getView();
-
-        if (musicQueueView != null) {
-            musicQueueView.setAlpha(slideOffset);
-        }
 
         if (miniPlayerView != null) {
             miniPlayerView.setAlpha(1.0f - slideOffset);
@@ -188,12 +188,6 @@ public class HomeActivity extends BaseActivity implements MusicQueueFragment.OnV
 
         rootView.setScrollableView(scrollableView);
         rootView.addPanelSlideListener(this);
-
-        // hide queue on start
-        View musicQueueView = musicQueueFragment.getView();
-        if (musicQueueView != null) {
-            musicQueueView.setAlpha(0.0f);
-        }
     }
 
     @Override
