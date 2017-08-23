@@ -20,18 +20,28 @@
 
     <string name="dialog_about_message">Ayyy lmaooooo</string>
 
-    <string name="service_musicplayback_notification_title">Nyaa Nyaa Music Player</string>
+    <string name="service_musicplayback_notification_title">Music</string>
     <string name="service_musicplayback_notification_message">Unknown music playing</string>
     <string name="service_musicplayback_notification_pause_message">Pause</string>
 
     <string name="fragment_name_music_list">Music</string>
     <string name="fragment_name_queue">Queue</string>
     <string name="fragment_name_album">Album</string>
+    <string name="fragment_name_artist">Artist</string>
 
     <string name="fragment_player_bar_play">Play</string>
     <string name="fragment_player_bar_pause">Pause</string>
     <string name="fragment_player_bar_next">Next</string>
     <string name="fragment_player_bar_prev">Prev</string>
+
+    <plurals name="num_albums">
+        <item quantity="one">%1$d album</item>
+        <item quantity="other">%1$d albums</item>
+    </plurals>
+    <plurals name="num_tracks">
+        <item quantity="one">%1$d track</item>
+        <item quantity="other">%1$d tracks</item>
+    </plurals>
 
 
 </resources>

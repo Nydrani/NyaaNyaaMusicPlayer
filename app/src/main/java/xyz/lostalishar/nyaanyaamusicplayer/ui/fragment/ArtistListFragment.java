@@ -22,7 +22,7 @@ import java.util.List;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.MusicAdapter;
-import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicListLoader;
+import xyz.lostalishar.nyaanyaamusicplayer.loader.ArtistListLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 
@@ -30,15 +30,21 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
  * Fragment containing entire list of music on device
  */
 
-public class MusicListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Music>> {
-    private static final String TAG = MusicListFragment.class.getSimpleName();
+public class ArtistListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Music>> {
+    private static final String TAG = ArtistListFragment.class.getSimpleName();
 
     public MusicAdapter adapter;
+    private RecyclerView.LayoutManager layout;
 
-    public static MusicListFragment newInstance() {
+    public static ArtistListFragment newInstance(long albumId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
 
-        return new MusicListFragment();
+        ArtistListFragment fragment = new ArtistListFragment();
+        Bundle args = new Bundle();
+        args.putLong("artistId", albumId);
+
+        fragment.setArguments(args);
+        return fragment;
     }
 
 
@@ -51,7 +57,10 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
+        Activity activity = getActivity();
         adapter = new MusicAdapter(new ArrayList<Music>(), this);
+
+        layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
     }
 
     @Override
@@ -60,11 +69,8 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
 
         Activity activity = getActivity();
-        RecyclerView.LayoutManager layout = new LinearLayoutManager(activity,
-                LinearLayoutManager.VERTICAL, false);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(activity,
                 DividerItemDecoration.VERTICAL);
-
         View rootView = inflater.inflate(R.layout.list_base, container, false);
         RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.list_base_view);
 
@@ -126,7 +132,7 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
 
         Activity activity = getActivity();
 
-        return new MusicListLoader(activity);
+        return new ArtistListLoader(activity, getArguments().getLong("artistId"));
     }
 
     @Override
@@ -161,7 +167,7 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
 
         List<Music> musicList = adapter.getMusicList();
         int musicListSize = musicList.size();
-        if (BuildConfig.DEBUG) Log.d(TAG, "Music list size: " + musicListSize);
+        if (BuildConfig.DEBUG) Log.d(TAG, "Artist list size: " + musicListSize);
 
         long[] musicIdArray = new long[musicListSize];
         for (int i = 0; i < musicListSize; i++) {

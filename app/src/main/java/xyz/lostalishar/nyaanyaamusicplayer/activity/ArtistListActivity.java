@@ -18,20 +18,19 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
-import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
-import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.AlbumListFragment;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.ArtistListFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MiniPlayerFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicQueueFragment;
 
-public class AlbumListActivity extends BaseActivity implements MusicQueueFragment.OnViewInflatedListener,
+public class ArtistListActivity extends BaseActivity implements MusicQueueFragment.OnViewInflatedListener,
         MiniPlayerFragment.OnMiniPlayerTouchedListener, SlidingUpPanelLayout.PanelSlideListener {
-    private static final String TAG = AlbumListActivity.class.getSimpleName();
+    private static final String TAG = ArtistListActivity.class.getSimpleName();
 
     private SlidingUpPanelLayout slidingUpPanelLayout;
 
     private Fragment musicQueueFragment;
-    private Fragment albumListFragment;
+    private Fragment artistListFragment;
     private Fragment miniPlayerFragment;
 
 
@@ -51,9 +50,9 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
         long chosenId = MusicPlaybackService.UNKNOWN_ID;
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            chosenId = extras.getLong("albumId");
+            chosenId = extras.getLong("artistId");
         }
-        albumListFragment = AlbumListFragment.newInstance(chosenId);
+        artistListFragment = ArtistListFragment.newInstance(chosenId);
         musicQueueFragment = MusicQueueFragment.newInstance();
         miniPlayerFragment = MiniPlayerFragment.newInstance();
     }
@@ -84,7 +83,7 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateOptionsMenu");
 
         MenuInflater mi = getMenuInflater();
-        mi.inflate(R.menu.album_list, menu);
+        mi.inflate(R.menu.artist_list, menu);
         return true;
     }
 
@@ -189,7 +188,7 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
         if (BuildConfig.DEBUG) Log.d(TAG, "initialise");
         super.initialise();
 
-        setBaseFragment(albumListFragment);
+        setBaseFragment(artistListFragment);
         setSlidingFragment(musicQueueFragment);
         setMiniPlayerFragment(miniPlayerFragment);
     }

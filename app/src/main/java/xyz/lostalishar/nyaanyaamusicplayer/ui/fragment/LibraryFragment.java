@@ -41,6 +41,7 @@ public class LibraryFragment extends Fragment {
 
     public static final int LIST_FRAGMENT = 0;
     public static final int ALBUM_FRAGMENT = 1;
+    public static final int ARTIST_FRAGMENT = 2;
 
     public static LibraryFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -158,6 +159,11 @@ public class LibraryFragment extends Fragment {
         page = new LibraryPagerAdapter.PageHolder();
         page.fragment = AlbumFragment.newInstance();
         page.sname = getString(R.string.fragment_name_album);
+        pageList.add(page);
+
+        page = new LibraryPagerAdapter.PageHolder();
+        page.fragment = ArtistFragment.newInstance();
+        page.sname = getString(R.string.fragment_name_artist);
         pageList.add(page);
 
         return pageList;

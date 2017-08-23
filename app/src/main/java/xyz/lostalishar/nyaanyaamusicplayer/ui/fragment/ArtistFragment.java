@@ -14,31 +14,29 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
-import xyz.lostalishar.nyaanyaamusicplayer.adapter.MusicAdapter;
-import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicListLoader;
-import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
-import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
+import xyz.lostalishar.nyaanyaamusicplayer.adapter.ArtistAdapter;
+import xyz.lostalishar.nyaanyaamusicplayer.loader.ArtistLoader;
+import xyz.lostalishar.nyaanyaamusicplayer.model.Artist;
 
 /**
  * Fragment containing entire list of music on device
  */
 
-public class MusicListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Music>> {
-    private static final String TAG = MusicListFragment.class.getSimpleName();
+public class ArtistFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Artist>> {
+    private static final String TAG = ArtistFragment.class.getSimpleName();
 
-    public MusicAdapter adapter;
+    public ArtistAdapter adapter;
 
-    public static MusicListFragment newInstance() {
+    public static ArtistFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
 
-        return new MusicListFragment();
+        return new ArtistFragment();
     }
 
 
@@ -51,7 +49,7 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
-        adapter = new MusicAdapter(new ArrayList<Music>(), this);
+        adapter = new ArtistAdapter(new ArrayList<Artist>(), this);
     }
 
     @Override
@@ -92,7 +90,7 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateOptionsMenu");
 
-        inflater.inflate(R.menu.list, menu);
+        inflater.inflate(R.menu.artist_list, menu);
     }
 
     @Override
@@ -104,9 +102,6 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
         switch (id) {
             case R.id.actionbar_refresh:
                 refreshList();
-                return true;
-            case R.id.actionbar_add_all:
-                addAll();
                 return true;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);
@@ -121,16 +116,16 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
     //=========================================================================
 
     @Override
-    public Loader<List<Music>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<Artist>> onCreateLoader(int id, Bundle args) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateLoader");
 
         Activity activity = getActivity();
 
-        return new MusicListLoader(activity);
+        return new ArtistLoader(activity);
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Music>> loader, List<Music> data) {
+    public void onLoadFinished(Loader<List<Artist>> loader, List<Artist> data) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadFinished");
 
         adapter.finishCAB();
@@ -138,7 +133,7 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
     }
 
     @Override
-    public void onLoaderReset(Loader<List<Music>> loader) {
+    public void onLoaderReset(Loader<List<Artist>> loader) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
         adapter.finishCAB();
@@ -154,25 +149,5 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
         if (BuildConfig.DEBUG) Log.d(TAG, "refreshList");
 
         getLoaderManager().restartLoader(0, null, this);
-    }
-
-    private void addAll() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "addAll");
-
-        List<Music> musicList = adapter.getMusicList();
-        int musicListSize = musicList.size();
-        if (BuildConfig.DEBUG) Log.d(TAG, "Music list size: " + musicListSize);
-
-        long[] musicIdArray = new long[musicListSize];
-        for (int i = 0; i < musicListSize; i++) {
-            musicIdArray[i] = musicList.get(i).getId();
-        }
-
-        int numAdded = MusicUtils.enqueue(musicIdArray, null);
-        if (BuildConfig.DEBUG) Log.d(TAG, "Number enqueued: " + numAdded);
-
-        String toastFormat = getResources().getString(R.string.toast_add_x_tracks);
-        String toastMessage = String.format(toastFormat, numAdded);
-        Toast.makeText(getActivity(), toastMessage, Toast.LENGTH_SHORT).show();
     }
 }

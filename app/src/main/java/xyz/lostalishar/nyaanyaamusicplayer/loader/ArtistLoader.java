@@ -11,22 +11,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
-import xyz.lostalishar.nyaanyaamusicplayer.model.Album;
+import xyz.lostalishar.nyaanyaamusicplayer.model.Artist;
 
 /**
  * Loads a List of Music classes from the MediaStore cursor in the background
  */
 
-public class AlbumLoader extends CachedAsyncTaskLoader<List<Album>> {
-    private static final String TAG = AlbumLoader.class.getSimpleName();
+public class ArtistLoader extends CachedAsyncTaskLoader<List<Artist>> {
+    private static final String TAG = ArtistLoader.class.getSimpleName();
 
-    private List<Album> albumList;
+    private List<Artist> artistList;
 
-    public AlbumLoader(Context context) {
+    public ArtistLoader(Context context) {
         super(context);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        albumList = new ArrayList<>();
+        artistList = new ArrayList<>();
     }
 
 
@@ -35,35 +35,36 @@ public class AlbumLoader extends CachedAsyncTaskLoader<List<Album>> {
     //=========================================================================
 
     @Override
-    public List<Album> loadInBackground() {
+    public List<Artist> loadInBackground() {
         if (BuildConfig.DEBUG) Log.d(TAG, "loadInBackground");
 
         Cursor cursor = getCursor();
 
         // can sometimes return null on bad problems
         if (cursor == null) {
-            return albumList;
+            return artistList;
         }
 
-        int idColumn = cursor.getColumnIndex(MediaStore.Audio.Albums._ID);
-        int titleColumn = cursor.getColumnIndex(MediaStore.Audio.AlbumColumns.ALBUM);
-        int artistColumn = cursor.getColumnIndex(MediaStore.Audio.AlbumColumns.ARTIST);
-        int numSongsColumn = cursor.getColumnIndex(MediaStore.Audio.AlbumColumns.NUMBER_OF_SONGS);
+        int idColumn = cursor.getColumnIndex(MediaStore.Audio.Artists._ID);
+        int artistColumn = cursor.getColumnIndex(MediaStore.Audio.ArtistColumns.ARTIST);
+        int numTracksColumn = cursor.getColumnIndex(MediaStore.Audio.ArtistColumns.NUMBER_OF_TRACKS);
+        int numAlbumsColumn = cursor.getColumnIndex(MediaStore.Audio.ArtistColumns.NUMBER_OF_ALBUMS);
+
 
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             final long id = cursor.getLong(idColumn);
-            final String name = cursor.getString(titleColumn);
             final String artistName = cursor.getString(artistColumn);
-            final int numSongs = cursor.getInt(numSongsColumn);
+            final int numTracks = cursor.getInt(numTracksColumn);
+            final int numAlbums = cursor.getInt(numAlbumsColumn);
 
-            final Album album = new Album(id, name, artistName, numSongs);
+            final Artist artist = new Artist(id, artistName, numTracks, numAlbums);
 
-            albumList.add(album);
+            artistList.add(artist);
         }
 
         cursor.close();
 
-        return albumList;
+        return artistList;
     }
 
 
@@ -75,25 +76,25 @@ public class AlbumLoader extends CachedAsyncTaskLoader<List<Album>> {
         if (BuildConfig.DEBUG) Log.d(TAG, "getCursor");
 
         Context context = getContext();
-        return makeAlbumCursor(context);
+        return makeArtistCursor(context);
     }
 
     // override this to change query
-    public static Cursor makeAlbumCursor(Context context) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "makeAlbumCursor");
+    public static Cursor makeArtistCursor(Context context) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "makeArtistCursor");
 
         ContentResolver musicResolver = context.getContentResolver();
 
-        Uri musicUri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
+        Uri musicUri = MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI;
         String[] projection = new String[4];
         String selection = MediaStore.Audio.Media.IS_MUSIC + "=?";
         String args[] = { "1" };
-        String sortOrder = MediaStore.Audio.Albums.DEFAULT_SORT_ORDER;
+        String sortOrder = MediaStore.Audio.Artists.DEFAULT_SORT_ORDER;
 
-        projection[0] = MediaStore.Audio.Albums._ID;
-        projection[1] = MediaStore.Audio.AlbumColumns.ALBUM;
-        projection[2] = MediaStore.Audio.AlbumColumns.ARTIST;
-        projection[3] = MediaStore.Audio.AlbumColumns.NUMBER_OF_SONGS;
+        projection[0] = MediaStore.Audio.Artists._ID;
+        projection[1] = MediaStore.Audio.ArtistColumns.ARTIST;
+        projection[2] = MediaStore.Audio.ArtistColumns.NUMBER_OF_TRACKS;
+        projection[3] = MediaStore.Audio.ArtistColumns.NUMBER_OF_ALBUMS;
 
         return musicResolver.query(musicUri, projection, null, null, sortOrder);
     }

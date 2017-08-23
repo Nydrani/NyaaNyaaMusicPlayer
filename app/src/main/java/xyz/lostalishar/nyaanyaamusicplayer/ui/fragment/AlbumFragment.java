@@ -33,8 +33,6 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
 
     public AlbumAdapter adapter;
 
-    private RecyclerView.LayoutManager layout;
-
     public static AlbumFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
 
@@ -51,10 +49,7 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
-        Activity activity = getActivity();
         adapter = new AlbumAdapter(new ArrayList<Album>(), this);
-
-        layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
     }
 
     @Override
@@ -63,8 +58,11 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
 
         Activity activity = getActivity();
+        RecyclerView.LayoutManager layout = new LinearLayoutManager(activity,
+                LinearLayoutManager.VERTICAL, false);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(activity,
                 DividerItemDecoration.VERTICAL);
+
         View rootView = inflater.inflate(R.layout.list_base, container, false);
         RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.list_base_view);
 

@@ -26,6 +26,10 @@
             android:name=".activity.AlbumListActivity">
         </activity>
 
+        <activity
+            android:name=".activity.ArtistListActivity">
+        </activity>
+
         <service
             android:name=".service.MusicPlaybackService"
             android:enabled="true"
