@@ -61,15 +61,6 @@ public class MusicListViewHolder extends BaseMusicViewHolder {
     public boolean onLongClick(View v) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLongClick");
 
-        Snackbar.make(v, musicTitle.getText(), Snackbar.LENGTH_LONG)
-                .setAction("Description", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(v.getContext(), musicDescription.getText(), Toast.LENGTH_LONG)
-                                .show();
-                    }
-                }).show();
-
         // show cab
         return super.onLongClick(v);
     }
