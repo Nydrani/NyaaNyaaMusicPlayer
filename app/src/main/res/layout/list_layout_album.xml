@@ -16,7 +16,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
     <TextView
-        android:id="@+id/album_num_songs"
+        android:id="@+id/album_num_tracks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />

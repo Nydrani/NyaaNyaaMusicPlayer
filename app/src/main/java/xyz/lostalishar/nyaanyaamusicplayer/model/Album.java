@@ -10,13 +10,13 @@ public class Album {
     private long id;
     private String name;
     private String artistName;
-    private int numSongs;
+    private int numTracks;
 
-    public Album(long id, String name, String artistName, int numSongs) {
+    public Album(long id, String name, String artistName, int numTracks) {
         this.id = id;
         this.name = name;
         this.artistName = artistName;
-        this.numSongs = numSongs;
+        this.numTracks = numTracks;
     }
 
 
@@ -32,8 +32,8 @@ public class Album {
         return artistName;
     }
 
-    public int getNumSongs() {
-        return numSongs;
+    public int getNumTracks() {
+        return numTracks;
     }
 
     public void setId(long id) {
@@ -48,8 +48,8 @@ public class Album {
         this.artistName = artistName;
     }
 
-    public void setNumSongs(int numSongs) {
-        this.numSongs = numSongs;
+    public void setNumTracks(int numTracks) {
+        this.numTracks = numTracks;
     }
 
 
@@ -76,7 +76,7 @@ public class Album {
         if (!Objects.equals(artistName, other.artistName)) {
             return false;
         }
-        if (numSongs != other.numSongs) {
+        if (numTracks != other.numTracks) {
             return false;
         }
 

@@ -1,11 +1,9 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder;
 
 import android.app.Activity;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
@@ -20,7 +18,7 @@ public class AlbumViewHolder extends BaseMusicViewHolder {
     private static final String TAG = AlbumViewHolder.class.getSimpleName();
 
     public TextView albumTitle;
-    public TextView numSongs;
+    public TextView numTracks;
 
     public AlbumDataHolder albumDataHolder;
 
@@ -30,7 +28,7 @@ public class AlbumViewHolder extends BaseMusicViewHolder {
 
         // extra field for album
         albumTitle = (TextView) view.findViewById(R.id.album_title);
-        numSongs = (TextView) view.findViewById(R.id.album_num_songs);
+        numTracks = (TextView) view.findViewById(R.id.album_num_tracks);
 
         // instantiate album data holder
         albumDataHolder = new AlbumDataHolder();

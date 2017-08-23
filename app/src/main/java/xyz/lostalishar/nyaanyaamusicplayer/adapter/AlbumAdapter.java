@@ -61,8 +61,12 @@ public class AlbumAdapter extends BaseAdapter<AlbumViewHolder> {
 
         Album album = getAlbumList().get(position);
 
+        int numTracks = album.getNumTracks();
+        String tracksDescription = fragment.get().getResources().
+                getQuantityString(R.plurals.num_tracks, numTracks, numTracks);
+
         holder.albumTitle.setText(album.getName());
-        holder.numSongs.setText(String.valueOf(album.getNumSongs()));
+        holder.numTracks.setText(tracksDescription);
 
         // store id
         holder.albumDataHolder.albumId = album.getId();
