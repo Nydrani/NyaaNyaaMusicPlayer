@@ -4,7 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
@@ -17,14 +17,14 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
+import xyz.lostalishar.nyaanyaamusicplayer.interfaces.OnViewInflatedListener;
 import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
-import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.AlbumListFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MiniPlayerFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicQueueFragment;
 
-public class AlbumListActivity extends BaseActivity implements MusicQueueFragment.OnViewInflatedListener,
+public class AlbumListActivity extends BaseActivity implements OnViewInflatedListener,
         MiniPlayerFragment.OnMiniPlayerTouchedListener, SlidingUpPanelLayout.PanelSlideListener {
     private static final String TAG = AlbumListActivity.class.getSimpleName();
 
@@ -56,13 +56,6 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
         albumListFragment = AlbumListFragment.newInstance(chosenId);
         musicQueueFragment = MusicQueueFragment.newInstance();
         miniPlayerFragment = MiniPlayerFragment.newInstance();
-    }
-
-
-    @Override
-    protected void onResume() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
-        super.onResume();
     }
 
     @Override
@@ -119,23 +112,9 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
         FragmentManager fm = getFragmentManager();
         BaseFragment slidingFragment = (BaseFragment)getSlidingFragment(fm);
         BaseFragment baseFragment = (BaseFragment)getBaseFragment(fm);
-        View miniPlayerView = miniPlayerFragment.getView();
 
-        if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
-            slidingFragment.setHasOptionsMenu(false);
-            if (miniPlayerView != null) {
-                miniPlayerView.setVisibility(View.VISIBLE);
-            }
-        } else if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
-            if (miniPlayerView != null) {
-                miniPlayerView.setVisibility(View.GONE);
-            }
-        } else {
-            slidingFragment.setHasOptionsMenu(true);
-            if (miniPlayerView != null) {
-                miniPlayerView.setVisibility(View.VISIBLE);
-            }
-        }
+        updateUI(newState);
+
 
         // @TODO update CAB to be located it the fragment (UI) instead of adapter
         // @TODO pass CAB into the adapter so single cab entry
@@ -163,11 +142,16 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
     public void onViewInflated(View view) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onViewInflated");
 
-        SlidingUpPanelLayout rootView = (SlidingUpPanelLayout)findViewById(R.id.activity_sliding_up_layout);
-        RecyclerView scrollableView = (RecyclerView)view.findViewById(R.id.list_base_view);
+        SlidingUpPanelLayout slidingView = (SlidingUpPanelLayout)findViewById(R.id.activity_sliding_up_layout);
 
-        rootView.setScrollableView(scrollableView);
-        rootView.addPanelSlideListener(this);
+        if (view.getId() == R.id.fragment_mini_player_container) {
+            updateUI(slidingView.getPanelState());
+        } else if (view.getId() == R.id.fragment_queue_container) {
+            RecyclerView scrollableView = (RecyclerView) view.findViewById(R.id.list_base_view);
+
+            slidingView.setScrollableView(scrollableView);
+            slidingView.addPanelSlideListener(this);
+        }
     }
 
     @Override
@@ -309,5 +293,38 @@ public class AlbumListActivity extends BaseActivity implements MusicQueueFragmen
         if (BuildConfig.DEBUG) Log.d(TAG, "expandPanel");
 
         slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+    }
+
+    private void updateUI(SlidingUpPanelLayout.PanelState state) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updateUI");
+
+        FragmentManager fm = getFragmentManager();
+        BaseFragment slidingFragment = (BaseFragment)getSlidingFragment(fm);
+        View miniPlayerView = miniPlayerFragment.getView();
+        ActionBar actionBar = getSupportActionBar();
+
+
+        if (state == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+            slidingFragment.setHasOptionsMenu(false);
+            if (miniPlayerView != null) {
+                miniPlayerView.setVisibility(View.VISIBLE);
+            }
+            if (actionBar != null) {
+                actionBar.setTitle(R.string.app_name);
+            }
+        } else if (state == SlidingUpPanelLayout.PanelState.EXPANDED) {
+            slidingFragment.setHasOptionsMenu(true);
+            if (miniPlayerView != null) {
+                miniPlayerView.setVisibility(View.GONE);
+            }
+            if (actionBar != null) {
+                actionBar.setTitle(R.string.fragment_name_queue);
+            }
+        } else {
+            slidingFragment.setHasOptionsMenu(true);
+            if (miniPlayerView != null) {
+                miniPlayerView.setVisibility(View.VISIBLE);
+            }
+        }
     }
 }

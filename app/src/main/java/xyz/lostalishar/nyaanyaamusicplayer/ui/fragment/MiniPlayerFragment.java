@@ -22,6 +22,7 @@ import java.lang.ref.WeakReference;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
+import xyz.lostalishar.nyaanyaamusicplayer.interfaces.OnViewInflatedListener;
 import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
 import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackTrack;
 import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
@@ -39,6 +40,7 @@ public class MiniPlayerFragment extends Fragment {
     private MetaChangedListener metaChangedListener;
 
     private OnMiniPlayerTouchedListener miniPlayerTouchedListener;
+    private OnViewInflatedListener viewInflatedListener;
 
     private TextView musicTitleView;
     private TextView musicArtistView;
@@ -66,10 +68,11 @@ public class MiniPlayerFragment extends Fragment {
 
             try {
                 miniPlayerTouchedListener = (OnMiniPlayerTouchedListener) activity;
+                viewInflatedListener = (OnViewInflatedListener) activity;
             } catch (ClassCastException e) {
                 if (BuildConfig.DEBUG) Log.e(TAG, e.getMessage());
                 throw new ClassCastException(activity.toString() +
-                        " must implement OnMiniPlayerTouchedListener");
+                        " must implement OnMiniPlayerTouchedListener|OnViewInflatedListener");
             }
         }
     }
@@ -81,6 +84,7 @@ public class MiniPlayerFragment extends Fragment {
 
         filter = new IntentFilter();
         filter.addAction(NyaaUtils.META_CHANGED);
+        filter.addAction(NyaaUtils.SERVICE_READY);
         metaChangedListener = new MetaChangedListener(this);
     }
 
@@ -146,6 +150,17 @@ public class MiniPlayerFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onViewCreated");
+        super.onViewCreated(view, savedInstanceState);
+
+        // notify listener
+        if (viewInflatedListener != null) {
+            viewInflatedListener.onViewInflated(view);
+        }
     }
 
     @Override
@@ -271,6 +286,9 @@ public class MiniPlayerFragment extends Fragment {
 
             switch (action) {
                 case NyaaUtils.META_CHANGED:
+                    reference.get().updateMetaUI();
+                    break;
+                case NyaaUtils.SERVICE_READY:
                     reference.get().updateMetaUI();
                     break;
                 default:

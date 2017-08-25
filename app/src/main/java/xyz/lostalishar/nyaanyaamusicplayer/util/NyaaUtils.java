@@ -75,6 +75,7 @@ public class NyaaUtils {
      */
     public static void notifyChange(Context context, String what) {
         if (BuildConfig.DEBUG) Log.d(TAG, "notifyChange");
+        if (BuildConfig.DEBUG) Log.d(TAG, "notifyChange: " + what);
 
         Intent intent = new Intent(what);
         context.sendBroadcast(intent);

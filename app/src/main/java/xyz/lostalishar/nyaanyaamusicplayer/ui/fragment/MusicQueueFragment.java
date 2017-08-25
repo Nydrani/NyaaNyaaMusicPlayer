@@ -28,6 +28,7 @@ import java.util.List;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.QueueAdapter;
+import xyz.lostalishar.nyaanyaamusicplayer.interfaces.OnViewInflatedListener;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicQueueLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
@@ -77,7 +78,7 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
             } catch (ClassCastException e) {
                 if (BuildConfig.DEBUG) Log.e(TAG, e.getMessage());
                 throw new ClassCastException(activity.toString() +
-                        " must implement OnViewCreatedListener");
+                        " must implement OnViewInflatedListener");
             }
         }
     }
@@ -173,6 +174,8 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
 
         // update ui on resume
         updateMetaUI();
+        // make sure to refresh the queue on resume since the listener wont listen if queue is paused
+        refreshQueue();
     }
 
     @Override
@@ -320,15 +323,12 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
                     reference.get().updateMetaUI();
                     break;
                 case NyaaUtils.SERVICE_READY:
+                    reference.get().updateMetaUI();
                     reference.get().refreshQueue();
                     break;
                 default:
                     if (BuildConfig.DEBUG) Log.e(TAG, "Unknown action: " + action);
             }
         }
-    }
-
-    public interface OnViewInflatedListener {
-        void onViewInflated(View view);
     }
 }
