@@ -59,6 +59,9 @@ public class ArtistLoader extends CachedAsyncTaskLoader<List<Artist>> {
 
             final Artist artist = new Artist(id, artistName, numTracks, numAlbums);
 
+            // @TODO debugging
+            Log.v(TAG, artist.toString());
+
             artistList.add(artist);
         }
 

@@ -58,6 +58,9 @@ public class AlbumLoader extends CachedAsyncTaskLoader<List<Album>> {
 
             final Album album = new Album(id, name, artistName, numSongs);
 
+            // @TODO debugging
+            Log.v(TAG, album.toString());
+
             albumList.add(album);
         }
 

@@ -300,6 +300,9 @@ public class MusicUtils {
             if (BuildConfig.DEBUG) Log.d(TAG, "onServiceConnected");
 
             musicService = INyaaNyaaMusicService.Stub.asInterface(service);
+
+            MusicPlaybackService.NyaaNyaaMusicServiceStub binder = (MusicPlaybackService.NyaaNyaaMusicServiceStub)service;
+            NyaaUtils.notifyChange(binder.getService(), NyaaUtils.SERVICE_READY);
         }
 
         @Override

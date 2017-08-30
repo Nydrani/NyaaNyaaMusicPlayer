@@ -152,9 +152,6 @@ public class MusicPlaybackService extends Service implements
 
         cancelDelayedShutdown();
 
-        // send ready intent to ui
-        NyaaUtils.notifyChange(this, NyaaUtils.SERVICE_READY);
-
         return binder;
     }
 
@@ -168,9 +165,6 @@ public class MusicPlaybackService extends Service implements
         }
 
         cancelDelayedShutdown();
-
-        // send ready intent to ui
-        NyaaUtils.notifyChange(this, NyaaUtils.SERVICE_READY);
     }
 
     @Override
@@ -1184,7 +1178,7 @@ public class MusicPlaybackService extends Service implements
     // ========================================================================
 
     // @TODO might have to check for null on reference.get() if service dies
-    private static class NyaaNyaaMusicServiceStub extends INyaaNyaaMusicService.Stub {
+    public static class NyaaNyaaMusicServiceStub extends INyaaNyaaMusicService.Stub {
         private static final String TAG = NyaaNyaaMusicServiceStub.class.getSimpleName();
 
         private final WeakReference<MusicPlaybackService> serviceReference;
@@ -1195,6 +1189,12 @@ public class MusicPlaybackService extends Service implements
             serviceReference = new WeakReference<>(service);
         }
 
+
+        public MusicPlaybackService getService() {
+            if (BuildConfig.DEBUG) Log.d(TAG, "getService");
+
+            return serviceReference.get();
+        }
 
         @Override
         public boolean load(int queuePos) throws RemoteException {

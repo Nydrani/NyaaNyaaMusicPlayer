@@ -86,6 +86,6 @@ public class Artist {
 
     @Override
     public String toString() {
-        return name;
+        return name + " : " + id;
     }
 }

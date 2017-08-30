@@ -64,7 +64,7 @@ public class NyaaUtils {
      * Function for clarity of logic
      */
     public static boolean needsPermissions(Context context) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "hasPermissions");
+        if (BuildConfig.DEBUG) Log.d(TAG, "needsPermissions");
 
         return getMissingPermissions(context).size() > 0;
     }
