@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 
 import java.util.List;
 
@@ -68,19 +69,50 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateViewHolder");
 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View v = inflater.inflate(R.layout.list_layout_music, parent, false);
+        View v = inflater.inflate(R.layout.list_layout_queue, parent, false);
 
         return new QueueViewHolder(v, this);
     }
 
+    // @TODO try do this without making the QueueViewHolder final
     @Override
-    public void onBindViewHolder(QueueViewHolder holder, int position) {
+    public void onBindViewHolder(final QueueViewHolder holder, int position) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onBindViewHolder");
 
         Music music = musicList.get(position);
 
         holder.musicTitle.setText(music.getName());
         holder.musicDescription.setText(music.getArtistName());
+        holder.musicMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popup = new PopupMenu(v.getContext(), v);
+                popup.inflate(R.menu.popup_queue);
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.popupmenu_select:
+                                // @TODO use some non final view + position
+                                toggleCab(holder.itemView, holder.getAdapterPosition());
+                                break;
+                            case R.id.popupmenu_remove:
+                                MusicUtils.dequeue(new long[] {
+                                        musicList.get(holder.getAdapterPosition()).getId()
+                                }, null);
+                                break;
+                            default:
+                                if (BuildConfig.DEBUG)
+                                    Log.d(TAG, "Unknown MenuItem choice: " + item.getTitle().toString());
+                        }
+
+                        return true;
+                    }
+                });
+
+                popup.show();
+            }
+        });
 
         // store id
         holder.queueDataHolder.musicId = music.getId();
@@ -88,7 +120,7 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
         // @TODO update background color if current position is playing
         // @TODO change to something with better UI design later lmao
         MusicPlaybackState state = MusicUtils.getState();
-        if (state == null) {
+        if (state == null || cabHolder.isCabOpen()) {
             return;
         }
 

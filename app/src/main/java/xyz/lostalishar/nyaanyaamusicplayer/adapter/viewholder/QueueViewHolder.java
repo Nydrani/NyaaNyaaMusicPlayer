@@ -1,8 +1,12 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder;
 
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
@@ -18,6 +22,7 @@ public class QueueViewHolder extends BaseMusicViewHolder {
 
     public TextView musicTitle;
     public TextView musicDescription;
+    public TextView musicMenu;
 
     public QueueDataHolder queueDataHolder;
 
@@ -25,8 +30,9 @@ public class QueueViewHolder extends BaseMusicViewHolder {
         super(view, adapter);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        musicTitle = (TextView) view.findViewById(R.id.music_name);
-        musicDescription = (TextView) view.findViewById(R.id.music_description);
+        musicTitle = (TextView)view.findViewById(R.id.queue_title);
+        musicDescription = (TextView)view.findViewById(R.id.queue_description);
+        musicMenu = (TextView)view.findViewById(R.id.queue_menu);
 
         // instantiate music data holder
         queueDataHolder = new QueueDataHolder();
@@ -51,6 +57,8 @@ public class QueueViewHolder extends BaseMusicViewHolder {
             MusicUtils.load(0);
         }
 
+        // for multi click toggle
+        super.onClick(v);
     }
 
     @Override

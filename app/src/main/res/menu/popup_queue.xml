@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/popupmenu_select"
+        android:title="@string/popupmenu_select" />
+
+    <item
+        android:id="@+id/popupmenu_remove"
+        android:title="@string/popupmenu_remove" />
+
+</menu>

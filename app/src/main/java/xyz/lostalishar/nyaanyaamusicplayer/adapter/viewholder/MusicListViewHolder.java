@@ -25,7 +25,7 @@ public class MusicListViewHolder extends BaseMusicViewHolder {
         super(view, adapter);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        musicTitle = (TextView) view.findViewById(R.id.music_name);
+        musicTitle = (TextView) view.findViewById(R.id.music_title);
         musicDescription = (TextView) view.findViewById(R.id.music_description);
 
         // instantiate music data holder
