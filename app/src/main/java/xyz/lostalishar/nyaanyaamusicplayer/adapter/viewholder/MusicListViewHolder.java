@@ -1,10 +1,8 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder;
 
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
@@ -49,7 +47,7 @@ public class MusicListViewHolder extends BaseMusicViewHolder {
         if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
 
         // add song here
-        if (!(adapter.get().fragment.get().isCABOpen())) {
+        if (!(adapter.get().cabHolder.isCabOpen())) {
             MusicUtils.enqueue(new long[] { musicDataHolder.musicId }, null);
         }
 

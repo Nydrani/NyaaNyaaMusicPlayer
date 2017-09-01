@@ -10,16 +10,20 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ActionMode;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
+import xyz.lostalishar.nyaanyaamusicplayer.interfaces.CabHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity implements CabHolder {
     private static final String TAG = BaseActivity.class.getSimpleName();
 
     // flag for service binding
     private boolean bound = false;
+
+    private ActionMode actionMode;
 
 
     //=========================================================================
@@ -76,6 +80,39 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
         super.onDestroy();
+    }
+
+
+    //=========================================================================
+    // CabHolder callback
+    //=========================================================================
+
+    @Override
+    public ActionMode openCab(ActionMode.Callback callback) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "openCab");
+
+        if (actionMode == null) {
+            actionMode = startActionMode(callback);
+        }
+
+        return actionMode;
+    }
+
+    @Override
+    public void closeCab() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "closeCab");
+
+        if (actionMode != null) {
+            actionMode.finish();
+            actionMode = null;
+        }
+    }
+
+    @Override
+    public boolean isCabOpen() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "isCabOpen");
+
+        return actionMode != null;
     }
 
 

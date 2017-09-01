@@ -21,6 +21,7 @@ import java.util.List;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.LibraryPagerAdapter;
+import xyz.lostalishar.nyaanyaamusicplayer.interfaces.CabHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
 /**
@@ -35,9 +36,10 @@ public class LibraryFragment extends Fragment {
     private ViewPager viewPager;
     private TabLayout.OnTabSelectedListener tabSelectedListener;
 
+    private CabHolder cabHolder;
+
     private IntentFilter filter;
     private MetaChangedListener metaChangedListener;
-
 
     public static final int LIST_FRAGMENT = 0;
     public static final int ALBUM_FRAGMENT = 1;
@@ -55,14 +57,30 @@ public class LibraryFragment extends Fragment {
     //=========================================================================
 
     @Override
+    public void onAttach(Context context) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onAttach");
+        super.onAttach(context);
+
+        if (context instanceof Activity){
+            Activity activity = (Activity)context;
+
+            try {
+                cabHolder = (CabHolder)activity;
+            } catch (ClassCastException e) {
+                if (BuildConfig.DEBUG) Log.e(TAG, e.getMessage());
+                throw new ClassCastException(activity.toString() +
+                        " must implement CabHolder");
+            }
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
-        Activity activity = getActivity();
-
         pageList = generatePageList();
-        adapter = new LibraryPagerAdapter(activity, getChildFragmentManager(), pageList);
+        adapter = new LibraryPagerAdapter(getChildFragmentManager(), pageList);
 
         tabSelectedListener = new TabLayout.OnTabSelectedListener() {
             @Override
@@ -74,8 +92,7 @@ public class LibraryFragment extends Fragment {
             public void onTabUnselected(TabLayout.Tab tab) {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onTabUnselected");
 
-                BaseFragment frag = (BaseFragment)adapter.getItem(tab.getPosition());
-                frag.closeCAB();
+                cabHolder.closeCab();
             }
 
             @Override

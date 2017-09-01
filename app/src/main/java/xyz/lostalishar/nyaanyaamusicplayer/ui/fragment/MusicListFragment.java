@@ -51,7 +51,7 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
-        adapter = new MusicAdapter(new ArrayList<Music>(), this);
+        adapter = new MusicAdapter(new ArrayList<Music>(), cabHolder);
     }
 
     @Override
@@ -133,7 +133,7 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
     public void onLoadFinished(Loader<List<Music>> loader, List<Music> data) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadFinished");
 
-        adapter.finishCAB();
+        cabHolder.closeCab();
         adapter.swap(data);
     }
 
@@ -141,7 +141,7 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
     public void onLoaderReset(Loader<List<Music>> loader) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
-        adapter.finishCAB();
+        cabHolder.closeCab();
         adapter.swap(null);
     }
 

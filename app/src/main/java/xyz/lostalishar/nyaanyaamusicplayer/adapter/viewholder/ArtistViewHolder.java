@@ -49,7 +49,7 @@ public class ArtistViewHolder extends BaseMusicViewHolder {
         if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
 
         // add song here
-        if (!(adapter.get().fragment.get().isCABOpen())) {
+        if (!(adapter.get().cabHolder.isCabOpen())) {
             NyaaUtils.openArtistList((Activity)v.getContext(), artistDataHolder.artistId);
         }
 

@@ -49,7 +49,7 @@ public class ArtistFragment extends BaseFragment implements LoaderManager.Loader
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
-        adapter = new ArtistAdapter(new ArrayList<Artist>(), this);
+        adapter = new ArtistAdapter(new ArrayList<Artist>(), cabHolder);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class ArtistFragment extends BaseFragment implements LoaderManager.Loader
     public void onLoadFinished(Loader<List<Artist>> loader, List<Artist> data) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadFinished");
 
-        adapter.finishCAB();
+        cabHolder.closeCab();
         adapter.swap(data);
     }
 
@@ -136,7 +136,8 @@ public class ArtistFragment extends BaseFragment implements LoaderManager.Loader
     public void onLoaderReset(Loader<List<Artist>> loader) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
-        adapter.finishCAB();
+        // @TODO unsure if need to close cab here
+        cabHolder.closeCab();
         adapter.swap(null);
     }
 

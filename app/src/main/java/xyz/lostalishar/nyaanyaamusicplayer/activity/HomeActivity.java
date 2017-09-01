@@ -124,22 +124,8 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
                                     SlidingUpPanelLayout.PanelState newState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onPanelStateChanged");
 
-        FragmentManager fm = getFragmentManager();
-        BaseFragment slidingFragment = (BaseFragment)getSlidingFragment(fm);
-        LibraryFragment baseFragment = (LibraryFragment)getBaseFragment(fm);
-
         updateUI(newState);
-
-
-        // @TODO update CAB to be located it the fragment (UI) instead of adapter
-        // @TODO pass CAB into the adapter so single cab entry
-        BaseFragment frag1 = (BaseFragment)baseFragment.pageList.get(LibraryFragment.LIST_FRAGMENT).fragment;
-        BaseFragment frag2 = (BaseFragment)baseFragment.pageList.get(LibraryFragment.ALBUM_FRAGMENT).fragment;
-        BaseFragment frag3 = (BaseFragment)baseFragment.pageList.get(LibraryFragment.ARTIST_FRAGMENT).fragment;
-        frag1.closeCAB();
-        frag2.closeCAB();
-        frag3.closeCAB();
-        slidingFragment.closeCAB();
+        closeCab();
     }
 
     @Override

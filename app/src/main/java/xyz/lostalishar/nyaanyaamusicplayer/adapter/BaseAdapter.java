@@ -1,5 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ActionMode;
@@ -10,6 +11,7 @@ import java.lang.ref.WeakReference;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.BaseMusicViewHolder;
+import xyz.lostalishar.nyaanyaamusicplayer.interfaces.CabHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 
@@ -25,12 +27,12 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
     private static final String TAG = BaseAdapter.class.getSimpleName();
 
     public int chosenItem;
-    public WeakReference<BaseFragment> fragment;
+    public CabHolder cabHolder;
 
-    protected BaseAdapter(BaseFragment fragment) {
+    protected BaseAdapter(CabHolder cabHolder) {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        this.fragment = new WeakReference<>(fragment);
+        this.cabHolder = cabHolder;
 
         // @TODO check if ids are stable
         // ids are stable. at least i would hope (pls be stable MediaStore)
@@ -53,20 +55,18 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
     public void onDestroyActionMode(ActionMode mode) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onDestroyActionMode");
 
-        fragment.get().actionMode = null;
         chosenItem = MusicPlaybackService.UNKNOWN_POS;
     }
+
 
     // ========================================================================
     // Multi item toggle CAB
     // ========================================================================
 
-    public void toggleCAB(View v, ActionMode.Callback callback, int position) {
-        fragment.get().openCAB(v, callback);
-    }
+    public void toggleCab(View v, ActionMode.Callback callback, int position) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "toggleCab");
 
-    public void finishCAB() {
-        fragment.get().closeCAB();
-        chosenItem = MusicPlaybackService.UNKNOWN_POS;
+        chosenItem = position;
+        cabHolder.openCab(callback);
     }
 }

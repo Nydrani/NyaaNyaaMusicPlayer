@@ -49,7 +49,7 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
-        adapter = new AlbumAdapter(new ArrayList<Album>(), this);
+        adapter = new AlbumAdapter(new ArrayList<Album>(), cabHolder);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
     public void onLoadFinished(Loader<List<Album>> loader, List<Album> data) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadFinished");
 
-        adapter.finishCAB();
+        cabHolder.closeCab();
         adapter.swap(data);
     }
 
@@ -136,7 +136,7 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
     public void onLoaderReset(Loader<List<Album>> loader) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
-        adapter.finishCAB();
+        cabHolder.closeCab();
         adapter.swap(null);
     }
 

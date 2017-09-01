@@ -68,10 +68,8 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
         if (BuildConfig.DEBUG) Log.d(TAG, "onAttach");
         super.onAttach(context);
 
-        Activity activity;
-
         if (context instanceof Activity){
-            activity = (Activity) context;
+            Activity activity = (Activity) context;
 
             try {
                 viewInflatedListener = (OnViewInflatedListener) activity;
@@ -93,7 +91,7 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
 
         List<Music> queueList = new ArrayList<>();
 
-        adapter = new QueueAdapter(queueList, this);
+        adapter = new QueueAdapter(queueList, cabHolder);
 
         Activity activity = getActivity();
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
@@ -234,7 +232,7 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
     public void onLoadFinished(Loader<List<Music>> loader, List<Music> data) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadFinished");
 
-        adapter.finishCAB();
+        cabHolder.closeCab();
         adapter.swap(data);
     }
 
@@ -242,7 +240,7 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
     public void onLoaderReset(Loader<List<Music>> loader) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
-        adapter.finishCAB();
+        cabHolder.closeCab();
         adapter.swap(null);
     }
 
