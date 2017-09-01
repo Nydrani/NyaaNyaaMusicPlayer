@@ -1,5 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ActionMode;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
+import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.BaseMusicViewHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.interfaces.CabHolder;
 
@@ -24,6 +26,7 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
         implements ActionMode.Callback {
     private static final String TAG = BaseAdapter.class.getSimpleName();
 
+    public List<View> chosenViews;
     public List<Integer> chosenItems;
     public CabHolder cabHolder;
     public ActionMode actionMode;
@@ -33,6 +36,7 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
 
         this.cabHolder = cabHolder;
         chosenItems = new ArrayList<>();
+        chosenViews = new ArrayList<>();
 
         // @TODO check if ids are stable
         // ids are stable. at least i would hope (pls be stable MediaStore)
@@ -55,7 +59,12 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
     public void onDestroyActionMode(ActionMode mode) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onDestroyActionMode");
 
+        // clear color when destroyed
+        for (View v : chosenViews) {
+            v.setBackground(null);
+        }
         chosenItems.clear();
+        chosenViews.clear();
     }
 
 
@@ -70,8 +79,14 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
 
         // add/remove from list functionality
         if (foundItem == -1) {
+            // add color
+            v.setBackgroundColor(ContextCompat.getColor(v.getContext(), R.color.grey));
+            chosenViews.add(v);
             chosenItems.add(position);
         } else {
+            // remove color
+            v.setBackground(null);
+            chosenViews.remove(v);
             chosenItems.remove(foundItem);
         }
 

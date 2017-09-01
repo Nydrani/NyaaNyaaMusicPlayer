@@ -46,23 +46,18 @@ public class QueueViewHolder extends BaseMusicViewHolder {
     public void onClick(View v) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
 
-        // load song to play
-        if (!(adapter.get().cabHolder.isCabOpen())) {
-            if (!MusicUtils.load(getAdapterPosition())) {
-                MusicUtils.load(0);
-            }
+        // play music
+        if (!MusicUtils.load(getAdapterPosition())) {
+            MusicUtils.load(0);
         }
 
-        // close cab
-        super.onClick(v);
     }
 
     @Override
     public boolean onLongClick(View v) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLongClick");
 
-        // show cab
-        return super.onLongClick(v);
+        return true;
     }
 
 

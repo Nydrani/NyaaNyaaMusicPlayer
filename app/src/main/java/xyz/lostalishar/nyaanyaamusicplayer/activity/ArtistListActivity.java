@@ -88,7 +88,7 @@ public class ArtistListActivity extends BaseActivity implements OnViewInflatedLi
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.actionbar_refresh:
+            case R.id.actionbar_settings:
                 Toast.makeText(this, R.string.app_name, Toast.LENGTH_LONG).show();
                 return true;
             default:

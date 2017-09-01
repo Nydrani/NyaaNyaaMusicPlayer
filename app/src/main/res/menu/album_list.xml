@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/actionbar_refresh"
-        android:title="@string/actionbar_refresh" />
+        android:id="@+id/actionbar_settings"
+        android:title="@string/actionbar_settings" />
 
 </menu>
