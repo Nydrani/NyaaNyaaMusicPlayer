@@ -1,19 +1,17 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.View;
 
-import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.BaseMusicViewHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.interfaces.CabHolder;
-import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
-import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 
 /**
  * Currently not implementing a List rather than Cursor due to:
@@ -26,13 +24,15 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
         implements ActionMode.Callback {
     private static final String TAG = BaseAdapter.class.getSimpleName();
 
-    public int chosenItem;
+    public List<Integer> chosenItems;
     public CabHolder cabHolder;
+    public ActionMode actionMode;
 
     protected BaseAdapter(CabHolder cabHolder) {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         this.cabHolder = cabHolder;
+        chosenItems = new ArrayList<>();
 
         // @TODO check if ids are stable
         // ids are stable. at least i would hope (pls be stable MediaStore)
@@ -55,7 +55,7 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
     public void onDestroyActionMode(ActionMode mode) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onDestroyActionMode");
 
-        chosenItem = MusicPlaybackService.UNKNOWN_POS;
+        chosenItems.clear();
     }
 
 
@@ -63,10 +63,30 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
     // Multi item toggle CAB
     // ========================================================================
 
-    public void toggleCab(View v, ActionMode.Callback callback, int position) {
+    public void toggleCab(View v, int position) {
         if (BuildConfig.DEBUG) Log.d(TAG, "toggleCab");
 
-        chosenItem = position;
-        cabHolder.openCab(callback);
+        int foundItem = chosenItems.indexOf(position);
+
+        // add/remove from list functionality
+        if (foundItem == -1) {
+            chosenItems.add(position);
+        } else {
+            chosenItems.remove(foundItem);
+        }
+
+        // cab open/close functionality
+        if (!cabHolder.isCabOpen()) {
+            actionMode = cabHolder.openCab(this);
+        } else if (cabHolder.isCabOpen() && chosenItems.size() == 0) {
+            cabHolder.closeCab();
+            actionMode = null;
+        }
+
+        // set cab title
+        // @TODO set title to name of highlighted instead of just count
+        if (chosenItems.size() > 0) {
+            actionMode.setTitle(String.valueOf(chosenItems.size()));
+        }
     }
 }

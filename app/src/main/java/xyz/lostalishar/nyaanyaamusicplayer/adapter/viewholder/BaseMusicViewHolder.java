@@ -40,8 +40,9 @@ public abstract class BaseMusicViewHolder extends RecyclerView.ViewHolder
     public void onClick(View v) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
 
-        // finish action mode here
-        adapter.get().cabHolder.closeCab();
+        if (adapter.get().cabHolder.isCabOpen()) {
+            adapter.get().toggleCab(v, getAdapterPosition());
+        }
     }
 
     @Override
@@ -49,7 +50,7 @@ public abstract class BaseMusicViewHolder extends RecyclerView.ViewHolder
         if (BuildConfig.DEBUG) Log.d(TAG, "onLongClick");
 
         // open action mode here
-        adapter.get().toggleCab(v, adapter.get(), getAdapterPosition());
+        adapter.get().toggleCab(v, getAdapterPosition());
 
         return true;
     }

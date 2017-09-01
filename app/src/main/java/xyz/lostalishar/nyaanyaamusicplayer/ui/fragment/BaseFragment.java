@@ -48,33 +48,4 @@ public abstract class BaseFragment extends Fragment {
 
         setHasOptionsMenu(true);
     }
-
-
-    // ========================================================================
-    // Helper functions
-    // ========================================================================
-
-    /*
-    public void openCAB(View v, ActionMode.Callback callback) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "openCAB");
-
-        if (actionMode == null) {
-            actionMode = v.startActionMode(callback);
-        }
-    }
-
-    public void closeCAB() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "finishCab");
-
-        if (actionMode != null) {
-            actionMode.finish();
-        }
-    }
-
-    public boolean isCabOpen() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "isCabOpen");
-
-        return actionMode != null;
-    }
-    */
 }

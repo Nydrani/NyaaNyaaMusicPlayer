@@ -125,7 +125,7 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
                 mode.finish();
                 return true;
             case R.id.actionbar_remove:
-                MusicUtils.dequeue(new long[] { musicList.get(chosenItem).getId() }, null);
+                MusicUtils.dequeue(removeItems(), null);
                 mode.finish();
                 return true;
             default:
@@ -159,5 +159,16 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
             musicList.addAll(newList);
         }
         notifyDataSetChanged();
+    }
+
+    private long[] removeItems() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "removeItems");
+
+        long[] removeArray = new long[chosenItems.size()];
+        for (int i = 0; i < removeArray.length; i++) {
+            removeArray[i] = musicList.get(chosenItems.get(i)).getId();
+        }
+
+        return removeArray;
     }
 }
