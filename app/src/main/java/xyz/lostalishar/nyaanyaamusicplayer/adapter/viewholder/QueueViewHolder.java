@@ -1,5 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder;
 
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -63,9 +64,15 @@ public class QueueViewHolder extends BaseMusicViewHolder {
     public void onClick(View v) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
 
+        int position = getAdapterPosition();
+
+        if (getAdapterPosition() == RecyclerView.NO_POSITION) {
+            position = 0;
+        }
+
         // play music
-        if (!MusicUtils.load(getAdapterPosition())) {
-            MusicUtils.load(0);
+        if (!(adapter.get().cabHolder.isCabOpen())) {
+            MusicUtils.load(position);
         }
 
         // for multi click toggle
