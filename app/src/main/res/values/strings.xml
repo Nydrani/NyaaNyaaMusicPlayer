@@ -36,6 +36,8 @@
     <string name="fragment_player_bar_next">Next</string>
     <string name="fragment_player_bar_prev">Prev</string>
 
+    <string name="description_more_overflow">Image to indicate more overflow options</string>
+
     <string name="menu_dots">&#8942;</string>
     
     <plurals name="num_albums">

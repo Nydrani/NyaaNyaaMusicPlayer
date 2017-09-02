@@ -1,6 +1,7 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -74,43 +75,37 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
         return new QueueViewHolder(v, this);
     }
 
-    // @TODO try do this without making the QueueViewHolder final
     @Override
-    public void onBindViewHolder(final QueueViewHolder holder, int position) {
+    public void onBindViewHolder(QueueViewHolder holder, int position) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onBindViewHolder");
 
         Music music = musicList.get(position);
 
-        holder.musicTitle.setText(music.getName());
-        holder.musicDescription.setText(music.getArtistName());
-        holder.musicMenu.setOnClickListener(new View.OnClickListener() {
+        // store final variables like a pleb
+        final int boundPosition = holder.getAdapterPosition();
+        final View boundView = holder.itemView;
+
+        holder.queueTitle.setText(music.getName());
+        holder.queueDescription.setText(music.getArtistName());
+        holder.popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
-            public void onClick(View v) {
-                PopupMenu popup = new PopupMenu(v.getContext(), v);
-                popup.inflate(R.menu.popup_queue);
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.popupmenu_select:
-                                // @TODO use some non final view + position
-                                toggleCab(holder.itemView, holder.getAdapterPosition());
-                                break;
-                            case R.id.popupmenu_remove:
-                                MusicUtils.dequeue(new long[] {
-                                        musicList.get(holder.getAdapterPosition()).getId()
-                                }, null);
-                                break;
-                            default:
-                                if (BuildConfig.DEBUG)
-                                    Log.d(TAG, "Unknown MenuItem choice: " + item.getTitle().toString());
-                        }
-
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.popupmenu_select:
+                        toggleCab(boundView, boundPosition);
                         return true;
-                    }
-                });
+                    case R.id.popupmenu_remove:
+                        MusicUtils.dequeue(new long[] {
+                                musicList.get(boundPosition).getId()
+                        }, null);
+                        return true;
+                    default:
+                        if (BuildConfig.DEBUG) {
+                            Log.d(TAG, "Unknown MenuItem choice: " + item.getTitle().toString());
+                        }
+                }
 
-                popup.show();
+                return false;
             }
         });
 
@@ -125,7 +120,8 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
         }
 
         if (state.getQueuePos() == position) {
-            holder.itemView.setBackgroundColor(Color.RED);
+            holder.itemView.setBackgroundColor(ContextCompat
+                    .getColor(holder.itemView.getContext(),R.color.red));
         } else if (holder.itemView.getBackground() != null) {
             holder.itemView.setBackground(null);
         }

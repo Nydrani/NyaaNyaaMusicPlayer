@@ -1,12 +1,10 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder;
 
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
@@ -20,9 +18,11 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 public class QueueViewHolder extends BaseMusicViewHolder {
     private static final String TAG = QueueViewHolder.class.getSimpleName();
 
-    public TextView musicTitle;
-    public TextView musicDescription;
-    public TextView musicMenu;
+    public TextView queueTitle;
+    public TextView queueDescription;
+    public ImageView queueMenu;
+
+    public PopupMenu popupMenu;
 
     public QueueDataHolder queueDataHolder;
 
@@ -30,9 +30,20 @@ public class QueueViewHolder extends BaseMusicViewHolder {
         super(view, adapter);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        musicTitle = (TextView)view.findViewById(R.id.queue_title);
-        musicDescription = (TextView)view.findViewById(R.id.queue_description);
-        musicMenu = (TextView)view.findViewById(R.id.queue_menu);
+        queueTitle = (TextView)view.findViewById(R.id.queue_title);
+        queueDescription = (TextView)view.findViewById(R.id.queue_description);
+        queueMenu = (ImageView)view.findViewById(R.id.queue_menu);
+
+        popupMenu = new PopupMenu(itemView.getContext(), queueMenu);
+        popupMenu.inflate(R.menu.popup_queue);
+
+        // set the onclick to show menu
+        queueMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupMenu.show();
+            }
+        });
 
         // instantiate music data holder
         queueDataHolder = new QueueDataHolder();

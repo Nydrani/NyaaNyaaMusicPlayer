@@ -8,7 +8,7 @@
     android:paddingEnd="?android:attr/listPreferredItemPaddingEnd">
 
     <LinearLayout
-        android:id="@+id/music_container"
+        android:id="@+id/queue_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -29,16 +29,17 @@
 
     </LinearLayout>
 
-    <TextView
+    <ImageView
         android:id="@+id/queue_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/queue_container"
         android:layout_alignParentEnd="true"
+        android:layout_alignTop="@id/queue_container"
         android:layout_centerInParent="true"
-        android:background="?android:attr/selectableItemBackground"
-        android:paddingStart="@dimen/horizontal_padding"
-        android:paddingEnd="@dimen/horizontal_padding"
-        android:text="@string/menu_dots"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/description_more_overflow"
+        android:src="@drawable/ic_more_overflow_24dp"
+        android:tint="@color/darkGrey" />
 
 </RelativeLayout>
