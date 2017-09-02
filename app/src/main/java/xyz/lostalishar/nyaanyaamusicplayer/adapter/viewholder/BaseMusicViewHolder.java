@@ -11,6 +11,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.adapter.BaseAdapter;
 
 /**
  * ViewHolder for music list
+ * @TODO rewrite this completely to not be a hierarchical structure
  */
 
 public abstract class BaseMusicViewHolder extends RecyclerView.ViewHolder
@@ -40,16 +41,25 @@ public abstract class BaseMusicViewHolder extends RecyclerView.ViewHolder
     public void onClick(View v) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
 
-        // finish action mode here
-        adapter.get().finishCAB();
+        if (getAdapterPosition() == RecyclerView.NO_POSITION) {
+            return;
+        }
+
+        if (adapter.get().cabHolder.isCabOpen()) {
+            adapter.get().toggleCab(v, getAdapterPosition());
+        }
     }
 
     @Override
     public boolean onLongClick(View v) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLongClick");
 
+        if (getAdapterPosition() == RecyclerView.NO_POSITION) {
+            return true;
+        }
+
         // open action mode here
-        adapter.get().toggleCAB(v, adapter.get(), getAdapterPosition());
+        adapter.get().toggleCab(v, getAdapterPosition());
 
         return true;
     }

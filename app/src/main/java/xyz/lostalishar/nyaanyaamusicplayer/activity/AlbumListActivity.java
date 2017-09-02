@@ -88,7 +88,7 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.actionbar_refresh:
+            case R.id.actionbar_settings:
                 Toast.makeText(this, R.string.app_name, Toast.LENGTH_LONG).show();
                 return true;
             default:
@@ -109,17 +109,8 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
                                     SlidingUpPanelLayout.PanelState newState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onPanelStateChanged");
 
-        FragmentManager fm = getFragmentManager();
-        BaseFragment slidingFragment = (BaseFragment)getSlidingFragment(fm);
-        BaseFragment baseFragment = (BaseFragment)getBaseFragment(fm);
-
         updateUI(newState);
-
-
-        // @TODO update CAB to be located it the fragment (UI) instead of adapter
-        // @TODO pass CAB into the adapter so single cab entry
-        baseFragment.closeCAB();
-        slidingFragment.closeCAB();
+        closeCab();
     }
 
     @Override

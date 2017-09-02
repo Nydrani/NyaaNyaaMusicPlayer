@@ -4,6 +4,9 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="white">#FFFFFF</color>
+    <color name="red">#f44336</color>
+    <color name="grey">#e0e0e0</color>
+    <color name="darkGrey">#424242</color>
     <color name="buttonLight">#90caf9</color>
     <color name="buttonPrimary">#b388ff</color>
     <color name="dividerColor">#bdbdbd</color>

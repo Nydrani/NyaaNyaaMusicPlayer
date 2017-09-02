@@ -509,6 +509,7 @@ public class MusicPlaybackService extends Service implements
         updatePlaybackState();
         savePlaybackState();
 
+        // notify people
         NyaaUtils.notifyChange(this, NyaaUtils.QUEUE_CHANGED);
 
         // @TODO for now update queue database in here (change to use message handling later)
@@ -1049,6 +1050,9 @@ public class MusicPlaybackService extends Service implements
         }
     }
 
+    // @TODO to find where the correct position of the queue should be, we need to find:
+    // @TODO new position = old position - items removed above it, because everything cascades down
+    // @TODO the question is, how do we find how many items were removed that were above the current playing
     private void updatePlaybackState() {
         if (BuildConfig.DEBUG) Log.d(TAG, "updatePlaybackState");
 

@@ -70,7 +70,10 @@ public class MusicUtils {
 
         try {
             musicService.reset();
-            return musicService.load(queuePos);
+            // @TODO debugging
+            boolean loaded =  musicService.load(queuePos);
+            Log.v(TAG, "ABLE TO LOAD: " + String.valueOf(loaded));
+            return loaded;
         } catch (RemoteException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
         }
@@ -193,7 +196,10 @@ public class MusicUtils {
         }
 
         try {
-            return musicService.getQueue();
+            // @TODO debugging
+            List<MusicPlaybackTrack> queue = musicService.getQueue();
+            if (BuildConfig.DEBUG) Log.v(TAG, queue.toString());
+            return queue;
         } catch (RemoteException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
         }
@@ -209,7 +215,10 @@ public class MusicUtils {
         }
 
         try {
-            return musicService.getCurrentPlaying();
+            // @TODO debugging
+            MusicPlaybackTrack track = musicService.getCurrentPlaying();
+            if (BuildConfig.DEBUG) Log.v(TAG, track.toString());
+            return track;
         } catch (RemoteException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
         }
@@ -257,7 +266,10 @@ public class MusicUtils {
         }
 
         try {
-            return musicService.getState();
+            // @TODO debugging
+            MusicPlaybackState state = musicService.getState();
+            if (BuildConfig.DEBUG) Log.v(TAG, state.toString());
+            return state;
         } catch (RemoteException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
         }

@@ -1,10 +1,11 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder;
 
-import android.support.design.widget.Snackbar;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
@@ -18,8 +19,11 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 public class QueueViewHolder extends BaseMusicViewHolder {
     private static final String TAG = QueueViewHolder.class.getSimpleName();
 
-    public TextView musicTitle;
-    public TextView musicDescription;
+    public TextView queueTitle;
+    public TextView queueDescription;
+    public ImageView queueMenu;
+
+    public PopupMenu popupMenu;
 
     public QueueDataHolder queueDataHolder;
 
@@ -27,8 +31,20 @@ public class QueueViewHolder extends BaseMusicViewHolder {
         super(view, adapter);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        musicTitle = (TextView) view.findViewById(R.id.music_name);
-        musicDescription = (TextView) view.findViewById(R.id.music_description);
+        queueTitle = (TextView)view.findViewById(R.id.queue_title);
+        queueDescription = (TextView)view.findViewById(R.id.queue_description);
+        queueMenu = (ImageView)view.findViewById(R.id.queue_menu);
+
+        popupMenu = new PopupMenu(itemView.getContext(), queueMenu);
+        popupMenu.inflate(R.menu.popup_queue);
+
+        // set the onclick to show menu
+        queueMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupMenu.show();
+            }
+        });
 
         // instantiate music data holder
         queueDataHolder = new QueueDataHolder();
@@ -48,14 +64,18 @@ public class QueueViewHolder extends BaseMusicViewHolder {
     public void onClick(View v) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
 
-        // load song to play
-        if (!(adapter.get().fragment.get().isCABOpen())) {
-            if (!MusicUtils.load(getAdapterPosition())) {
-                MusicUtils.load(0);
-            }
+        int position = getAdapterPosition();
+
+        if (getAdapterPosition() == RecyclerView.NO_POSITION) {
+            position = 0;
         }
 
-        // close cab
+        // play music
+        if (!(adapter.get().cabHolder.isCabOpen())) {
+            MusicUtils.load(position);
+        }
+
+        // for multi click toggle
         super.onClick(v);
     }
 
@@ -63,8 +83,7 @@ public class QueueViewHolder extends BaseMusicViewHolder {
     public boolean onLongClick(View v) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLongClick");
 
-        // show cab
-        return super.onLongClick(v);
+        return true;
     }
 
 

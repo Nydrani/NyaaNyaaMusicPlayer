@@ -1,6 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
-import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -9,15 +9,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 
 import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.QueueViewHolder;
+import xyz.lostalishar.nyaanyaamusicplayer.interfaces.CabHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
-import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 
 /**
@@ -32,8 +33,8 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
 
     private List<Music> musicList;
 
-    public QueueAdapter(List<Music> musicList, BaseFragment fragment) {
-        super(fragment);
+    public QueueAdapter(List<Music> musicList, CabHolder cabHolder) {
+        super(cabHolder);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         this.musicList = musicList;
@@ -68,7 +69,7 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateViewHolder");
 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View v = inflater.inflate(R.layout.list_layout_music, parent, false);
+        View v = inflater.inflate(R.layout.list_layout_queue, parent, false);
 
         return new QueueViewHolder(v, this);
     }
@@ -79,8 +80,33 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
 
         Music music = musicList.get(position);
 
-        holder.musicTitle.setText(music.getName());
-        holder.musicDescription.setText(music.getArtistName());
+        // store final variables like a pleb
+        final int boundPosition = holder.getAdapterPosition();
+        final View boundView = holder.itemView;
+
+        holder.queueTitle.setText(music.getName());
+        holder.queueDescription.setText(music.getArtistName());
+        holder.popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.popupmenu_select:
+                        toggleCab(boundView, boundPosition);
+                        return true;
+                    case R.id.popupmenu_remove:
+                        MusicUtils.dequeue(new long[] {
+                                musicList.get(boundPosition).getId()
+                        }, null);
+                        return true;
+                    default:
+                        if (BuildConfig.DEBUG) {
+                            Log.d(TAG, "Unknown MenuItem choice: " + item.getTitle().toString());
+                        }
+                }
+
+                return false;
+            }
+        });
 
         // store id
         holder.queueDataHolder.musicId = music.getId();
@@ -88,12 +114,13 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
         // @TODO update background color if current position is playing
         // @TODO change to something with better UI design later lmao
         MusicPlaybackState state = MusicUtils.getState();
-        if (state == null) {
+        if (state == null || cabHolder.isCabOpen()) {
             return;
         }
 
         if (state.getQueuePos() == position) {
-            holder.itemView.setBackgroundColor(Color.RED);
+            holder.itemView.setBackgroundColor(ContextCompat
+                    .getColor(holder.itemView.getContext(),R.color.red));
         } else if (holder.itemView.getBackground() != null) {
             holder.itemView.setBackground(null);
         }
@@ -109,7 +136,7 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateActionMode");
 
         MenuInflater inflater = mode.getMenuInflater();
-        inflater.inflate(R.menu.context_music_queue, menu);
+        inflater.inflate(R.menu.context_queue_list, menu);
 
         return true;
     }
@@ -125,7 +152,7 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
                 mode.finish();
                 return true;
             case R.id.actionbar_remove:
-                MusicUtils.dequeue(new long[] { musicList.get(chosenItem).getId() }, null);
+                MusicUtils.dequeue(removeItems(), null);
                 mode.finish();
                 return true;
             default:
@@ -159,5 +186,16 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
             musicList.addAll(newList);
         }
         notifyDataSetChanged();
+    }
+
+    private long[] removeItems() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "removeItems");
+
+        long[] removeArray = new long[chosenItems.size()];
+        for (int i = 0; i < removeArray.length; i++) {
+            removeArray[i] = musicList.get(chosenItems.get(i)).getId();
+        }
+
+        return removeArray;
     }
 }

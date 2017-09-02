@@ -6,12 +6,15 @@
     <string name="actionbar_homelink">Link</string>
     <string name="actionbar_details">Details</string>
 
-
     <string name="actionbar_refresh">Refresh</string>
+    <string name="actionbar_add">Add</string>
     <string name="actionbar_add_all">Add all</string>
     <string name="actionbar_clear_queue">Clear queue</string>
 
     <string name="actionbar_remove">Remove</string>
+
+    <string name="popupmenu_remove">Remove</string>
+    <string name="popupmenu_select">Select</string>
 
     <string name="toast_clear_x_tracks">Cleared %1$d tracks from the queue</string>
     <string name="toast_add_x_tracks">Added %1$d tracks to the queue</string>
@@ -34,6 +37,10 @@
     <string name="fragment_player_bar_next">Next</string>
     <string name="fragment_player_bar_prev">Prev</string>
 
+    <string name="description_more_overflow">Image to indicate more overflow options</string>
+
+    <string name="menu_dots">&#8942;</string>
+    
     <plurals name="num_albums">
         <item quantity="one">%1$d album</item>
         <item quantity="other">%1$d albums</item>

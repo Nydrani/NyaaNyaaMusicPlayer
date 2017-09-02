@@ -7,5 +7,7 @@ import android.view.ActionMode;
  */
 
 public interface CabHolder {
-    ActionMode openCab(int menuRes, ActionMode.Callback callback);
+    ActionMode openCab(ActionMode.Callback callback);
+    void closeCab();
+    boolean isCabOpen();
 }

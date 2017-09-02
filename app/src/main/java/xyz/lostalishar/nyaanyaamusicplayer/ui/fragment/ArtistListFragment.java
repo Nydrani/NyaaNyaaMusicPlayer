@@ -58,7 +58,7 @@ public class ArtistListFragment extends BaseFragment implements LoaderManager.Lo
         super.onCreate(savedInstanceState);
 
         Activity activity = getActivity();
-        adapter = new MusicAdapter(new ArrayList<Music>(), this);
+        adapter = new MusicAdapter(new ArrayList<Music>(), cabHolder);
 
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
     }
@@ -139,7 +139,7 @@ public class ArtistListFragment extends BaseFragment implements LoaderManager.Lo
     public void onLoadFinished(Loader<List<Music>> loader, List<Music> data) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadFinished");
 
-        adapter.finishCAB();
+        cabHolder.closeCab();
         adapter.swap(data);
     }
 
@@ -147,7 +147,7 @@ public class ArtistListFragment extends BaseFragment implements LoaderManager.Lo
     public void onLoaderReset(Loader<List<Music>> loader) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
-        adapter.finishCAB();
+        cabHolder.closeCab();
         adapter.swap(null);
     }
 

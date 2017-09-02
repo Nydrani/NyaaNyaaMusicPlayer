@@ -3,11 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/actionbar_details"
-        android:title="@string/actionbar_details" />
+        android:id="@+id/popupmenu_select"
+        android:title="@string/popupmenu_select" />
 
     <item
-        android:id="@+id/actionbar_add"
-        android:title="@string/actionbar_add" />
+        android:id="@+id/popupmenu_remove"
+        android:title="@string/popupmenu_remove" />
 
 </menu>

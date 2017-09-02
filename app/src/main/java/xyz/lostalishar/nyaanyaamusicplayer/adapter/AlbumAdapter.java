@@ -14,8 +14,8 @@ import java.util.List;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.AlbumViewHolder;
+import xyz.lostalishar.nyaanyaamusicplayer.interfaces.CabHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Album;
-import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 
 /**
  * Currently not implementing a List rather than Cursor due to:
@@ -29,8 +29,8 @@ public class AlbumAdapter extends BaseAdapter<AlbumViewHolder> {
 
     private List<Album> albumList;
 
-    public AlbumAdapter(List<Album> albumList, BaseFragment fragment) {
-        super(fragment);
+    public AlbumAdapter(List<Album> albumList, CabHolder cabHolder) {
+        super(cabHolder);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         this.albumList = albumList;
@@ -62,7 +62,7 @@ public class AlbumAdapter extends BaseAdapter<AlbumViewHolder> {
         Album album = getAlbumList().get(position);
 
         int numTracks = album.getNumTracks();
-        String tracksDescription = fragment.get().getResources().
+        String tracksDescription = holder.itemView.getResources().
                 getQuantityString(R.plurals.num_tracks, numTracks, numTracks);
 
         holder.albumTitle.setText(album.getName());

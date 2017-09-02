@@ -1,6 +1,5 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
-import android.content.Context;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.v13.app.FragmentPagerAdapter;
@@ -18,13 +17,11 @@ public class LibraryPagerAdapter extends FragmentPagerAdapter {
     private static final String TAG = LibraryPagerAdapter.class.getSimpleName();
 
     private final List<PageHolder> holderList;
-    private Context context;
 
-    public LibraryPagerAdapter(Context context, FragmentManager fm, List<PageHolder> holderList) {
+    public LibraryPagerAdapter(FragmentManager fm, List<PageHolder> holderList) {
         super(fm);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        this.context = context;
         this.holderList = holderList;
     }
 

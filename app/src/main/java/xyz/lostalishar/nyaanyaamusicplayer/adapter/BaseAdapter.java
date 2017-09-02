@@ -1,17 +1,19 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.View;
 
-import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
+import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.BaseMusicViewHolder;
-import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
-import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
+import xyz.lostalishar.nyaanyaamusicplayer.interfaces.CabHolder;
 
 /**
  * Currently not implementing a List rather than Cursor due to:
@@ -24,13 +26,17 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
         implements ActionMode.Callback {
     private static final String TAG = BaseAdapter.class.getSimpleName();
 
-    public int chosenItem;
-    public WeakReference<BaseFragment> fragment;
+    public List<View> chosenViews;
+    public List<Integer> chosenItems;
+    public CabHolder cabHolder;
+    public ActionMode actionMode;
 
-    protected BaseAdapter(BaseFragment fragment) {
+    protected BaseAdapter(CabHolder cabHolder) {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        this.fragment = new WeakReference<>(fragment);
+        this.cabHolder = cabHolder;
+        chosenItems = new ArrayList<>();
+        chosenViews = new ArrayList<>();
 
         // @TODO check if ids are stable
         // ids are stable. at least i would hope (pls be stable MediaStore)
@@ -53,20 +59,49 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
     public void onDestroyActionMode(ActionMode mode) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onDestroyActionMode");
 
-        fragment.get().actionMode = null;
-        chosenItem = MusicPlaybackService.UNKNOWN_POS;
+        // clear color when destroyed
+        for (View v : chosenViews) {
+            v.setBackground(null);
+        }
+        chosenItems.clear();
+        chosenViews.clear();
     }
+
 
     // ========================================================================
     // Multi item toggle CAB
     // ========================================================================
 
-    public void toggleCAB(View v, ActionMode.Callback callback, int position) {
-        fragment.get().openCAB(v, callback);
-    }
+    public void toggleCab(View v, int position) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "toggleCab");
 
-    public void finishCAB() {
-        fragment.get().closeCAB();
-        chosenItem = MusicPlaybackService.UNKNOWN_POS;
+        int foundItem = chosenItems.indexOf(position);
+
+        // add/remove from list functionality
+        if (foundItem == -1) {
+            // add color
+            v.setBackgroundColor(ContextCompat.getColor(v.getContext(), R.color.grey));
+            chosenViews.add(v);
+            chosenItems.add(position);
+        } else {
+            // remove color
+            v.setBackground(null);
+            chosenViews.remove(v);
+            chosenItems.remove(foundItem);
+        }
+
+        // cab open/close functionality
+        if (!cabHolder.isCabOpen()) {
+            actionMode = cabHolder.openCab(this);
+        } else if (cabHolder.isCabOpen() && chosenItems.size() == 0) {
+            cabHolder.closeCab();
+            actionMode = null;
+        }
+
+        // set cab title
+        // @TODO set title to name of highlighted instead of just count
+        if (chosenItems.size() > 0) {
+            actionMode.setTitle(String.valueOf(chosenItems.size()));
+        }
     }
 }
