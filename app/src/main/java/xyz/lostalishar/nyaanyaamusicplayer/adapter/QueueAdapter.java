@@ -1,6 +1,5 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
-import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.ActionMode;
@@ -137,7 +136,7 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateActionMode");
 
         MenuInflater inflater = mode.getMenuInflater();
-        inflater.inflate(R.menu.context_music_queue, menu);
+        inflater.inflate(R.menu.context_queue_list, menu);
 
         return true;
     }

@@ -7,7 +7,7 @@
         android:title="@string/actionbar_details" />
 
     <item
-        android:id="@+id/actionbar_about"
-        android:title="@string/actionbar_about" />
+        android:id="@+id/actionbar_add"
+        android:title="@string/actionbar_add" />
 
 </menu>

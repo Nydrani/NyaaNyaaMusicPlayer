@@ -16,6 +16,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.viewholder.MusicListViewHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.interfaces.CabHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
+import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 
 /**
  * Currently not implementing a List rather than Cursor due to:
@@ -118,7 +119,8 @@ public class MusicAdapter extends BaseAdapter<MusicListViewHolder> {
             case R.id.actionbar_details:
                 mode.finish();
                 return true;
-            case R.id.actionbar_about:
+            case R.id.actionbar_add:
+                MusicUtils.enqueue(addItems(), null);
                 mode.finish();
                 return true;
             default:
@@ -141,5 +143,16 @@ public class MusicAdapter extends BaseAdapter<MusicListViewHolder> {
             musicList.addAll(newList);
         }
         notifyDataSetChanged();
+    }
+
+    private long[] addItems() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "addItems");
+
+        long[] addArray = new long[chosenItems.size()];
+        for (int i = 0; i < addArray.length; i++) {
+            addArray[i] = musicList.get(chosenItems.get(i)).getId();
+        }
+
+        return addArray;
     }
 }
