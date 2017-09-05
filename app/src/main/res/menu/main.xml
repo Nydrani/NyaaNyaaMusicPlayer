@@ -3,11 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/actionbar_homelink"
-        android:title="@string/actionbar_homelink"
-        android:enabled="false" />
-
-    <item
         android:id="@+id/actionbar_about"
         android:title="@string/actionbar_about" />
 

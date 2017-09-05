@@ -65,6 +65,9 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
         }
         chosenItems.clear();
         chosenViews.clear();
+
+        // make sure to null this out
+        actionMode = null;
     }
 
 
@@ -95,7 +98,6 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
             actionMode = cabHolder.openCab(this);
         } else if (cabHolder.isCabOpen() && chosenItems.size() == 0) {
             cabHolder.closeCab();
-            actionMode = null;
         }
 
         // set cab title

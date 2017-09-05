@@ -186,6 +186,12 @@ public class LibraryFragment extends Fragment {
         return pageList;
     }
 
+    public void setChildrenOptionsMenu(boolean hasMenu) {
+        for (LibraryPagerAdapter.PageHolder pageHolder : pageList) {
+            pageHolder.fragment.setHasOptionsMenu(hasMenu);
+        }
+    }
+
 
     //=========================================================================
     // Internal classes

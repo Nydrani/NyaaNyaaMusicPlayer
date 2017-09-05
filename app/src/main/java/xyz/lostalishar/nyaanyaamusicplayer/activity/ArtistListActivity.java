@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,6 +20,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.interfaces.OnViewInflatedListener;
 import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.ArtistListFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MiniPlayerFragment;
@@ -77,7 +79,7 @@ public class ArtistListActivity extends BaseActivity implements OnViewInflatedLi
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateOptionsMenu");
 
         MenuInflater mi = getMenuInflater();
-        mi.inflate(R.menu.artist_list, menu);
+        mi.inflate(R.menu.main, menu);
         return true;
     }
 
@@ -88,8 +90,13 @@ public class ArtistListActivity extends BaseActivity implements OnViewInflatedLi
         int id = item.getItemId();
 
         switch (id) {
+            case R.id.actionbar_about:
+                setDialogFragment(AboutDialogFragment.newInstance());
+                return true;
             case R.id.actionbar_settings:
                 Toast.makeText(this, R.string.app_name, Toast.LENGTH_LONG).show();
+                Snackbar.make(findViewById(android.R.id.content), R.string.app_name, Snackbar.LENGTH_SHORT)
+                        .show();
                 return true;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);
@@ -290,13 +297,14 @@ public class ArtistListActivity extends BaseActivity implements OnViewInflatedLi
         if (BuildConfig.DEBUG) Log.d(TAG, "updateUI");
 
         FragmentManager fm = getFragmentManager();
+        BaseFragment baseFragment = (BaseFragment)getBaseFragment(fm);
         BaseFragment slidingFragment = (BaseFragment)getSlidingFragment(fm);
         View miniPlayerView = miniPlayerFragment.getView();
         ActionBar actionBar = getSupportActionBar();
 
-
         if (state == SlidingUpPanelLayout.PanelState.COLLAPSED) {
             slidingFragment.setHasOptionsMenu(false);
+
             if (miniPlayerView != null) {
                 miniPlayerView.setVisibility(View.VISIBLE);
             }
@@ -304,6 +312,8 @@ public class ArtistListActivity extends BaseActivity implements OnViewInflatedLi
                 actionBar.setTitle(R.string.app_name);
             }
         } else if (state == SlidingUpPanelLayout.PanelState.EXPANDED) {
+            baseFragment.setHasOptionsMenu(false);
+
             if (miniPlayerView != null) {
                 miniPlayerView.setVisibility(View.GONE);
             }
@@ -311,7 +321,9 @@ public class ArtistListActivity extends BaseActivity implements OnViewInflatedLi
                 actionBar.setTitle(R.string.fragment_name_queue);
             }
         } else {
+            baseFragment.setHasOptionsMenu(true);
             slidingFragment.setHasOptionsMenu(true);
+
             if (miniPlayerView != null) {
                 miniPlayerView.setVisibility(View.VISIBLE);
             }

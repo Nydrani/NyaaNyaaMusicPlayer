@@ -96,15 +96,13 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.actionbar_homelink:
-                Snackbar.make(findViewById(android.R.id.content), "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .show();
-                return true;
             case R.id.actionbar_about:
                 setDialogFragment(AboutDialogFragment.newInstance());
                 return true;
             case R.id.actionbar_settings:
                 Toast.makeText(this, R.string.app_name, Toast.LENGTH_LONG).show();
+                Snackbar.make(findViewById(android.R.id.content), R.string.app_name, Snackbar.LENGTH_SHORT)
+                        .show();
                 return true;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);
@@ -306,13 +304,14 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
         if (BuildConfig.DEBUG) Log.d(TAG, "updateUI");
 
         FragmentManager fm = getFragmentManager();
+        LibraryFragment baseFragment = (LibraryFragment)getBaseFragment(fm);
         BaseFragment slidingFragment = (BaseFragment)getSlidingFragment(fm);
         View miniPlayerView = miniPlayerFragment.getView();
         ActionBar actionBar = getSupportActionBar();
 
-
         if (state == SlidingUpPanelLayout.PanelState.COLLAPSED) {
             slidingFragment.setHasOptionsMenu(false);
+
             if (miniPlayerView != null) {
                 miniPlayerView.setVisibility(View.VISIBLE);
             }
@@ -320,6 +319,8 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
                 actionBar.setTitle(R.string.app_name);
             }
         } else if (state == SlidingUpPanelLayout.PanelState.EXPANDED) {
+            baseFragment.setChildrenOptionsMenu(false);
+
             if (miniPlayerView != null) {
                 miniPlayerView.setVisibility(View.GONE);
             }
@@ -327,7 +328,9 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
                 actionBar.setTitle(R.string.fragment_name_queue);
             }
         } else {
+            baseFragment.setChildrenOptionsMenu(true);
             slidingFragment.setHasOptionsMenu(true);
+
             if (miniPlayerView != null) {
                 miniPlayerView.setVisibility(View.VISIBLE);
             }

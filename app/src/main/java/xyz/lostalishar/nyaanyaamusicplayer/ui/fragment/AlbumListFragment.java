@@ -98,7 +98,7 @@ public class AlbumListFragment extends BaseFragment implements LoaderManager.Loa
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateOptionsMenu");
 
-        inflater.inflate(R.menu.list, menu);
+        inflater.inflate(R.menu.album_list, menu);
     }
 
     @Override

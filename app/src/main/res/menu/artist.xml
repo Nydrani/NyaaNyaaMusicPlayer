@@ -6,8 +6,4 @@
         android:id="@+id/actionbar_refresh"
         android:title="@string/actionbar_refresh" />
 
-    <item
-        android:id="@+id/actionbar_add_all"
-        android:title="@string/actionbar_add_all" />
-
 </menu>

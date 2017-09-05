@@ -217,7 +217,9 @@ public class MusicUtils {
         try {
             // @TODO debugging
             MusicPlaybackTrack track = musicService.getCurrentPlaying();
-            if (BuildConfig.DEBUG) Log.v(TAG, track.toString());
+            if (BuildConfig.DEBUG  && track != null) {
+                Log.v(TAG, track.toString());
+            }
             return track;
         } catch (RemoteException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
@@ -268,7 +270,9 @@ public class MusicUtils {
         try {
             // @TODO debugging
             MusicPlaybackState state = musicService.getState();
-            if (BuildConfig.DEBUG) Log.v(TAG, state.toString());
+            if (BuildConfig.DEBUG && state != null) {
+                Log.v(TAG, state.toString());
+            }
             return state;
         } catch (RemoteException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");

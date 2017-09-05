@@ -90,7 +90,7 @@ public class ArtistFragment extends BaseFragment implements LoaderManager.Loader
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateOptionsMenu");
 
-        inflater.inflate(R.menu.artist_list, menu);
+        inflater.inflate(R.menu.artist, menu);
     }
 
     @Override
