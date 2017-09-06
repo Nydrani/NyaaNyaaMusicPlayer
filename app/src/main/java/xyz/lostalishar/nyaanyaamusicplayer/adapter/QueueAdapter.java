@@ -2,14 +2,14 @@ package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
+
+import com.afollestad.materialcab.MaterialCab;
 
 import java.util.List;
 
@@ -114,7 +114,7 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
         // @TODO update background color if current position is playing
         // @TODO change to something with better UI design later lmao
         MusicPlaybackState state = MusicUtils.getState();
-        if (state == null || cabHolder.isCabOpen()) {
+        if (state == null || isCabActive()) {
             return;
         }
 
@@ -132,28 +132,26 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
     // ========================================================================
 
     @Override
-    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateActionMode");
+    public boolean onCabCreated(MaterialCab materialCab, Menu menu) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCabCreated");
 
-        MenuInflater inflater = mode.getMenuInflater();
-        inflater.inflate(R.menu.context_queue_list, menu);
-
+        materialCab.setMenu(R.menu.context_queue_list);
         return true;
     }
 
     @Override
-    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onActionItemClicked");
+    public boolean onCabItemClicked(MenuItem menuItem) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCabItemClicked");
 
-        int id = item.getItemId();
+        int id = menuItem.getItemId();
 
         switch (id) {
             case R.id.actionbar_details:
-                mode.finish();
+                cab.finish();
                 return true;
             case R.id.actionbar_remove:
-                MusicUtils.dequeue(removeItems(), null);
-                mode.finish();
+                MusicUtils.enqueue(removeItems(), null);
+                cab.finish();
                 return true;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);

@@ -1,32 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sothree="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_sliding_up_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="bottom"
-    sothree:umanoPanelHeight="@dimen/mini_player_height">
+    android:layout_height="match_parent">
 
-    <FrameLayout
-        android:id="@+id/activity_base_content"
+    <ViewStub
+        android:id="@+id/cab_stub"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="?actionBarSize" />
 
-    <FrameLayout
-        android:id="@+id/activity_sliding_container"
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        android:id="@+id/activity_sliding_up_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        sothree:umanoPanelHeight="@dimen/mini_player_height">
 
         <FrameLayout
-            android:id="@+id/activity_sliding_content"
+            android:id="@+id/activity_base_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
         <FrameLayout
-            android:id="@+id/activity_mini_player"
+            android:id="@+id/activity_sliding_container"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/mini_player_height" />
+            android:layout_height="match_parent">
 
-    </FrameLayout>
+            <FrameLayout
+                android:id="@+id/activity_sliding_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-</com.sothree.slidinguppanel.SlidingUpPanelLayout>
+            <FrameLayout
+                android:id="@+id/activity_mini_player"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/mini_player_height" />
+
+        </FrameLayout>
+
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+</FrameLayout>

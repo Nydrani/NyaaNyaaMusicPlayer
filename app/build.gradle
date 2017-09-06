@@ -43,6 +43,7 @@ dependencies {
     compile 'com.android.support:support-v13:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'com.sothree.slidinguppanel:library:3.3.1'
+    compile 'com.afollestad:material-cab:0.1.12'
     testCompile 'junit:junit:4.12'
     androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
 }

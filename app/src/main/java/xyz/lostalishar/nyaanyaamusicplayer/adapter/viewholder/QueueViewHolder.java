@@ -71,7 +71,7 @@ public class QueueViewHolder extends BaseMusicViewHolder {
         }
 
         // play music
-        if (!(adapter.get().cabHolder.isCabOpen())) {
+        if (!(adapter.get().isCabActive())) {
             MusicUtils.load(position);
         }
 

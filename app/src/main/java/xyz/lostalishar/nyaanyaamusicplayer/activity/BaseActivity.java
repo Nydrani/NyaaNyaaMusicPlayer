@@ -6,13 +6,15 @@ import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.ActionMode;
+
+import com.afollestad.materialcab.MaterialCab;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
+import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.interfaces.CabHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
@@ -23,7 +25,7 @@ public abstract class BaseActivity extends AppCompatActivity implements CabHolde
     // flag for service binding
     private boolean bound = false;
 
-    private ActionMode actionMode;
+    protected MaterialCab cab;
 
 
     //=========================================================================
@@ -84,35 +86,46 @@ public abstract class BaseActivity extends AppCompatActivity implements CabHolde
 
 
     //=========================================================================
+    // Other activity callbacks
+    //=========================================================================
+
+    @Override
+    public void onBackPressed() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onBackPressed");
+
+        if (cab != null && cab.isActive()) {
+            cab.finish();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+
+    //=========================================================================
     // CabHolder callback
     //=========================================================================
 
     @Override
-    public ActionMode openCab(ActionMode.Callback callback) {
+    public MaterialCab openCab(MaterialCab.Callback callback) {
         if (BuildConfig.DEBUG) Log.d(TAG, "openCab");
 
-        if (actionMode == null) {
-            actionMode = startActionMode(callback);
+        if (cab != null && cab.isActive()) {
+            cab.finish();
         }
 
-        return actionMode;
+        cab = new MaterialCab(this, R.id.cab_stub)
+                .start(callback);
+
+        return cab;
     }
 
     @Override
     public void closeCab() {
         if (BuildConfig.DEBUG) Log.d(TAG, "closeCab");
 
-        if (actionMode != null) {
-            actionMode.finish();
-            actionMode = null;
+        if (cab != null && cab.isActive()) {
+            cab.finish();
         }
-    }
-
-    @Override
-    public boolean isCabOpen() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "isCabOpen");
-
-        return actionMode != null;
     }
 
 

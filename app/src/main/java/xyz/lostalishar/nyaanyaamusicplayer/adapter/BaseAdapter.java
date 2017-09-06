@@ -3,9 +3,9 @@ package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.ActionMode;
-import android.view.Menu;
 import android.view.View;
+
+import com.afollestad.materialcab.MaterialCab;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +23,13 @@ import xyz.lostalishar.nyaanyaamusicplayer.interfaces.CabHolder;
  */
 
 public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends RecyclerView.Adapter<VH>
-        implements ActionMode.Callback {
+        implements MaterialCab.Callback {
     private static final String TAG = BaseAdapter.class.getSimpleName();
 
     public List<View> chosenViews;
     public List<Integer> chosenItems;
     public CabHolder cabHolder;
-    public ActionMode actionMode;
+    public MaterialCab cab;
 
     protected BaseAdapter(CabHolder cabHolder) {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
@@ -49,25 +49,11 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
     // ========================================================================
 
     @Override
-    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onPrepareActionMode");
+    public boolean onCabFinished(MaterialCab materialCab) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCabFinished");
 
-        return false;
-    }
-
-    @Override
-    public void onDestroyActionMode(ActionMode mode) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onDestroyActionMode");
-
-        // clear color when destroyed
-        for (View v : chosenViews) {
-            v.setBackground(null);
-        }
-        chosenItems.clear();
-        chosenViews.clear();
-
-        // make sure to null this out
-        actionMode = null;
+        clearLists();
+        return true;
     }
 
 
@@ -94,16 +80,33 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
         }
 
         // cab open/close functionality
-        if (!cabHolder.isCabOpen()) {
-            actionMode = cabHolder.openCab(this);
-        } else if (cabHolder.isCabOpen() && chosenItems.size() == 0) {
-            cabHolder.closeCab();
+        if (cab == null || !cab.isActive()) {
+            cab = cabHolder.openCab(this);
+        } else if (cab.isActive() && chosenItems.size() == 0) {
+            cab.finish();
         }
 
         // set cab title
         // @TODO set title to name of highlighted instead of just count
         if (chosenItems.size() > 0) {
-            actionMode.setTitle(String.valueOf(chosenItems.size()));
+            cab.setTitle(String.valueOf(chosenItems.size()));
         }
+    }
+
+    public boolean isCabActive() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "isCabActive");
+
+        return cab != null && cab.isActive();
+    }
+
+    private void clearLists() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "clearLists");
+
+        for (View v : chosenViews) {
+            v.setBackground(null);
+        }
+
+        chosenItems.clear();
+        chosenViews.clear();
     }
 }

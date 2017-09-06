@@ -49,7 +49,7 @@ public class AlbumViewHolder extends BaseMusicViewHolder {
         if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
 
         // add song here
-        if (!(adapter.get().cabHolder.isCabOpen())) {
+        if (!(adapter.get().isCabActive())) {
             NyaaUtils.openAlbumList((Activity)v.getContext(), albumDataHolder.albumId);
         }
 

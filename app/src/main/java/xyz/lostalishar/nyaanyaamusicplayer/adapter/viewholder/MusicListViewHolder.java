@@ -47,7 +47,7 @@ public class MusicListViewHolder extends BaseMusicViewHolder {
         if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
 
         // add song here
-        if (!(adapter.get().cabHolder.isCabOpen())) {
+        if (!(adapter.get().isCabActive())) {
             MusicUtils.enqueue(new long[] { musicDataHolder.musicId }, null);
         }
 
