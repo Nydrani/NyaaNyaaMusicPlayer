@@ -36,6 +36,7 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
     private Fragment musicQueueFragment;
     private Fragment albumListFragment;
     private Fragment miniPlayerFragment;
+    private Fragment slidingMiniPlayerFragment;
 
 
     //=========================================================================
@@ -61,6 +62,7 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
         albumListFragment = AlbumListFragment.newInstance(chosenId);
         musicQueueFragment = MusicQueueFragment.newInstance();
         miniPlayerFragment = MiniPlayerFragment.newInstance();
+        slidingMiniPlayerFragment = MiniPlayerFragment.newInstance();
     }
 
     @Override
@@ -176,6 +178,7 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
         setBaseFragment(albumListFragment);
         setSlidingFragment(musicQueueFragment);
         setMiniPlayerFragment(miniPlayerFragment);
+        setSlidingMiniPlayerFragment(slidingMiniPlayerFragment);
     }
 
     /*
@@ -253,6 +256,31 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
         ft.commit();
     }
 
+    /**
+     * Replaces the fragment in the FrameLayout container
+     * If fragment == null : remove "all" from fragment     <---- all is assuming only 1
+     * If fragment != null : replace with new fragment
+     */
+    private void setSlidingMiniPlayerFragment(Fragment fragment) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setSlidingMiniPlayerFragment");
+
+        FragmentManager fm = getFragmentManager();
+        Fragment element = getSlidingMiniPlayerFragment(fm);
+
+        // check for "remove fragment" and null fragment in container
+        if (fragment == null && element == null) {
+            return;
+        }
+
+        FragmentTransaction ft = fm.beginTransaction();
+        if (fragment == null) {
+            ft.remove(element);
+        } else {
+            ft.replace(R.id.fragment_bottom_bar, fragment);
+        }
+        ft.commit();
+    }
+
     // Gets the current fragment being shown
     private Fragment getBaseFragment(FragmentManager fm) {
         if (BuildConfig.DEBUG) Log.d(TAG, "getBaseFragment");
@@ -272,6 +300,13 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
         if (BuildConfig.DEBUG) Log.d(TAG, "getMiniFragment");
 
         return fm.findFragmentById(R.id.activity_mini_player);
+    }
+
+    // Gets the other mini player fragment
+    private Fragment getSlidingMiniPlayerFragment(FragmentManager fm) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getSlidingMiniFragment");
+
+        return fm.findFragmentById(R.id.fragment_bottom_bar);
     }
 
     private boolean handleBackPressed() {

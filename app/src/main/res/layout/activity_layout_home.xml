@@ -29,8 +29,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
                     android:background="?attr/colorPrimary"
-                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                    android:elevation="4dp" />
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
                 <ViewStub
                     android:id="@+id/cab_stub"
@@ -49,21 +48,35 @@
 
     </android.support.design.widget.CoordinatorLayout>
 
-    <FrameLayout
-        android:id="@+id/activity_sliding_container"
+    <RelativeLayout
+        android:id="@+id/activity_sliding_base_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <FrameLayout
-            android:id="@+id/activity_sliding_content"
+            android:id="@+id/activity_sliding_content_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_above="@+id/fragment_bottom_bar">
+
+            <FrameLayout
+                android:id="@+id/activity_sliding_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <FrameLayout
+                android:id="@+id/activity_mini_player"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/mini_player_height" />
+
+        </FrameLayout>
 
         <FrameLayout
-            android:id="@+id/activity_mini_player"
+            android:id="@+id/fragment_bottom_bar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/mini_player_height" />
+            android:layout_height="@dimen/mini_player_height"
+            android:layout_alignParentBottom="true" />
 
-    </FrameLayout>
+    </RelativeLayout>
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

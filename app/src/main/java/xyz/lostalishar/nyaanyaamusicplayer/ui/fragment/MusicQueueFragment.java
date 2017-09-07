@@ -45,7 +45,6 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
 
     public QueueAdapter adapter;
     private RecyclerView.LayoutManager layout;
-    private TextView pauseBox;
 
     private IntentFilter filter;
     private QueueUpdateListener queueUpdateListener;
@@ -113,32 +112,10 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
                 DividerItemDecoration.VERTICAL);
         View rootView = inflater.inflate(R.layout.fragment_queue, container, false);
         RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.list_base_view);
-        pauseBox = (TextView)rootView.findViewById(R.id.fragment_bottom_bar);
 
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layout);
-
-        pauseBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (BuildConfig.DEBUG) Log.d(TAG, "onClick");
-
-                MusicPlaybackState state = MusicUtils.getState();
-                // do nothing on unknown state
-                if (state == null) {
-                    return;
-                }
-
-                if (MusicUtils.isPlaying()) {
-                    MusicUtils.pause();
-                } else if (state.getQueuePos() == MusicPlaybackService.UNKNOWN_POS) {
-                    Toast.makeText(v.getContext(), R.string.toast_choose_track, Toast.LENGTH_SHORT).show();
-                } else {
-                    MusicUtils.resume();
-                }
-            }
-        });
 
         return rootView;
     }
@@ -255,20 +232,9 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
         getLoaderManager().restartLoader(0, null, this);
     }
 
-    private void updatePauseBox() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "updatePauseBox");
-
-        if (MusicUtils.isPlaying()) {
-            pauseBox.setText(getString(R.string.fragment_player_bar_pause));
-        } else {
-            pauseBox.setText(getString(R.string.fragment_player_bar_play));
-        }
-    }
-
     private void updateMetaUI() {
         if (BuildConfig.DEBUG) Log.d(TAG, "updateMetaUI");
 
-        updatePauseBox();
         adapter.notifyDataSetChanged();
     }
 
