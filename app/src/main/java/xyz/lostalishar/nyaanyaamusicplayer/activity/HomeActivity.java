@@ -310,7 +310,6 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
         LibraryFragment baseFragment = (LibraryFragment)getBaseFragment(fm);
         BaseFragment slidingFragment = (BaseFragment)getSlidingFragment(fm);
         View miniPlayerView = miniPlayerFragment.getView();
-        ActionBar actionBar = getSupportActionBar();
 
         if (state == SlidingUpPanelLayout.PanelState.COLLAPSED) {
             slidingFragment.setHasOptionsMenu(false);
@@ -318,17 +317,11 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
             if (miniPlayerView != null) {
                 miniPlayerView.setVisibility(View.VISIBLE);
             }
-            if (actionBar != null) {
-                actionBar.setTitle(R.string.app_name);
-            }
         } else if (state == SlidingUpPanelLayout.PanelState.EXPANDED) {
             baseFragment.setChildrenOptionsMenu(false);
 
             if (miniPlayerView != null) {
                 miniPlayerView.setVisibility(View.GONE);
-            }
-            if (actionBar != null) {
-                actionBar.setTitle(R.string.fragment_name_queue);
             }
         } else {
             baseFragment.setChildrenOptionsMenu(true);

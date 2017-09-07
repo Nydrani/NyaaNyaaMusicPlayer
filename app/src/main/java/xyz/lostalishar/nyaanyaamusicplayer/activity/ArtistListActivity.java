@@ -303,7 +303,6 @@ public class ArtistListActivity extends BaseActivity implements OnViewInflatedLi
         BaseFragment baseFragment = (BaseFragment)getBaseFragment(fm);
         BaseFragment slidingFragment = (BaseFragment)getSlidingFragment(fm);
         View miniPlayerView = miniPlayerFragment.getView();
-        ActionBar actionBar = getSupportActionBar();
 
         if (state == SlidingUpPanelLayout.PanelState.COLLAPSED) {
             slidingFragment.setHasOptionsMenu(false);
@@ -311,17 +310,11 @@ public class ArtistListActivity extends BaseActivity implements OnViewInflatedLi
             if (miniPlayerView != null) {
                 miniPlayerView.setVisibility(View.VISIBLE);
             }
-            if (actionBar != null) {
-                actionBar.setTitle(R.string.app_name);
-            }
         } else if (state == SlidingUpPanelLayout.PanelState.EXPANDED) {
             baseFragment.setHasOptionsMenu(false);
 
             if (miniPlayerView != null) {
                 miniPlayerView.setVisibility(View.GONE);
-            }
-            if (actionBar != null) {
-                actionBar.setTitle(R.string.fragment_name_queue);
             }
         } else {
             baseFragment.setHasOptionsMenu(true);
