@@ -2,6 +2,7 @@ package xyz.lostalishar.nyaanyaamusicplayer.service;
 
 import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -74,6 +75,7 @@ public class MusicPlaybackService extends Service implements
     private MediaController mediaController;
 
     private Notification musicNotification;
+    private NotificationManager notificationManager;
 
     private MusicPlaybackState musicPlaybackState;
     private List<MusicPlaybackTrack> musicQueue;
@@ -127,6 +129,7 @@ public class MusicPlaybackService extends Service implements
         // setup misc services
         setupMediaSession();
         setupNotification();
+        notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
         // restore playback queue
@@ -181,10 +184,11 @@ public class MusicPlaybackService extends Service implements
         // @TODO find out when intent can be null
         // intent can be null (called when process died since START_STICKY on app close)
         // make sure to call for a shutdown since it sits in idle
+        // @TODO may be fixed since no more use of start_sticky
         if (intent == null) {
-            if (BuildConfig.DEBUG) Log.w(TAG, "INTENT IS NULL (CHECK ME OUT)");
+            if (BuildConfig.DEBUG) Log.w(TAG, "INTENT IS NULL (SCHEDULING GRACEFUL SHUTDOWN)");
             scheduleDelayedShutdown();
-            return START_STICKY;
+            return START_NOT_STICKY;
         }
 
         final String action = intent.getAction();
@@ -197,7 +201,7 @@ public class MusicPlaybackService extends Service implements
 
         handleCommand(intent);
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -297,8 +301,6 @@ public class MusicPlaybackService extends Service implements
         try {
             musicPlayer.load(loc);
 
-            // store song id on success
-            // musicPlayer.musicId = musicId;
             musicPlaybackState.setQueuePos(queuePos);
             NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
 
@@ -354,9 +356,9 @@ public class MusicPlaybackService extends Service implements
         try {
             musicPlayer.pause();
 
-            scheduleDelayedShutdown();
             updateMediaSession("PAUSE");
-            stopForeground(true);
+            notificationManager.notify(MUSIC_NOTIFICATION_ID, buildNotification());
+            stopForeground(false);
             NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
             savePlaybackState();
         } catch (IllegalStateException e) {
@@ -540,11 +542,13 @@ public class MusicPlaybackService extends Service implements
     public void seekTo(int msec) {
         if (BuildConfig.DEBUG) Log.d(TAG, "seekTo");
 
+        /*
         try {
             musicPlayer.seekTo(msec);
         } catch (IllegalStateException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Called seekTo in illegal state");
         }
+        */
     }
 
     // @TODO make private since not exposed function
@@ -693,6 +697,9 @@ public class MusicPlaybackService extends Service implements
 
         Intent activityIntent = new Intent(this, HomeActivity.class);
         PendingIntent activityPendingIntent = PendingIntent.getActivity(this, 0, activityIntent, 0);
+        Intent deleteIntent = new Intent(this, MusicPlaybackService.class);
+        deleteIntent.setAction(ACTION_SHUTDOWN);
+        PendingIntent deletePendingIntent = PendingIntent.getService(this, 0, deleteIntent, 0);
 
         Intent serviceIntent = new Intent(this, MusicPlaybackService.class);
         serviceIntent.putExtra(ACTION_EXTRA_KEYCODE, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
@@ -708,6 +715,7 @@ public class MusicPlaybackService extends Service implements
                 .setContentText(getText(R.string.service_musicplayback_notification_message))
                 .setSmallIcon(android.R.drawable.star_on)
                 .setContentIntent(activityPendingIntent)
+                .setDeleteIntent(deletePendingIntent)
                 .addAction(playPauseAction)
                 .build();
     }
@@ -871,6 +879,13 @@ public class MusicPlaybackService extends Service implements
     private Notification buildNotification() {
         if (BuildConfig.DEBUG) Log.d(TAG, "buildNotification");
 
+        int pos = musicPlaybackState.getQueuePos();
+
+        // die if not playing
+        if (pos == UNKNOWN_POS) {
+            return musicNotification;
+        }
+
         // find the location from the MediaStore
         Cursor cursor = makeMusicNameCursor(musicQueue.get(musicPlaybackState.getQueuePos()).getId());
 
@@ -897,23 +912,41 @@ public class MusicPlaybackService extends Service implements
 
         Intent activityIntent = new Intent(this, HomeActivity.class);
         PendingIntent activityPendingIntent = PendingIntent.getActivity(this, 0, activityIntent, 0);
+        Intent deleteIntent = new Intent(this, MusicPlaybackService.class);
+        deleteIntent.setAction(ACTION_SHUTDOWN);
+        PendingIntent deletePendingIntent = PendingIntent.getService(this, 0, deleteIntent, 0);
 
         Intent serviceIntent = new Intent(this, MusicPlaybackService.class);
         serviceIntent.putExtra(ACTION_EXTRA_KEYCODE, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
 
         // @TODO apparently deprecated. fix later
         PendingIntent servicePendingIntent = PendingIntent.getService(this, 0, serviceIntent, 0);
-        Notification.Action playPauseAction = new Notification.Action.Builder(android.R.drawable.ic_media_pause,
-                getText(R.string.service_musicplayback_notification_pause_message), servicePendingIntent)
-                .build();
+        Notification.Action playPauseAction;
+        if (isPlaying()) {
+            playPauseAction = new Notification.Action.Builder(android.R.drawable.ic_media_pause,
+                    getText(R.string.service_musicplayback_notification_pause_message), servicePendingIntent)
+                    .build();
+        } else {
+            playPauseAction = new Notification.Action.Builder(android.R.drawable.ic_media_play,
+                    getText(R.string.service_musicplayback_notification_play_message), servicePendingIntent)
+                    .build();
+        }
 
         return new Notification.Builder(this)
                 .setContentTitle(getText(R.string.service_musicplayback_notification_title))
                 .setContentText(name)
                 .setSmallIcon(android.R.drawable.star_on)
                 .setContentIntent(activityPendingIntent)
+                .setDeleteIntent(deletePendingIntent)
                 .addAction(playPauseAction)
                 .build();
+    }
+
+    private void updateNotification() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updateNotification");
+
+        // @TODO this is api level >= 23
+        //StatusBarNotification[] notifications = notificationManager.getActiveNotifications();
     }
 
     private void savePlaybackState() {

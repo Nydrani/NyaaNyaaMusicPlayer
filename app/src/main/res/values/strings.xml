@@ -26,6 +26,7 @@
     <string name="service_musicplayback_notification_title">Music</string>
     <string name="service_musicplayback_notification_message">Unknown music playing</string>
     <string name="service_musicplayback_notification_pause_message">Pause</string>
+    <string name="service_musicplayback_notification_play_message">Play</string>
 
     <string name="fragment_name_music_list">Music</string>
     <string name="fragment_name_queue">Queue</string>

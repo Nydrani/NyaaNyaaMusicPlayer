@@ -1,82 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sothree="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_sliding_up_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="bottom"
-    sothree:umanoPanelHeight="@dimen/mini_player_height">
+    android:orientation="vertical">
 
-    <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/fragment_library_container"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <android.support.design.widget.AppBarLayout
+        <FrameLayout
+            android:id="@+id/toolbar_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            android:layout_height="match_parent">
 
-            <FrameLayout
-                android:id="@+id/toolbar_container"
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_scrollFlags="scroll|enterAlways">
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    android:background="?attr/colorPrimary"
-                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            <ViewStub
+                android:id="@+id/cab_stub"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize" />
 
-                <ViewStub
-                    android:id="@+id/cab_stub"
-                    android:layout_width="match_parent"
-                    android:layout_height="?actionBarSize" />
+        </FrameLayout>
 
-            </FrameLayout>
+    </android.support.design.widget.AppBarLayout>
 
-        </android.support.design.widget.AppBarLayout>
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        android:id="@+id/activity_sliding_up_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        sothree:umanoPanelHeight="@dimen/mini_player_height">
 
         <FrameLayout
             android:id="@+id/activity_base_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            android:layout_height="match_parent" />
 
-    </android.support.design.widget.CoordinatorLayout>
-
-    <RelativeLayout
-        android:id="@+id/activity_sliding_base_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <FrameLayout
-            android:id="@+id/activity_sliding_content_container"
+        <RelativeLayout
+            android:id="@+id/activity_sliding_base_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/fragment_bottom_bar">
+            android:layout_height="match_parent">
 
             <FrameLayout
-                android:id="@+id/activity_sliding_content"
+                android:id="@+id/activity_sliding_content_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:layout_above="@+id/fragment_bottom_bar">
+
+                <FrameLayout
+                    android:id="@+id/activity_sliding_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <FrameLayout
+                    android:id="@+id/activity_mini_player"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/mini_player_height" />
+
+            </FrameLayout>
 
             <FrameLayout
-                android:id="@+id/activity_mini_player"
+                android:id="@+id/fragment_bottom_bar"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/mini_player_height" />
+                android:layout_height="@dimen/mini_player_height"
+                android:layout_alignParentBottom="true" />
 
-        </FrameLayout>
+        </RelativeLayout>
 
-        <FrameLayout
-            android:id="@+id/fragment_bottom_bar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/mini_player_height"
-            android:layout_alignParentBottom="true" />
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
-    </RelativeLayout>
-
-</com.sothree.slidinguppanel.SlidingUpPanelLayout>
+</LinearLayout>
