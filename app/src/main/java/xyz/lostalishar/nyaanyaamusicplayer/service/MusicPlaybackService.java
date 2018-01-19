@@ -1,19 +1,15 @@
 package xyz.lostalishar.nyaanyaamusicplayer.service;
 
-import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ContentProviderOperation;
-import android.content.ContentProviderResult;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.session.MediaController;
@@ -27,7 +23,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 import android.os.RemoteException;
-import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -64,8 +59,6 @@ public class MusicPlaybackService extends Service implements
 
     private IBinder binder;
     private MusicPlayer musicPlayer;
-    private AlarmManager alarmManager;
-    private PendingIntent shutdownPendingIntent;
 
     private HandlerThread databaseThread;
     private Handler databaseHandler;
@@ -79,9 +72,6 @@ public class MusicPlaybackService extends Service implements
 
     private MusicPlaybackState musicPlaybackState;
     private List<MusicPlaybackTrack> musicQueue;
-
-    // 1 minutes allowed to be inactive before death for testing
-    private static final int SHUTDOWN_DELAY_TIME = 60 * 1000;
 
     public static final String ACTION_SHUTDOWN = "SHUTDOWN";
     public static final String ACTION_EXTRA_KEYCODE = "KEYCODE";
@@ -114,7 +104,6 @@ public class MusicPlaybackService extends Service implements
         // init service
         binder = new NyaaNyaaMusicServiceStub(this);
         setupReceivers();
-        setupAlarms();
 
         // setup threads
         databaseThread = new HandlerThread(THREAD_DATABASE, Process.THREAD_PRIORITY_BACKGROUND);
@@ -137,9 +126,6 @@ public class MusicPlaybackService extends Service implements
 
         // restore previous playback state
         loadPlaybackState();
-
-        // schedule shutdown for idle service
-        scheduleDelayedShutdown();
     }
 
     @Override
@@ -153,8 +139,6 @@ public class MusicPlaybackService extends Service implements
             return null;
         }
 
-        cancelDelayedShutdown();
-
         return binder;
     }
 
@@ -167,7 +151,6 @@ public class MusicPlaybackService extends Service implements
             return;
         }
 
-        cancelDelayedShutdown();
     }
 
     @Override
@@ -186,8 +169,7 @@ public class MusicPlaybackService extends Service implements
         // make sure to call for a shutdown since it sits in idle
         // @TODO may be fixed since no more use of start_sticky
         if (intent == null) {
-            if (BuildConfig.DEBUG) Log.w(TAG, "INTENT IS NULL (SCHEDULING GRACEFUL SHUTDOWN)");
-            scheduleDelayedShutdown();
+            if (BuildConfig.DEBUG) Log.w(TAG, "INTENT IS NULL (CHECK THIS OUT)");
             return START_NOT_STICKY;
         }
 
@@ -215,7 +197,7 @@ public class MusicPlaybackService extends Service implements
         if (!(NyaaUtils.needsPermissions(this))) {
             // only schedule if service is not in use
             if (!(musicPlayer.isPlaying())) {
-                scheduleDelayedShutdown();
+                //scheduleDelayedShutdown();
             }
         }
 
@@ -233,9 +215,6 @@ public class MusicPlaybackService extends Service implements
 
         // unregister receivers
         unregisterReceivers();
-
-        // make sure to cancel lingering AlarmManager tasks
-        cancelDelayedShutdown();
 
         // stop background threads
         databaseThread.quitSafely();
@@ -337,7 +316,6 @@ public class MusicPlaybackService extends Service implements
             //   5. don't get killed by OS
             //   6. send notification of meta changing to UI
             //   7. save current playback state
-            cancelDelayedShutdown();
             updateMediaSession("PLAY");
             mediaSession.setActive(true);
             startForeground(MUSIC_NOTIFICATION_ID, buildNotification());
@@ -372,7 +350,6 @@ public class MusicPlaybackService extends Service implements
         try {
             musicPlayer.stop();
 
-            scheduleDelayedShutdown();
             updateMediaSession("STOP");
             mediaSession.setActive(false);
             stopForeground(true);
@@ -409,7 +386,6 @@ public class MusicPlaybackService extends Service implements
 
         musicPlayer.reset();
 
-        scheduleDelayedShutdown();
         updateMediaSession("RESET");
         mediaSession.setActive(false);
         stopForeground(true);
@@ -542,13 +518,11 @@ public class MusicPlaybackService extends Service implements
     public void seekTo(int msec) {
         if (BuildConfig.DEBUG) Log.d(TAG, "seekTo");
 
-        /*
         try {
             musicPlayer.seekTo(msec);
         } catch (IllegalStateException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Called seekTo in illegal state");
         }
-        */
     }
 
     // @TODO make private since not exposed function
@@ -681,17 +655,6 @@ public class MusicPlaybackService extends Service implements
         updateMediaSession("NONE");
     }
 
-    private void setupAlarms() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "setupAlarms");
-
-        alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-
-        Intent intent = new Intent(this, MusicPlaybackService.class);
-        intent.setAction(ACTION_SHUTDOWN);
-
-        shutdownPendingIntent = PendingIntent.getService(this, 0, intent, 0);
-    }
-
     private void setupNotification() {
         if (BuildConfig.DEBUG) Log.d(TAG, "setupNotification");
 
@@ -796,19 +759,6 @@ public class MusicPlaybackService extends Service implements
                 state == PlaybackState.STATE_STOPPED) {
             play();
         }
-    }
-
-    private void scheduleDelayedShutdown() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "scheduleDelayedShutdown");
-
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + SHUTDOWN_DELAY_TIME, shutdownPendingIntent);
-    }
-
-    private void cancelDelayedShutdown() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "cancelDelayedShutdown");
-
-        alarmManager.cancel(shutdownPendingIntent);
     }
 
     private void updateMediaSession(String state) {
@@ -1024,63 +974,6 @@ public class MusicPlaybackService extends Service implements
         }
 
         cursor.close();
-    }
-
-    /**
-     * Updates the required table fields for playback queue
-     * @param type True for insert, False for deletion
-     * @param track Item of interest
-     */
-    private void updatePlaybackQueue(boolean type, MusicPlaybackTrack track) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "updatePlaybackQueue");
-
-        ContentResolver resolver = getContentResolver();
-        ContentValues value;
-        int trackIndex = musicQueue.indexOf(track);
-
-        if (type) {
-            value = new ContentValues();
-            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.ID, track.getId());
-            value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION, trackIndex);
-
-            Uri uri = resolver.insert(MusicDatabaseProvider.QUEUE_CONTENT_URI, value);
-
-            if (BuildConfig.DEBUG) Log.d(TAG, "Inserted into: " + uri);
-        } else {
-            int queueSize = musicQueue.size();
-            String[] args;
-            ArrayList<ContentProviderOperation> operations = new ArrayList<>();
-
-            // first delete the track from the table
-            args = new String[] { String.valueOf(trackIndex) };
-
-            operations.add(ContentProviderOperation.newDelete(MusicDatabaseProvider.QUEUE_CONTENT_URI)
-                    .withSelection(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION + "=?", args)
-                    .build());
-
-            // then update the rest of the tracks where position > trackPosition
-            for (int i = trackIndex; i < queueSize; i++) {
-                args = new String[] { String.valueOf(i+1) };
-                value = new ContentValues();
-                value.put(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION, i);
-
-                operations.add(ContentProviderOperation.newUpdate(MusicDatabaseProvider.QUEUE_CONTENT_URI)
-                        .withValues(value)
-                        .withSelection(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION + "=?", args)
-                        .build());
-            }
-
-            try {
-                ContentProviderResult[] results = resolver.applyBatch(MusicDatabaseProvider.URI_AUTHORITY, operations);
-                for (ContentProviderResult result : results) {
-                    if (BuildConfig.DEBUG) Log.d(TAG, "Result: " + result.toString());
-                }
-            } catch (RemoteException e) {
-                if (BuildConfig.DEBUG) Log.d(TAG, "RemoteException: " + e);
-            } catch (OperationApplicationException e) {
-                if (BuildConfig.DEBUG) Log.d(TAG, "OperationApplicationException: " + e);
-            }
-        }
     }
 
     // @TODO to find where the correct position of the queue should be, we need to find:
