@@ -50,7 +50,7 @@ public class LibraryPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         if (BuildConfig.DEBUG) Log.d(TAG, "getPageTitle");
 
-        return holderList.get(position).sname;
+        return holderList.get(position).name;
     }
 
 
@@ -62,7 +62,7 @@ public class LibraryPagerAdapter extends FragmentPagerAdapter {
         private static final String TAG = PageHolder.class.getSimpleName();
 
         public Fragment fragment;
-        public String sname;
+        public String name;
 
         public PageHolder() {
             if (BuildConfig.DEBUG) Log.d(TAG, "constructor");

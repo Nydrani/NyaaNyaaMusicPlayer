@@ -3,7 +3,6 @@ package xyz.lostalishar.nyaanyaamusicplayer.activity;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.ComponentName;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -75,7 +74,7 @@ public abstract class BaseActivity extends AppCompatActivity implements CabHolde
         if (BuildConfig.DEBUG) Log.d(TAG, "onStop");
         super.onStop();
 
-        deinitialise();
+        terminate();
     }
 
     @Override
@@ -171,13 +170,13 @@ public abstract class BaseActivity extends AppCompatActivity implements CabHolde
     protected void initialise() {
         if (BuildConfig.DEBUG) Log.d(TAG, "initialise");
 
-        ComponentName name = MusicUtils.startService(this);
+        MusicUtils.startService(this);
         bound = MusicUtils.bindToService(this);
     }
 
-    // deinitialisation code
-    protected void deinitialise() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "deinitialise");
+    // terminate code
+    protected void terminate() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "terminate");
 
         if (bound) {
             MusicUtils.unbindFromService(this);

@@ -5,7 +5,6 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -49,8 +48,8 @@ public class ArtistListActivity extends BaseActivity implements OnViewInflatedLi
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_layout_home);
-        slidingUpPanelLayout = (SlidingUpPanelLayout)findViewById(R.id.activity_sliding_up_layout);
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        slidingUpPanelLayout = findViewById(R.id.activity_sliding_up_layout);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // setup fragments
@@ -145,12 +144,12 @@ public class ArtistListActivity extends BaseActivity implements OnViewInflatedLi
     public void onViewInflated(View view) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onViewInflated");
 
-        SlidingUpPanelLayout slidingView = (SlidingUpPanelLayout)findViewById(R.id.activity_sliding_up_layout);
+        SlidingUpPanelLayout slidingView = findViewById(R.id.activity_sliding_up_layout);
 
         if (view.getId() == R.id.fragment_mini_player_container) {
             updateUI(slidingView.getPanelState());
         } else if (view.getId() == R.id.fragment_queue_container) {
-            RecyclerView scrollableView = (RecyclerView) view.findViewById(R.id.list_base_view);
+            RecyclerView scrollableView = view.findViewById(R.id.list_base_view);
 
             slidingView.setScrollableView(scrollableView);
             slidingView.addPanelSlideListener(this);

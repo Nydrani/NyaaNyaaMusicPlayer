@@ -64,7 +64,7 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
                 DividerItemDecoration.VERTICAL);
 
         View rootView = inflater.inflate(R.layout.list_base, container, false);
-        RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.list_base_view);
+        RecyclerView recyclerView = rootView.findViewById(R.id.list_base_view);
 
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(adapter);
