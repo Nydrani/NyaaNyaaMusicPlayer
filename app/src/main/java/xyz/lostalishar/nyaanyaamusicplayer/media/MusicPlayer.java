@@ -57,12 +57,6 @@ public class MusicPlayer implements
         mediaPlayer.pause();
     }
 
-    public void stop() throws IllegalStateException {
-        if (BuildConfig.DEBUG) Log.d(TAG, "stop");
-
-        mediaPlayer.stop();
-    }
-
     public void reset() {
         if (BuildConfig.DEBUG) Log.d(TAG, "reset");
 
@@ -115,7 +109,9 @@ public class MusicPlayer implements
                 initMediaPlayer();
                 return true;
             default:
-                if (BuildConfig.DEBUG) Log.wtf(TAG, "VERY BAD HAPPENED");
+                if (BuildConfig.DEBUG) Log.wtf(TAG, "VERY BAD HAPPENED (MEDIA PLAYER ERROR)");
+                if (BuildConfig.DEBUG) Log.wtf(TAG, "what: " + String.valueOf(what));
+
                 // @TODO not sure what to do here --> fix later. for now just reset
                 mp.release();
                 initMediaPlayer();
@@ -128,8 +124,9 @@ public class MusicPlayer implements
     public void onCompletion(MediaPlayer mp) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCompletion");
 
-        service.get().next();
-        service.get().play();
+        MusicPlaybackService playbackService = service.get();
+        playbackService.next();
+        playbackService.play();
     }
 
 

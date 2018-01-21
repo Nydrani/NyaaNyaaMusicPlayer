@@ -8,7 +8,6 @@ interface INyaaNyaaMusicService {
     boolean load(int queuePos);
     void play();
     void pause();
-    void stop();
     void reset();
     void next();
     void previous();
