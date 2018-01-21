@@ -43,7 +43,7 @@ public class MusicUtils {
 
         Intent intent = new Intent(context, MusicPlaybackService.class);
         // only bind to services that are already running
-        return context.bindService(intent, musicServiceConnection, 0);
+        return context.bindService(intent, musicServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     public static void unbindFromService(Context context) {
@@ -56,7 +56,6 @@ public class MusicUtils {
         if (BuildConfig.DEBUG) Log.d(TAG, "stopService");
 
         Intent intent = new Intent(context, MusicPlaybackService.class);
-        intent.setAction(MusicPlaybackService.ACTION_SHUTDOWN);
         return context.stopService(intent);
     }
 
