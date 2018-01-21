@@ -170,6 +170,7 @@ public class MusicPlaybackService extends Service implements
         // @TODO may be fixed since no more use of start_sticky
         if (intent == null) {
             if (BuildConfig.DEBUG) Log.w(TAG, "INTENT IS NULL (CHECK THIS OUT)");
+            stopSelf();
             return START_NOT_STICKY;
         }
 
