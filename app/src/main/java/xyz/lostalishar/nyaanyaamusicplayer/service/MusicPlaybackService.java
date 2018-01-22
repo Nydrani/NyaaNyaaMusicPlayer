@@ -1,6 +1,7 @@
 package xyz.lostalishar.nyaanyaamusicplayer.service;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -11,6 +12,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.drawable.Icon;
+import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.session.MediaController;
 import android.media.session.MediaSession;
@@ -65,6 +68,7 @@ public class MusicPlaybackService extends Service implements
 
     private MediaSession mediaSession;
     private AudioManager audioManager;
+    private AudioFocusRequest audioFocusRequest;
     private MediaController mediaController;
 
     private Notification musicNotification;
@@ -76,6 +80,8 @@ public class MusicPlaybackService extends Service implements
     public static final String ACTION_SHUTDOWN = "SHUTDOWN";
     public static final String ACTION_EXTRA_KEYCODE = "KEYCODE";
     public static final String THREAD_DATABASE = "DatabaseThread";
+    public static final String NOTIFICATION_ID = "MusicPlayerController";
+    public static final String NOTIFICATION_NAME = "Remote Control";
     public static final int UNKNOWN_POS = -1;
     public static final long UNKNOWN_ID = -1;
 
@@ -118,8 +124,13 @@ public class MusicPlaybackService extends Service implements
         // setup misc services
         setupMediaSession();
         setupNotification();
-        notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // setup audio manager
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        // we need audio focus request for oreo+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN).build();
+        }
 
         // restore playback queue
         loadPlaybackQueue();
@@ -214,6 +225,27 @@ public class MusicPlaybackService extends Service implements
             return;
         }
 
+        // release music player
+        if (musicPlayer != null) {
+            musicPlayer.reset();
+            musicPlayer.release();
+        }
+
+        // abandon audio since we no longer need
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            audioManager.abandonAudioFocusRequest(audioFocusRequest);
+        } else {
+            audioManager.abandonAudioFocus(this);
+        }
+
+        // delete notification channel on oreo
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            notificationManager.deleteNotificationChannel(NOTIFICATION_ID);
+        }
+
+        // release media session
+        mediaSession.release();
+
         // unregister receivers
         unregisterReceivers();
 
@@ -222,18 +254,6 @@ public class MusicPlaybackService extends Service implements
 
         // stop running as foreground service
         stopForeground(true);
-
-        // release media session
-        mediaSession.release();
-
-        // abandon audio since we no longer need
-        audioManager.abandonAudioFocus(this);
-
-        // release music player
-        if (musicPlayer != null) {
-            musicPlayer.reset();
-            musicPlayer.release();
-        }
     }
 
 
@@ -299,10 +319,17 @@ public class MusicPlaybackService extends Service implements
     public void play() {
         if (BuildConfig.DEBUG) Log.d(TAG, "play");
 
-        int status = audioManager.requestAudioFocus(this,
-                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        int status;
 
-        if (status == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
+        // check if my android version is oreo+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            status = audioManager.requestAudioFocus(audioFocusRequest);
+        } else {
+            status = audioManager.requestAudioFocus(this,
+                    AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        }
+
+        if (status != AudioManager.AUDIOFOCUS_GAIN) {
             return;
         }
 
@@ -374,8 +401,13 @@ public class MusicPlaybackService extends Service implements
         mediaSession.setActive(false);
         stopForeground(false);
         NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
-        audioManager.abandonAudioFocus(this);
-    }
+
+        // abandon audio since we no longer need
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            audioManager.abandonAudioFocusRequest(audioFocusRequest);
+        } else {
+            audioManager.abandonAudioFocus(this);
+        }    }
 
     public List<MusicPlaybackTrack> getQueue() {
         if (BuildConfig.DEBUG) Log.d(TAG, "getQueue");
@@ -632,8 +664,12 @@ public class MusicPlaybackService extends Service implements
                 new Intent(this, MediaButtonIntentReceiver.class),
                 PendingIntent.FLAG_UPDATE_CURRENT);
         mediaSession.setMediaButtonReceiver(pi);
-        mediaSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS
-                | MediaSession.FLAG_HANDLES_MEDIA_BUTTONS);
+
+        // assumes all media sesions handle these flags after oreo+
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) {
+            mediaSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS
+                    | MediaSession.FLAG_HANDLES_MEDIA_BUTTONS);
+        }
 
         mediaController = mediaSession.getController();
         updateMediaSession(PlaybackState.STATE_NONE);
@@ -651,20 +687,52 @@ public class MusicPlaybackService extends Service implements
         Intent serviceIntent = new Intent(this, MusicPlaybackService.class);
         serviceIntent.putExtra(ACTION_EXTRA_KEYCODE, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
 
-        // @TODO apparently deprecated. fix later
-        PendingIntent servicePendingIntent = PendingIntent.getService(this, 0, serviceIntent, 0);
-        Notification.Action playPauseAction = new Notification.Action.Builder(android.R.drawable.ic_media_pause,
-                getText(R.string.service_musicplayback_notification_pause_message), servicePendingIntent)
-                .build();
+        PendingIntent servicePendingIntent = PendingIntent.getService(this, 0,
+                serviceIntent, 0);
 
-        musicNotification = new Notification.Builder(this)
-                .setContentTitle(getText(R.string.service_musicplayback_notification_title))
-                .setContentText(getText(R.string.service_musicplayback_notification_message))
-                .setSmallIcon(android.R.drawable.star_on)
-                .setContentIntent(activityPendingIntent)
-                .setDeleteIntent(deletePendingIntent)
-                .addAction(playPauseAction)
-                .build();
+        // need to do this for marshmallow
+        Notification.Action playPauseAction;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            Icon icon = Icon.createWithResource(this, android.R.drawable.ic_media_pause);
+            playPauseAction = new Notification.Action.Builder(icon,
+                    getText(R.string.service_musicplayback_notification_pause_message), servicePendingIntent)
+                    .build();
+        } else {
+            playPauseAction = new Notification.Action.Builder(
+                    android.R.drawable.ic_media_pause,
+                    getText(R.string.service_musicplayback_notification_pause_message), servicePendingIntent)
+                    .build();
+        }
+
+        // need to do this for oreo
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            musicNotification = new Notification.Builder(this, NOTIFICATION_ID)
+                    .setContentTitle(getText(R.string.service_musicplayback_notification_title))
+                    .setContentText(getText(R.string.service_musicplayback_notification_message))
+                    .setSmallIcon(android.R.drawable.star_on)
+                    .setContentIntent(activityPendingIntent)
+                    .setDeleteIntent(deletePendingIntent)
+                    .addAction(playPauseAction)
+                    .build();
+        } else {
+            musicNotification = new Notification.Builder(this)
+                    .setContentTitle(getText(R.string.service_musicplayback_notification_title))
+                    .setContentText(getText(R.string.service_musicplayback_notification_message))
+                    .setSmallIcon(android.R.drawable.star_on)
+                    .setContentIntent(activityPendingIntent)
+                    .setDeleteIntent(deletePendingIntent)
+                    .addAction(playPauseAction)
+                    .build();
+        }
+
+        notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // oreo needs a notification channel for some reason
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_ID,
+                    NOTIFICATION_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
     }
 
     private void setupReceivers() {
@@ -833,36 +901,69 @@ public class MusicPlaybackService extends Service implements
         String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
         cursor.close();
 
+        // construct notification intents
         Intent activityIntent = new Intent(this, HomeActivity.class);
         PendingIntent activityPendingIntent = PendingIntent.getActivity(this, 0, activityIntent, 0);
+
         Intent deleteIntent = new Intent(this, MusicPlaybackService.class);
         deleteIntent.setAction(ACTION_SHUTDOWN);
         PendingIntent deletePendingIntent = PendingIntent.getService(this, 0, deleteIntent, 0);
 
         Intent serviceIntent = new Intent(this, MusicPlaybackService.class);
         serviceIntent.putExtra(ACTION_EXTRA_KEYCODE, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
-
-        // @TODO apparently deprecated. fix later
         PendingIntent servicePendingIntent = PendingIntent.getService(this, 0, serviceIntent, 0);
+
         Notification.Action playPauseAction;
         if (isPlaying()) {
-            playPauseAction = new Notification.Action.Builder(android.R.drawable.ic_media_pause,
-                    getText(R.string.service_musicplayback_notification_pause_message), servicePendingIntent)
+            // need to do this for marshmallow
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                Icon icon = Icon.createWithResource(this, android.R.drawable.ic_media_pause);
+                playPauseAction = new Notification.Action.Builder(icon,
+                        getText(R.string.service_musicplayback_notification_pause_message), servicePendingIntent)
+                        .build();
+            } else {
+                playPauseAction = new Notification.Action.Builder(
+                        android.R.drawable.ic_media_pause,
+                        getText(R.string.service_musicplayback_notification_pause_message), servicePendingIntent)
+                        .build();
+            }
+        } else {
+            // need to do this for marshmallow
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                Icon icon = Icon.createWithResource(this, android.R.drawable.ic_media_play);
+                playPauseAction = new Notification.Action.Builder(icon,
+                        getText(R.string.service_musicplayback_notification_play_message), servicePendingIntent)
+                        .build();
+            } else {
+                playPauseAction = new Notification.Action.Builder(
+                        android.R.drawable.ic_media_play,
+                        getText(R.string.service_musicplayback_notification_play_message), servicePendingIntent)
+                        .build();
+            }
+        }
+
+        Notification notification;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            notification = new Notification.Builder(this, NOTIFICATION_ID)
+                    .setContentTitle(getText(R.string.service_musicplayback_notification_title))
+                    .setContentText(name)
+                    .setSmallIcon(android.R.drawable.star_on)
+                    .setContentIntent(activityPendingIntent)
+                    .setDeleteIntent(deletePendingIntent)
+                    .addAction(playPauseAction)
                     .build();
         } else {
-            playPauseAction = new Notification.Action.Builder(android.R.drawable.ic_media_play,
-                    getText(R.string.service_musicplayback_notification_play_message), servicePendingIntent)
+            notification = new Notification.Builder(this)
+                    .setContentTitle(getText(R.string.service_musicplayback_notification_title))
+                    .setContentText(name)
+                    .setSmallIcon(android.R.drawable.star_on)
+                    .setContentIntent(activityPendingIntent)
+                    .setDeleteIntent(deletePendingIntent)
+                    .addAction(playPauseAction)
                     .build();
         }
 
-        return new Notification.Builder(this)
-                .setContentTitle(getText(R.string.service_musicplayback_notification_title))
-                .setContentText(name)
-                .setSmallIcon(android.R.drawable.star_on)
-                .setContentIntent(activityPendingIntent)
-                .setDeleteIntent(deletePendingIntent)
-                .addAction(playPauseAction)
-                .build();
+        return notification;
     }
 
     private void updateNotification() {
@@ -923,8 +1024,8 @@ public class MusicPlaybackService extends Service implements
     private void loadPlaybackQueue() {
         if (BuildConfig.DEBUG) Log.d(TAG, "loadPlaybackQueue");
 
-        Cursor cursor = getContentResolver().query(MusicDatabaseProvider.QUEUE_CONTENT_URI, null, null, null,
-                PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION + " ASC");
+        Cursor cursor = getContentResolver().query(MusicDatabaseProvider.QUEUE_CONTENT_URI,
+                null, null, null, PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION + " ASC");
 
         if (cursor == null) {
             return;
