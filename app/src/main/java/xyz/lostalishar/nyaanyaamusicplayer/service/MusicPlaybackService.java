@@ -372,7 +372,7 @@ public class MusicPlaybackService extends Service implements
 
         updateMediaSession(PlaybackState.STATE_NONE);
         mediaSession.setActive(false);
-        stopForeground(true);
+        stopForeground(false);
         NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
         audioManager.abandonAudioFocus(this);
     }
