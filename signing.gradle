@@ -1,6 +1,6 @@
-def getProperties(String fileName) {
-    final Properties properties = new Properties()
-    def file = file(fileName)
+def getFileProperties(String fileName) {
+    final properties = new Properties()
+    final file = file(fileName)
     if (file.exists()) {
         file.withInputStream {
             stream -> properties.load(stream)
@@ -9,14 +9,16 @@ def getProperties(String fileName) {
     return properties
 }
 
-def getProperty(Properties properties, String name) {
-    if (properties.getProperty(name)) {
-        return properties.getProperty(name)
+def getFileProperty(Properties properties, String name) {
+    final prop = properties.getProperty(name)
+    if (prop) {
+        println("Found: " + name)
+        return prop
     }
     return "cant find prop: $name"
 }
 
 ext {
-    getProperties = this.&getProperties
-    getProperty = this.&getProperty
+    getFileProperties = this.&getFileProperties
+    getFileProperty = this.&getFileProperty
 }

@@ -6,11 +6,11 @@ apply from: "$rootDir/versioning.gradle"
 android {
     signingConfigs {
         release {
-            Properties properties = getProperties('../keystore.properties')
-            storeFile file(getProperty(properties, 'store'))
-            storePassword getProperty(properties, 'storepass')
-            keyAlias getProperty(properties, 'alias')
-            keyPassword getProperty(properties, 'aliaspass')
+            Properties properties = getFileProperties('../keystore.properties')
+            storeFile file(getFileProperty(properties, 'store'))
+            storePassword getFileProperty(properties, 'storepass')
+            keyAlias getFileProperty(properties, 'alias')
+            keyPassword getFileProperty(properties, 'aliaspass')
         }
     }
     compileSdkVersion 27
