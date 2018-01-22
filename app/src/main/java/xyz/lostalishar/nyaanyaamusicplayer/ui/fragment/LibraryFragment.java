@@ -111,8 +111,8 @@ public class LibraryFragment extends Fragment {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
 
         View rootView = inflater.inflate(R.layout.fragment_library, container, false);
-        viewPager = (ViewPager)rootView.findViewById(R.id.fragment_library_view_pager);
-        TabLayout tabLayout = (TabLayout)viewPager.findViewById(R.id.fragment_library_tab_layout);
+        viewPager = rootView.findViewById(R.id.fragment_library_view_pager);
+        TabLayout tabLayout = viewPager.findViewById(R.id.fragment_library_tab_layout);
 
         viewPager.setAdapter(adapter);
         tabLayout.addOnTabSelectedListener(tabSelectedListener);
@@ -170,17 +170,17 @@ public class LibraryFragment extends Fragment {
 
         LibraryPagerAdapter.PageHolder page = new LibraryPagerAdapter.PageHolder();
         page.fragment = MusicListFragment.newInstance();
-        page.sname = getString(R.string.fragment_name_music_list);
+        page.name = getString(R.string.fragment_name_music_list);
         pageList.add(page);
 
         page = new LibraryPagerAdapter.PageHolder();
         page.fragment = AlbumFragment.newInstance();
-        page.sname = getString(R.string.fragment_name_album);
+        page.name = getString(R.string.fragment_name_album);
         pageList.add(page);
 
         page = new LibraryPagerAdapter.PageHolder();
         page.fragment = ArtistFragment.newInstance();
-        page.sname = getString(R.string.fragment_name_artist);
+        page.name = getString(R.string.fragment_name_artist);
         pageList.add(page);
 
         return pageList;
@@ -214,8 +214,16 @@ public class LibraryFragment extends Fragment {
 
             final String action = intent.getAction();
 
-            if (action.equals(NyaaUtils.META_CHANGED)) {
-                // reference.get().updateMetaUI();
+            if (action == null) {
+                return;
+            }
+
+            switch (action) {
+                case NyaaUtils.SERVICE_READY:
+                    //reference.get().updateMetaUI();
+                    break;
+                default:
+                    if (BuildConfig.DEBUG) Log.e(TAG, "Unknown action: " + action);
             }
         }
     }

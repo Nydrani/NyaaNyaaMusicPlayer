@@ -173,15 +173,15 @@ public class MusicUtils {
         }
     }
 
-    public static void stop() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "stop");
+    public static void reset() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "reset");
 
         if (musicService == null) {
             return;
         }
 
         try {
-            musicService.stop();
+            musicService.reset();
         } catch (RemoteException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
         }

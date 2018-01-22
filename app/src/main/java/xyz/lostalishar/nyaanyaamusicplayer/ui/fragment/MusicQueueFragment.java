@@ -18,7 +18,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
@@ -31,8 +30,6 @@ import xyz.lostalishar.nyaanyaamusicplayer.adapter.QueueAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.interfaces.OnViewInflatedListener;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicQueueLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
-import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
-import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
@@ -111,7 +108,7 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(activity,
                 DividerItemDecoration.VERTICAL);
         View rootView = inflater.inflate(R.layout.fragment_queue, container, false);
-        RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.list_base_view);
+        RecyclerView recyclerView = rootView.findViewById(R.id.list_base_view);
 
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(adapter);
@@ -278,6 +275,10 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
             if (BuildConfig.DEBUG) Log.d(TAG, "onReceive");
 
             final String action = intent.getAction();
+
+            if (action == null) {
+                return;
+            }
 
             switch (action) {
                 case NyaaUtils.QUEUE_CHANGED:

@@ -28,7 +28,7 @@ public class AboutDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle onSavedInstance) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateDialog");
 
-        // this should be called after onAttach but die if it doesnt
+        // this should be called after onAttach but die if it doesn't
         final Context context = getActivity();
         assert context != null;
 

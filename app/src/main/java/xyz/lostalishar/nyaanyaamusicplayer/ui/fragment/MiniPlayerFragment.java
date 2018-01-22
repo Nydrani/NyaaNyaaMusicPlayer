@@ -94,12 +94,12 @@ public class MiniPlayerFragment extends Fragment {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
 
         View rootView = inflater.inflate(R.layout.fragment_mini_player, container, false);
-        musicTitleView = (TextView)rootView.findViewById(R.id.mini_player_title);
-        musicArtistView = (TextView)rootView.findViewById(R.id.mini_player_artist);
+        musicTitleView = rootView.findViewById(R.id.mini_player_title);
+        musicArtistView = rootView.findViewById(R.id.mini_player_artist);
 
-        TextView prev = (TextView)rootView.findViewById(R.id.prev_button);
-        TextView next = (TextView)rootView.findViewById(R.id.next_button);
-        playPauseButton = (TextView)rootView.findViewById(R.id.play_pause_button);
+        TextView prev = rootView.findViewById(R.id.prev_button);
+        TextView next = rootView.findViewById(R.id.next_button);
+        playPauseButton = rootView.findViewById(R.id.play_pause_button);
 
         rootView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -284,10 +284,12 @@ public class MiniPlayerFragment extends Fragment {
 
             final String action = intent.getAction();
 
+            if (action == null) {
+                return;
+            }
+
             switch (action) {
                 case NyaaUtils.META_CHANGED:
-                    reference.get().updateMetaUI();
-                    break;
                 case NyaaUtils.SERVICE_READY:
                     reference.get().updateMetaUI();
                     break;

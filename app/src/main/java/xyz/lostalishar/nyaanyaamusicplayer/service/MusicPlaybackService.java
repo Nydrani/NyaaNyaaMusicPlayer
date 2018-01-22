@@ -284,7 +284,7 @@ public class MusicPlaybackService extends Service implements
             musicPlaybackState.setQueuePos(queuePos);
             NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
 
-            updateMediaSession("STOP");
+            updateMediaSession(PlaybackState.STATE_PAUSED);
         } catch (IOException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Unable to load data source: " + loc);
             return false;
@@ -317,7 +317,7 @@ public class MusicPlaybackService extends Service implements
             //   5. don't get killed by OS
             //   6. send notification of meta changing to UI
             //   7. save current playback state
-            updateMediaSession("PLAY");
+            updateMediaSession(PlaybackState.STATE_PLAYING);
             mediaSession.setActive(true);
             startForeground(MUSIC_NOTIFICATION_ID, buildNotification());
             NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
@@ -335,30 +335,13 @@ public class MusicPlaybackService extends Service implements
         try {
             musicPlayer.pause();
 
-            updateMediaSession("PAUSE");
+            updateMediaSession(PlaybackState.STATE_PAUSED);
             notificationManager.notify(MUSIC_NOTIFICATION_ID, buildNotification());
             stopForeground(false);
             NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
             savePlaybackState();
         } catch (IllegalStateException e) {
             if (BuildConfig.DEBUG) Log.e(TAG, "Called pause in illegal state");
-        }
-    }
-
-    public void stop() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "stop");
-
-        try {
-            musicPlayer.stop();
-
-            updateMediaSession("STOP");
-            mediaSession.setActive(false);
-            stopForeground(true);
-            NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
-            savePlaybackState();
-            audioManager.abandonAudioFocus(this);
-        } catch (IllegalStateException e) {
-            if (BuildConfig.DEBUG) Log.e(TAG, "Called stop in illegal state");
         }
     }
 
@@ -387,9 +370,9 @@ public class MusicPlaybackService extends Service implements
 
         musicPlayer.reset();
 
-        updateMediaSession("RESET");
+        updateMediaSession(PlaybackState.STATE_NONE);
         mediaSession.setActive(false);
-        stopForeground(true);
+        stopForeground(false);
         NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
         audioManager.abandonAudioFocus(this);
     }
@@ -608,7 +591,7 @@ public class MusicPlaybackService extends Service implements
             public void onStop() {
                 if (BuildConfig.DEBUG) Log.d(TAG, "onStop");
 
-                stop();
+                reset();
             }
 
             @Override
@@ -653,7 +636,7 @@ public class MusicPlaybackService extends Service implements
                 | MediaSession.FLAG_HANDLES_MEDIA_BUTTONS);
 
         mediaController = mediaSession.getController();
-        updateMediaSession("NONE");
+        updateMediaSession(PlaybackState.STATE_NONE);
     }
 
     private void setupNotification() {
@@ -721,7 +704,7 @@ public class MusicPlaybackService extends Service implements
                 break;
             case KeyEvent.KEYCODE_MEDIA_STOP:
                 if (BuildConfig.DEBUG) Log.d(TAG, KeyEvent.keyCodeToString(keyCode));
-                stop();
+                reset();
                 break;
             case KeyEvent.KEYCODE_MEDIA_NEXT:
                 if (BuildConfig.DEBUG) Log.d(TAG, KeyEvent.keyCodeToString(keyCode));
@@ -762,7 +745,7 @@ public class MusicPlaybackService extends Service implements
         }
     }
 
-    private void updateMediaSession(String state) {
+    private void updateMediaSession(int state) {
         if (BuildConfig.DEBUG) Log.d(TAG, "updateMediaSession");
 
         // @TODO debugging
@@ -789,25 +772,14 @@ public class MusicPlaybackService extends Service implements
         }
 
         switch (state) {
-            case "PLAY":
-                stateBuilder.setState(PlaybackState.STATE_PLAYING, musicPlayer.getCurrentPosition(),
+            case PlaybackState.STATE_PLAYING:
+            case PlaybackState.STATE_PAUSED:
+                stateBuilder.setState(state, musicPlayer.getCurrentPosition(),
                         1.0f);
                 break;
-            case "PAUSE":
-                stateBuilder.setState(PlaybackState.STATE_PAUSED, musicPlayer.getCurrentPosition(),
-                        1.0f);
-                break;
-            case "STOP":
-                stateBuilder.setState(PlaybackState.STATE_STOPPED, musicPlayer.getCurrentPosition(),
-                        1.0f);
-                break;
-            case "NONE":
-            case "RESET":
-                stateBuilder.setState(PlaybackState.STATE_NONE, PlaybackState.PLAYBACK_POSITION_UNKNOWN,
-                        1.0f);
-                break;
-            case "ERROR":
-                stateBuilder.setState(PlaybackState.STATE_ERROR, PlaybackState.PLAYBACK_POSITION_UNKNOWN,
+            case PlaybackState.STATE_NONE:
+            case PlaybackState.STATE_ERROR:
+                stateBuilder.setState(state, PlaybackState.PLAYBACK_POSITION_UNKNOWN,
                         1.0f);
                 break;
             default:
@@ -1029,7 +1001,7 @@ public class MusicPlaybackService extends Service implements
             case AudioManager.AUDIOFOCUS_LOSS:
                 if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_LOSS");
 
-                stop();
+                pause();
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                 if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_LOSS_TRANSIENT");
@@ -1044,7 +1016,8 @@ public class MusicPlaybackService extends Service implements
                 setVolume(0.4f, 0.4f);
                 break;
             default:
-                if (BuildConfig.DEBUG) Log.wtf(TAG, "VERY BAD HAPPENED");
+                if (BuildConfig.DEBUG) Log.wtf(TAG, "VERY BAD HAPPENED (AUDIOFOCUS)");
+                if (BuildConfig.DEBUG) Log.wtf(TAG, "CHANGE: " + String.valueOf(change));
                 break;
         }
     }
@@ -1155,17 +1128,6 @@ public class MusicPlaybackService extends Service implements
 
             if (service != null) {
                 service.pause();
-            }
-        }
-
-        @Override
-        public void stop() throws RemoteException {
-            if (BuildConfig.DEBUG) Log.d(TAG, "stop");
-
-            MusicPlaybackService service = serviceReference.get();
-
-            if (service != null) {
-                service.stop();
             }
         }
 

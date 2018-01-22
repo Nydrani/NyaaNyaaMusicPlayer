@@ -26,10 +26,10 @@ public abstract class BaseAdapter<VH extends BaseMusicViewHolder> extends Recycl
         implements MaterialCab.Callback {
     private static final String TAG = BaseAdapter.class.getSimpleName();
 
-    public List<View> chosenViews;
-    public List<Integer> chosenItems;
-    public CabHolder cabHolder;
-    public MaterialCab cab;
+    protected List<View> chosenViews;
+    protected List<Integer> chosenItems;
+    protected CabHolder cabHolder;
+    protected MaterialCab cab;
 
     protected BaseAdapter(CabHolder cabHolder) {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");

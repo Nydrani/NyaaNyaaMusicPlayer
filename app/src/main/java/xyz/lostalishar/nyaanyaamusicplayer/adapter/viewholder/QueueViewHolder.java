@@ -31,9 +31,9 @@ public class QueueViewHolder extends BaseMusicViewHolder {
         super(view, adapter);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        queueTitle = (TextView)view.findViewById(R.id.queue_title);
-        queueDescription = (TextView)view.findViewById(R.id.queue_description);
-        queueMenu = (ImageView)view.findViewById(R.id.queue_menu);
+        queueTitle = view.findViewById(R.id.queue_title);
+        queueDescription = view.findViewById(R.id.queue_description);
+        queueMenu = view.findViewById(R.id.queue_menu);
 
         popupMenu = new PopupMenu(itemView.getContext(), queueMenu);
         popupMenu.inflate(R.menu.popup_queue);

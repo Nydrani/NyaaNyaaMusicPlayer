@@ -27,8 +27,8 @@ public class AlbumViewHolder extends BaseMusicViewHolder {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         // extra field for album
-        albumTitle = (TextView) view.findViewById(R.id.album_title);
-        numTracks = (TextView) view.findViewById(R.id.album_num_tracks);
+        albumTitle = view.findViewById(R.id.album_title);
+        numTracks = view.findViewById(R.id.album_num_tracks);
 
         // instantiate album data holder
         albumDataHolder = new AlbumDataHolder();

@@ -28,6 +28,10 @@ public class JobUtils {
 
         JobScheduler jobScheduler = (JobScheduler)context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
+        if (jobScheduler == null) {
+            return;
+        }
+
         ComponentName mediaJobServiceComponent = new ComponentName(context, MediaJobService.class);
         PersistableBundle infoBundle = new PersistableBundle();
         infoBundle.putInt(MusicPlaybackService.ACTION_EXTRA_KEYCODE, keyCode);

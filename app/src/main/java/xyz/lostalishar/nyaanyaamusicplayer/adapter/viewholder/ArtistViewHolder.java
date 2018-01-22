@@ -27,8 +27,8 @@ public class ArtistViewHolder extends BaseMusicViewHolder {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         // extra field for artists
-        artistTitle = (TextView) view.findViewById(R.id.artist_title);
-        artistDescription = (TextView) view.findViewById(R.id.artist_description);
+        artistTitle = view.findViewById(R.id.artist_title);
+        artistDescription = view.findViewById(R.id.artist_description);
 
         // instantiate artist data holder
         artistDataHolder = new ArtistDataHolder();
