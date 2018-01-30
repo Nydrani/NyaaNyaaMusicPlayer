@@ -363,7 +363,7 @@ public class MusicPlaybackService extends Service implements
             musicPlayer.pause();
 
             updateMediaSession(PlaybackState.STATE_PAUSED);
-            notificationManager.notify(MUSIC_NOTIFICATION_ID, buildNotification());
+            updateNotification();
             stopForeground(false);
             NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
             savePlaybackState();
@@ -375,21 +375,32 @@ public class MusicPlaybackService extends Service implements
     public void next() {
         if (BuildConfig.DEBUG) Log.d(TAG, "next");
 
-        int nextQueuePos = (musicPlaybackState.getQueuePos() + 1) % musicQueue.size();
+        int size = musicQueue.size();
+        if (size == 0) {
+            return;
+        }
 
+        int nextQueuePos = (musicPlaybackState.getQueuePos() + 1) % size;
         reset();
         load(nextQueuePos);
+
+        updateNotification();
     }
 
     public void previous() {
         if (BuildConfig.DEBUG) Log.d(TAG, "previous");
 
-        // apparently mod in java behaves as  { a % b = a - a / b * b }
-        int prevQueuePos = ((musicPlaybackState.getQueuePos() - 1) %
-                musicQueue.size() + musicQueue.size()) % musicQueue.size();
+        int size = musicQueue.size();
+        if (size == 0) {
+            return;
+        }
 
+        // apparently mod in java behaves as  { a % b = a - a / b * b }
+        int prevQueuePos = ((musicPlaybackState.getQueuePos() - 1) % size + size) % size;
         reset();
         load(prevQueuePos);
+
+        updateNotification();
     }
 
     public void reset() {
@@ -665,7 +676,7 @@ public class MusicPlaybackService extends Service implements
                 PendingIntent.FLAG_UPDATE_CURRENT);
         mediaSession.setMediaButtonReceiver(pi);
 
-        // assumes all media sesions handle these flags after oreo+
+        // assumes all media sessions handle these flags after oreo+
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) {
             mediaSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS
                     | MediaSession.FLAG_HANDLES_MEDIA_BUTTONS);
@@ -684,26 +695,6 @@ public class MusicPlaybackService extends Service implements
         deleteIntent.setAction(ACTION_SHUTDOWN);
         PendingIntent deletePendingIntent = PendingIntent.getService(this, 0, deleteIntent, 0);
 
-        Intent serviceIntent = new Intent(this, MusicPlaybackService.class);
-        serviceIntent.putExtra(ACTION_EXTRA_KEYCODE, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
-
-        PendingIntent servicePendingIntent = PendingIntent.getService(this, 0,
-                serviceIntent, 0);
-
-        // need to do this for marshmallow
-        Notification.Action playPauseAction;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            Icon icon = Icon.createWithResource(this, android.R.drawable.ic_media_pause);
-            playPauseAction = new Notification.Action.Builder(icon,
-                    getText(R.string.service_musicplayback_notification_pause_message), servicePendingIntent)
-                    .build();
-        } else {
-            playPauseAction = new Notification.Action.Builder(
-                    android.R.drawable.ic_media_pause,
-                    getText(R.string.service_musicplayback_notification_pause_message), servicePendingIntent)
-                    .build();
-        }
-
         // need to do this for oreo
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             musicNotification = new Notification.Builder(this, NOTIFICATION_ID)
@@ -712,7 +703,6 @@ public class MusicPlaybackService extends Service implements
                     .setSmallIcon(android.R.drawable.star_on)
                     .setContentIntent(activityPendingIntent)
                     .setDeleteIntent(deletePendingIntent)
-                    .addAction(playPauseAction)
                     .build();
         } else {
             musicNotification = new Notification.Builder(this)
@@ -721,7 +711,6 @@ public class MusicPlaybackService extends Service implements
                     .setSmallIcon(android.R.drawable.star_on)
                     .setContentIntent(activityPendingIntent)
                     .setDeleteIntent(deletePendingIntent)
-                    .addAction(playPauseAction)
                     .build();
         }
 
@@ -969,8 +958,7 @@ public class MusicPlaybackService extends Service implements
     private void updateNotification() {
         if (BuildConfig.DEBUG) Log.d(TAG, "updateNotification");
 
-        // @TODO this is api level >= 23
-        //StatusBarNotification[] notifications = notificationManager.getActiveNotifications();
+        notificationManager.notify(MUSIC_NOTIFICATION_ID, buildNotification());
     }
 
     private void savePlaybackState() {
