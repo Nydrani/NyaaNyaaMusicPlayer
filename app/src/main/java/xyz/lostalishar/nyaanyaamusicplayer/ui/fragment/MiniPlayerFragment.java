@@ -212,6 +212,7 @@ public class MiniPlayerFragment extends Fragment {
         MusicPlaybackTrack track = MusicUtils.getCurrentPlaying();
         if (track == null) {
             musicTitleView.setText(R.string.service_musicplayback_notification_message);
+            musicArtistView.setText("");
             return;
         }
 
@@ -220,6 +221,7 @@ public class MiniPlayerFragment extends Fragment {
 
         if (cursor == null) {
             musicTitleView.setText(R.string.service_musicplayback_notification_message);
+            musicArtistView.setText("");
             return;
         }
 
@@ -235,6 +237,7 @@ public class MiniPlayerFragment extends Fragment {
 
             cursor.close();
             musicTitleView.setText(R.string.service_musicplayback_notification_message);
+            musicArtistView.setText("");
             return;
         }
 

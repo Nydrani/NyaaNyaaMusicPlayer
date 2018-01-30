@@ -28,12 +28,14 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
@@ -86,7 +88,7 @@ public class MusicPlaybackService extends Service implements
     public static final long UNKNOWN_ID = -1;
 
     private static final int UPDATE_QUEUE = 0;
-    private static final int MUSIC_NOTIFICATION_ID = 1;
+    private static final int NOTIFICATION_NUM = 1;
 
     private boolean transientPause = false;
 
@@ -135,6 +137,9 @@ public class MusicPlaybackService extends Service implements
         // restore playback queue
         loadPlaybackQueue();
 
+        // clean playback queue
+        cleanPlaybackQueue();
+
         // restore previous playback state
         loadPlaybackState();
     }
@@ -162,6 +167,7 @@ public class MusicPlaybackService extends Service implements
             return;
         }
 
+        cleanPlaybackQueue();
     }
 
     @Override
@@ -224,6 +230,9 @@ public class MusicPlaybackService extends Service implements
         if (NyaaUtils.needsPermissions(this)) {
             return;
         }
+
+        savePlaybackState();
+        savePlaybackQueue();
 
         // release music player
         if (musicPlayer != null) {
@@ -346,7 +355,7 @@ public class MusicPlaybackService extends Service implements
             //   7. save current playback state
             updateMediaSession(PlaybackState.STATE_PLAYING);
             mediaSession.setActive(true);
-            startForeground(MUSIC_NOTIFICATION_ID, buildNotification());
+            startForeground(NOTIFICATION_NUM, buildNotification());
             NyaaUtils.notifyChange(this, NyaaUtils.META_CHANGED);
             savePlaybackState();
         } catch (IllegalStateException e) {
@@ -958,13 +967,13 @@ public class MusicPlaybackService extends Service implements
     private void updateNotification() {
         if (BuildConfig.DEBUG) Log.d(TAG, "updateNotification");
 
-        notificationManager.notify(MUSIC_NOTIFICATION_ID, buildNotification());
+        notificationManager.notify(NOTIFICATION_NUM, buildNotification());
     }
 
     private void savePlaybackState() {
         if (BuildConfig.DEBUG) Log.d(TAG, "savePlaybackState");
 
-        // update the current playback seek position
+        // save the current playback seek position
         musicPlaybackState.setSeekPos(getCurrentPosition());
         PreferenceUtils.saveCurPlaying(this, musicPlaybackState);
     }
@@ -1009,9 +1018,11 @@ public class MusicPlaybackService extends Service implements
         if (BuildConfig.DEBUG) Log.d(TAG, "Number of rows inserted: " + String.valueOf(inserted));
     }
 
+    // @TODO check for if the track even exists on the device
     private void loadPlaybackQueue() {
         if (BuildConfig.DEBUG) Log.d(TAG, "loadPlaybackQueue");
 
+        // query database
         Cursor cursor = getContentResolver().query(MusicDatabaseProvider.QUEUE_CONTENT_URI,
                 null, null, null, PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION + " ASC");
 
@@ -1019,6 +1030,10 @@ public class MusicPlaybackService extends Service implements
             return;
         }
 
+        // restore playback queue from storage
+        if (BuildConfig.DEBUG) Log.d(TAG, "Restoring queue");
+
+        // setup the columns
         int idColumn = cursor.getColumnIndex(PlaybackQueueSQLHelper.PlaybackQueueColumns.ID);
         int positionColumn = cursor.getColumnIndex(PlaybackQueueSQLHelper.PlaybackQueueColumns.POSITION);
 
@@ -1030,12 +1045,63 @@ public class MusicPlaybackService extends Service implements
             if (BuildConfig.DEBUG) Log.d(TAG, "id: " + String.valueOf(id));
             if (BuildConfig.DEBUG) Log.d(TAG, "position: " + String.valueOf(position));
 
+            MusicPlaybackTrack track = new MusicPlaybackTrack(id);
+            musicQueue.add(track);
+        }
+        cursor.close();
+    }
+
+    private void cleanPlaybackQueue() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "cleanPlaybackQueue");
+
+        Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = { MediaStore.Audio.Media._ID };
+        String selection = MediaStore.Audio.Media._ID + " IN (" + TextUtils.join(",", Collections.nCopies(musicQueue.size(), "?")) + ")";
+        String args[] = new String[musicQueue.size()];
+        for (int i = 0; i < args.length; i++) {
+            args[i] = String.valueOf(musicQueue.get(i).getId());
+        }
+        String sortOrder = MediaStore.Audio.Media.DEFAULT_SORT_ORDER;
+
+        // query database
+        Cursor cursor = getContentResolver().query(musicUri, projection, selection, args, sortOrder);
+
+        if (cursor == null) {
+            return;
+        }
+
+        // die if no difference
+        if (cursor.getCount() == musicQueue.size()) {
+            return;
+        }
+
+
+        // if discrepancies are found, wipe and reload the found ones
+        if (BuildConfig.DEBUG) Log.d(TAG, "Cleaning queue");
+        musicQueue.clear();
+
+        // setup the columns
+        int idColumn = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
+
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            final long id = cursor.getLong(idColumn);
+
+            // @TODO debugging
+            if (BuildConfig.DEBUG) Log.d(TAG, "id: " + String.valueOf(id));
 
             MusicPlaybackTrack track = new MusicPlaybackTrack(id);
             musicQueue.add(track);
         }
-
         cursor.close();
+
+        // make sure to update the queue
+        musicPlaybackState.setQueuePos(UNKNOWN_POS);
+        musicPlaybackState.setSeekPos(0);
+        savePlaybackState();
+        savePlaybackQueue();
+        
+        // clearn notification
+        notificationManager.cancel(NOTIFICATION_NUM);
     }
 
     // @TODO to find where the correct position of the queue should be, we need to find:
