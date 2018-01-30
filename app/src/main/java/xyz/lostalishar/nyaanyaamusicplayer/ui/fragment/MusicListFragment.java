@@ -33,6 +33,9 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 public class MusicListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Music>> {
     private static final String TAG = MusicListFragment.class.getSimpleName();
 
+    RecyclerView recyclerView;
+    View emptyView;
+
     public MusicAdapter adapter;
 
     public static MusicListFragment newInstance() {
@@ -52,6 +55,13 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
 
         adapter = new MusicAdapter(new ArrayList<Music>(), cabHolder);
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                emptyView.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
     @Override
@@ -66,7 +76,8 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
                 DividerItemDecoration.VERTICAL);
 
         View rootView = inflater.inflate(R.layout.list_base, container, false);
-        RecyclerView recyclerView = rootView.findViewById(R.id.list_base_view);
+        emptyView = rootView.findViewById(R.id.empty_view);
+        recyclerView = rootView.findViewById(R.id.list_base_view);
 
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(adapter);

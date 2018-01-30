@@ -80,6 +80,7 @@ public class MusicAdapter extends BaseAdapter<MusicListViewHolder> {
         return musicList;
     }
 
+
     // ========================================================================
     // RecyclerView.Adapter overrides
     // ========================================================================

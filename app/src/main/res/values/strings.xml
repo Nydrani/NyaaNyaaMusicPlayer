@@ -21,10 +21,10 @@
     <string name="toast_choose_track">Choose a track from the queue</string>
 
 
-    <string name="dialog_about_message">Ayyy lmaooooo</string>
+    <string name="dialog_about_message">https://github.com/Nydrani/NyaaNyaaMusicPlayer</string>
 
     <string name="service_musicplayback_notification_title">Music</string>
-    <string name="service_musicplayback_notification_message">Unknown music playing</string>
+    <string name="service_musicplayback_notification_message">Unknown</string>
     <string name="service_musicplayback_notification_pause_message">Pause</string>
     <string name="service_musicplayback_notification_play_message">Play</string>
 
@@ -39,6 +39,7 @@
     <string name="fragment_player_bar_prev">Prev</string>
 
     <string name="description_more_overflow">Image to indicate more overflow options</string>
+    <string name="no_data_available">No music found</string>
 
     <string name="menu_dots">&#8942;</string>
     
