@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,8 @@ import xyz.lostalishar.nyaanyaamusicplayer.model.Artist;
 
 public class ArtistFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Artist>> {
     private static final String TAG = ArtistFragment.class.getSimpleName();
+
+    private TextView emptyView;
 
     public ArtistAdapter adapter;
 
@@ -50,6 +53,13 @@ public class ArtistFragment extends BaseFragment implements LoaderManager.Loader
         super.onCreate(savedInstanceState);
 
         adapter = new ArtistAdapter(new ArrayList<Artist>(), cabHolder);
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                emptyView.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
     @Override
@@ -64,7 +74,10 @@ public class ArtistFragment extends BaseFragment implements LoaderManager.Loader
                 DividerItemDecoration.VERTICAL);
 
         View rootView = inflater.inflate(R.layout.list_base, container, false);
+        emptyView = rootView.findViewById(R.id.empty_view);
         RecyclerView recyclerView = rootView.findViewById(R.id.list_base_view);
+
+        emptyView.setText(R.string.no_artists_found);
 
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(adapter);

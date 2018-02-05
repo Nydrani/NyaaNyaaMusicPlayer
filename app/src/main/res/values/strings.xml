@@ -39,7 +39,13 @@
     <string name="fragment_player_bar_prev">Prev</string>
 
     <string name="description_more_overflow">Image to indicate more overflow options</string>
-    <string name="no_data_available">No music found</string>
+
+    <string name="no_data_available">No data found</string>
+    <string name="no_music_found">No music found</string>
+    <string name="no_albums_found">No albums found</string>
+    <string name="no_artists_found">No artists found</string>
+    <string name="empty_queue">The music queue is empty</string>
+
 
     <string name="menu_dots">&#8942;</string>
     

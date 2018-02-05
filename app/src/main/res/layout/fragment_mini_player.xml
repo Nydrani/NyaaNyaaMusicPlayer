@@ -3,7 +3,6 @@
     android:id="@+id/fragment_mini_player_container"
     android:layout_width="match_parent"
     android:layout_height="@dimen/mini_player_height"
-    android:background="@color/white"
     android:orientation="horizontal">
 
     <LinearLayout
@@ -12,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:background="@color/white"
         android:gravity="center">
 
         <TextView

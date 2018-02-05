@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -33,8 +34,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 public class MusicListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Music>> {
     private static final String TAG = MusicListFragment.class.getSimpleName();
 
-    RecyclerView recyclerView;
-    View emptyView;
+    private TextView emptyView;
 
     public MusicAdapter adapter;
 
@@ -77,7 +77,9 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
 
         View rootView = inflater.inflate(R.layout.list_base, container, false);
         emptyView = rootView.findViewById(R.id.empty_view);
-        recyclerView = rootView.findViewById(R.id.list_base_view);
+        RecyclerView recyclerView = rootView.findViewById(R.id.list_base_view);
+
+        emptyView.setText(R.string.no_music_found);
 
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(adapter);

@@ -18,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
@@ -39,6 +40,8 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
 public class MusicQueueFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Music>> {
     private static final String TAG = MusicQueueFragment.class.getSimpleName();
+
+    private TextView emptyView;
 
     public QueueAdapter adapter;
     private RecyclerView.LayoutManager layout;
@@ -88,6 +91,13 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
         List<Music> queueList = new ArrayList<>();
 
         adapter = new QueueAdapter(queueList, cabHolder);
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                emptyView.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+            }
+        });
 
         Activity activity = getActivity();
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
@@ -108,7 +118,10 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(activity,
                 DividerItemDecoration.VERTICAL);
         View rootView = inflater.inflate(R.layout.fragment_queue, container, false);
+        emptyView = rootView.findViewById(R.id.empty_view);
         RecyclerView recyclerView = rootView.findViewById(R.id.list_base_view);
+
+        emptyView.setText(R.string.empty_queue);
 
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(adapter);

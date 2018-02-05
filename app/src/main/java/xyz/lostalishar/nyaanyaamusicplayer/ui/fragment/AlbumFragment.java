@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,8 @@ import xyz.lostalishar.nyaanyaamusicplayer.model.Album;
 
 public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Album>> {
     private static final String TAG = AlbumFragment.class.getSimpleName();
+
+    private TextView emptyView;
 
     public AlbumAdapter adapter;
 
@@ -50,6 +53,13 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
         super.onCreate(savedInstanceState);
 
         adapter = new AlbumAdapter(new ArrayList<Album>(), cabHolder);
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                emptyView.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
     @Override
@@ -64,7 +74,10 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
                 DividerItemDecoration.VERTICAL);
 
         View rootView = inflater.inflate(R.layout.list_base, container, false);
+        emptyView = rootView.findViewById(R.id.empty_view);
         RecyclerView recyclerView = rootView.findViewById(R.id.list_base_view);
+
+        emptyView.setText(R.string.no_albums_found);
 
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(adapter);
