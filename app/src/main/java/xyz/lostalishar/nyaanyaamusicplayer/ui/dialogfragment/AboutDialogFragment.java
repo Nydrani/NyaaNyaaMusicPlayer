@@ -44,7 +44,7 @@ public class AboutDialogFragment extends DialogFragment {
         Linkify.addLinks(view, Linkify.WEB_URLS);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setIcon(getResources().getDrawable(R.mipmap.ic_launcher));
+        builder.setIcon(getResources().getDrawable(R.mipmap.ic_launcher, null));
         builder.setTitle(R.string.app_name);
         builder.setView(view);
 
