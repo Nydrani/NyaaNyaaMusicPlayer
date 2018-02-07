@@ -35,6 +35,7 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
     private static final String TAG = MusicListFragment.class.getSimpleName();
 
     private TextView emptyView;
+    private TextView bubbleView;
 
     public MusicAdapter adapter;
 
@@ -76,14 +77,34 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
                 DividerItemDecoration.VERTICAL);
 
         View rootView = inflater.inflate(R.layout.list_base, container, false);
-        emptyView = rootView.findViewById(R.id.empty_view);
         RecyclerView recyclerView = rootView.findViewById(R.id.list_base_view);
+        bubbleView = rootView.findViewById(R.id.bubble_view);
+        emptyView = rootView.findViewById(R.id.empty_view);
 
         emptyView.setText(R.string.no_music_found);
 
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layout);
+
+        // @TODO fix fast scroll bubble using SectionIndexer
+        /*
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (BuildConfig.DEBUG) Log.d(TAG, "onScrolled");
+                super.onScrolled(recyclerView, dx, dy);
+
+                int range = recyclerView.computeVerticalScrollRange();
+                int offset = recyclerView.computeVerticalScrollOffset();
+                int extent = recyclerView.computeVerticalScrollExtent();
+
+                float percentage = (offset / (float)(range - extent));
+
+                bubbleView.setY(percentage * (extent - bubbleView.getHeight()));
+            }
+        });
+        */
 
         return rootView;
     }
