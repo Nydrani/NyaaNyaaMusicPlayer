@@ -84,22 +84,24 @@ public class NyaaUtils {
     /**
      * Start up the AlbumListActivity
      */
-    public static void openAlbumList(Activity activity, long albumId) {
+    public static void openAlbumList(Activity activity, long albumId, String albumName) {
         if (BuildConfig.DEBUG) Log.d(TAG, "openAlbumList");
 
         Intent intent = new Intent(activity, AlbumListActivity.class);
         intent.putExtra("albumId", albumId);
+        intent.putExtra("albumName", albumName);
         activity.startActivity(intent);
     }
 
     /**
      * Start up the ArtistListActivity
      */
-    public static void openArtistList(Activity activity, long artistId) {
+    public static void openArtistList(Activity activity, long artistId, String artistName) {
         if (BuildConfig.DEBUG) Log.d(TAG, "openArtistList");
 
         Intent intent = new Intent(activity, ArtistListActivity.class);
         intent.putExtra("artistId", artistId);
+        intent.putExtra("artistName", artistName);
         activity.startActivity(intent);
     }
 

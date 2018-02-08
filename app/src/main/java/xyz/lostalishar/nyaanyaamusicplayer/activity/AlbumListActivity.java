@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -54,14 +55,23 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
 
         // setup fragments
         long chosenId = MusicPlaybackService.UNKNOWN_ID;
+        String chosenName = getString(R.string.app_name);
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             chosenId = extras.getLong("albumId");
+            chosenName = extras.getString("albumName");
         }
         albumListFragment = AlbumListFragment.newInstance(chosenId);
         musicQueueFragment = MusicQueueFragment.newInstance();
         miniPlayerFragment = MiniPlayerFragment.newInstance();
         slidingMiniPlayerFragment = MiniPlayerFragment.newInstance();
+
+        // set up actionbar
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(chosenName);
+        }
     }
 
     @Override
@@ -94,6 +104,9 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
         int id = item.getItemId();
 
         switch (id) {
+            case android.R.id.home:
+                super.onBackPressed();
+                return true;
             case R.id.actionbar_about:
                 setDialogFragment(AboutDialogFragment.newInstance());
                 return true;

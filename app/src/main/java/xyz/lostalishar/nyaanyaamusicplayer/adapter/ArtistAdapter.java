@@ -61,6 +61,8 @@ public class ArtistAdapter extends BaseAdapter<ArtistViewHolder> {
 
         Artist artist = getArtistList().get(position);
 
+        String artistName = artist.getName();
+
         int numAlbums = artist.getNumAlbums();
         int numTracks = artist.getNumTracks();
         String albumsDescription = holder.itemView.getResources().
@@ -70,11 +72,12 @@ public class ArtistAdapter extends BaseAdapter<ArtistViewHolder> {
 
         String descriptionMessage = albumsDescription + " | " + tracksDescription;
 
-        holder.artistTitle.setText(artist.getName());
+        holder.artistTitle.setText(artistName);
         holder.artistDescription.setText(descriptionMessage);
 
         // store id
         holder.artistDataHolder.artistId = artist.getId();
+        holder.artistDataHolder.artistName = artistName;
     }
 
     @Override

@@ -50,7 +50,7 @@ public class AlbumViewHolder extends BaseMusicViewHolder {
 
         // add song here
         if (!(adapter.get().isCabActive())) {
-            NyaaUtils.openAlbumList((Activity)v.getContext(), albumDataHolder.albumId);
+            NyaaUtils.openAlbumList((Activity)v.getContext(), albumDataHolder.albumId, albumDataHolder.albumName);
         }
 
         // close cab
@@ -77,6 +77,7 @@ public class AlbumViewHolder extends BaseMusicViewHolder {
         private static final String TAG = AlbumDataHolder.class.getSimpleName();
 
         public long albumId;
+        public String albumName;
 
         public AlbumDataHolder() {
             if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
