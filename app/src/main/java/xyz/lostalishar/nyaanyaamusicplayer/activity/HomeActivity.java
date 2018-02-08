@@ -4,6 +4,8 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -19,6 +21,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.interfaces.OnViewInflatedListener;
+import xyz.lostalishar.nyaanyaamusicplayer.observer.MediaStoreObserver;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.LibraryFragment;
@@ -36,6 +39,8 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
     private Fragment miniPlayerFragment;
     private Fragment slidingMiniPlayerFragment;
 
+    private MediaStoreObserver mediaStoreObserver;
+
 
     //=========================================================================
     // Activity lifecycle
@@ -52,15 +57,45 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
         setSupportActionBar(toolbar);
 
         // setup the fragments
-        if (savedInstanceState == null) {
-            libraryFragment = LibraryFragment.newInstance();
-        } else {
-            libraryFragment = getFragmentManager().getFragment(savedInstanceState, "libraryFragment");
-        }
+        libraryFragment = LibraryFragment.newInstance();
         musicQueueFragment = MusicQueueFragment.newInstance();
         miniPlayerFragment = MiniPlayerFragment.newInstance();
         slidingMiniPlayerFragment = MiniPlayerFragment.newInstance();
+
+        // setup a content observer
+        mediaStoreObserver = new MediaStoreObserver(new Handler());
+        getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, mediaStoreObserver);
     }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onRestoreInstanceState");
+        super.onRestoreInstanceState(savedInstanceState);
+
+        libraryFragment = getFragmentManager().getFragment(savedInstanceState, "libraryFragment");
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onSaveInstanceState");
+        super.onSaveInstanceState(outState);
+
+        //Save the fragment's instance
+        getFragmentManager().putFragment(outState, "libraryFragment", libraryFragment);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
+        super.onDestroy();
+
+        getContentResolver().unregisterContentObserver(mediaStoreObserver);
+    }
+
+
+    //=========================================================================
+    // Other activity callbacks
+    //=========================================================================
 
     @Override
     public void onBackPressed() {
@@ -69,14 +104,6 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
         if (!handleBackPressed()) {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        //Save the fragment's instance
-        getFragmentManager().putFragment(outState, "libraryFragment", libraryFragment);
     }
 
 

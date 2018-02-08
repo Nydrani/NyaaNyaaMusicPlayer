@@ -74,6 +74,11 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
         }
     }
 
+
+    //=========================================================================
+    // Other activity callbacks
+    //=========================================================================
+
     @Override
     public void onBackPressed() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onBackPressed");
@@ -168,6 +173,11 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
             slidingView.addPanelSlideListener(this);
         }
     }
+
+
+    //=========================================================================
+    // MiniPlayer listener overrides
+    //=========================================================================
 
     @Override
     public void onMiniPlayerTouched(View view) {

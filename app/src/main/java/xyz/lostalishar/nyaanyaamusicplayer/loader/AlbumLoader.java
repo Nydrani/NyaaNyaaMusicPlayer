@@ -14,7 +14,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Album;
 
 /**
- * Loads a List of Music classes from the MediaStore cursor in the background
+ * Loads a list of Album classes from the MediaStore cursor in the background
  */
 
 public class AlbumLoader extends CachedAsyncTaskLoader<List<Album>> {
@@ -92,8 +92,8 @@ public class AlbumLoader extends CachedAsyncTaskLoader<List<Album>> {
 
         Uri musicUri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
         String[] projection = new String[4];
-        String selection = MediaStore.Audio.Media.IS_MUSIC + "=?";
-        String args[] = { "1" };
+        // String selection = MediaStore.Audio.Media.IS_MUSIC + "=?";
+        // String args[] = { "1" };
         String sortOrder = MediaStore.Audio.Albums.DEFAULT_SORT_ORDER;
 
         projection[0] = MediaStore.Audio.Albums._ID;

@@ -46,25 +46,6 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
     // ========================================================================
 
     @Override
-    public long getItemId(int position) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "getItemId");
-
-        return musicList.get(position).getId();
-    }
-
-    @Override
-    public int getItemCount() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "getItemCount");
-
-        return musicList.size();
-    }
-
-
-    // ========================================================================
-    // RecyclerView.Adapter overrides
-    // ========================================================================
-
-    @Override
     public QueueViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateViewHolder");
 
@@ -124,6 +105,20 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
         } else if (holder.itemView.getBackground() != null) {
             holder.itemView.setBackground(null);
         }
+    }
+
+    @Override
+    public long getItemId(int position) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getItemId");
+
+        return musicList.get(position).getId();
+    }
+
+    @Override
+    public int getItemCount() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getItemCount");
+
+        return musicList.size();
     }
 
 

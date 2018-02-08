@@ -74,6 +74,11 @@ public class ArtistListActivity extends BaseActivity implements OnViewInflatedLi
         }
     }
 
+
+    //=========================================================================
+    // Other activity callbacks
+    //=========================================================================
+
     @Override
     public void onBackPressed() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onBackPressed");
@@ -168,6 +173,11 @@ public class ArtistListActivity extends BaseActivity implements OnViewInflatedLi
             slidingView.addPanelSlideListener(this);
         }
     }
+
+
+    //=========================================================================
+    // MiniPlayer listener overrides
+    //=========================================================================
 
     @Override
     public void onMiniPlayerTouched(View view) {

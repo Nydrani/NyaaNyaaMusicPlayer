@@ -11,7 +11,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
 
 /**
- * Loads a List of Music classes from the MediaStore cursor in the background
+ * Loads a list of Music classes from the MediaStore cursor in the background from an artist
  */
 
 public class ArtistListLoader extends MusicListLoader {

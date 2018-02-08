@@ -16,7 +16,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackTrack;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 
 /**
- * Loads a List of Music classes from the MediaStore cursor in the background
+ * Loads a list of Music classes from the MediaStore cursor in the background into the queue
  */
 
 public class MusicQueueLoader extends CachedAsyncTaskLoader<List<Music>> {
@@ -36,7 +36,7 @@ public class MusicQueueLoader extends CachedAsyncTaskLoader<List<Music>> {
     // AsyncTaskLoader implementation
     //=========================================================================
 
-    // @TODO it seems that multiple musicId doesnt work (queue ui doesn't display it)
+    // @TODO it seems that multiple musicId doesn't work (queue ui doesn't display it)
     @Override
     public List<Music> loadInBackground() {
         if (BuildConfig.DEBUG) Log.d(TAG, "loadInBackground");

@@ -36,7 +36,6 @@ public class MediaJobService extends JobService {
     public boolean onStopJob(JobParameters params) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onStopJob");
 
-
         // forcefully kill service if somehow the jobFinished had not been called
         Intent musicPlaybackService = new Intent(this, MusicPlaybackService.class);
         stopService(musicPlaybackService);

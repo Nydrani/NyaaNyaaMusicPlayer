@@ -48,9 +48,6 @@ public class MusicListLoader extends CachedAsyncTaskLoader<List<Music>> {
             return musicList;
         }
 
-        // @TODO debugging since list sometimes duplicates
-        Log.v(TAG, "Music list size before : " + String.valueOf(musicList.size()));
-
 
         int idColumn = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
         int titleColumn = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
@@ -75,9 +72,6 @@ public class MusicListLoader extends CachedAsyncTaskLoader<List<Music>> {
         }
 
         cursor.close();
-
-        // @TODO debugging since list sometimes duplicates
-        Log.v(TAG, "Music list size after : " + String.valueOf(musicList.size()));
 
         return musicList;
     }
