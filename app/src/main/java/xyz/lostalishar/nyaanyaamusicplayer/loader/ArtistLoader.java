@@ -38,6 +38,9 @@ public class ArtistLoader extends CachedAsyncTaskLoader<List<Artist>> {
     public List<Artist> loadInBackground() {
         if (BuildConfig.DEBUG) Log.d(TAG, "loadInBackground");
 
+        // reset the array
+        artistList = new ArrayList<>();
+
         Cursor cursor = getCursor();
 
         // can sometimes return null on bad problems

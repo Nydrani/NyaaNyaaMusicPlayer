@@ -41,6 +41,9 @@ public class MusicQueueLoader extends CachedAsyncTaskLoader<List<Music>> {
     public List<Music> loadInBackground() {
         if (BuildConfig.DEBUG) Log.d(TAG, "loadInBackground");
 
+        // reset the array
+        musicList = new ArrayList<>();
+
         Cursor cursor = getCursor();
 
         // @TODO for now (since list position is not relative to database position due to sorting

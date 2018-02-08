@@ -26,11 +26,10 @@ public abstract class CachedAsyncTaskLoader<D> extends AsyncTaskLoader<D> {
         if (BuildConfig.DEBUG) Log.d(TAG, "onStartLoading");
         super.onStartLoading();
 
-        if (mData != null) {
-            deliverResult(mData);
-        }
         if (takeContentChanged() || mData == null) {
             forceLoad();
+        } else {
+            deliverResult(mData);
         }
     }
 
@@ -38,9 +37,11 @@ public abstract class CachedAsyncTaskLoader<D> extends AsyncTaskLoader<D> {
     public void deliverResult(D data) {
         if (BuildConfig.DEBUG) Log.d(TAG, "deliverResult");
 
-        mData = data;
-        if (isStarted()) {
-            super.deliverResult(data);
+        if (!isReset()) {
+            mData = data;
+            if (isStarted()) {
+                super.deliverResult(data);
+            }
         }
     }
 
