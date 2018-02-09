@@ -17,8 +17,8 @@ public class PreferenceUtils {
     private static final String SETTINGS_PREFERENCES = "Settings";
     private static final String SERVICE_PREFERENCES = "Service";
 
-    private static final String SERVICE_QUEUE_PLAYING_POS = "cur_queue_music_pos";
-    private static final String SERVICE_QUEUE_PLAYING_SEEKPOS = "cur_queue_music_seekpos";
+    public static final String SERVICE_QUEUE_PLAYING_POS = "cur_queue_music_pos";
+    public static final String SERVICE_QUEUE_PLAYING_SEEKPOS = "cur_queue_music_seekpos";
 
     public PreferenceUtils() {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
@@ -54,6 +54,7 @@ public class PreferenceUtils {
             state.setSeekPos(seekPos);
         } catch (ClassCastException e) {
             if (BuildConfig.DEBUG) Log.d(TAG, "Incorrect type found for preference");
+            state = new MusicPlaybackState();
         }
 
         return state;

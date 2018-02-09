@@ -982,17 +982,20 @@ public class MusicPlaybackService extends Service implements
         if (BuildConfig.DEBUG) Log.d(TAG, "loadPlaybackState");
 
         MusicPlaybackState state = PreferenceUtils.loadCurPlaying(this);
+
         int pos = state.getQueuePos();
+        int seekPos = state.getSeekPos();
 
         musicPlaybackState.setQueuePos(pos);
-        musicPlaybackState.setSeekPos(state.getSeekPos());
+        musicPlaybackState.setSeekPos(seekPos);
 
         // die if load failed, probably due to out of bounds array position
         if (!(load(pos))) {
             return;
         }
 
-        seekTo(state.getSeekPos());
+        // seek to previous position
+        seekTo(seekPos);
     }
 
     private void savePlaybackQueue() {

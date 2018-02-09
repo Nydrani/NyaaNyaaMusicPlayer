@@ -14,6 +14,7 @@ import static org.junit.Assert.*;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
+
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
     @Test
@@ -21,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("xyz.velvetmilk.nyaanyaamusicplayer", appContext.getPackageName());
+        assertEquals("xyz.lostalishar.nyaanyaamusicplayer", appContext.getPackageName());
     }
 }

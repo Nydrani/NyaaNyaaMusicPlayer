@@ -3,6 +3,8 @@ package xyz.lostalishar.nyaanyaamusicplayer.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
+
 /**
  * State containing data about the current playstate
  * @TODO currently using SharedPreferences to store state about pos + id
@@ -14,6 +16,8 @@ public class MusicPlaybackState implements Parcelable {
     private int seekPos;
 
     public MusicPlaybackState() {
+        queuePos = MusicPlaybackService.UNKNOWN_POS;
+        seekPos = 0;
     }
 
     public MusicPlaybackState(Parcel in) {
@@ -68,6 +72,32 @@ public class MusicPlaybackState implements Parcelable {
 
     public void setSeekPos(int seekPos) {
         this.seekPos = seekPos;
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        final MusicPlaybackState other = (MusicPlaybackState) obj;
+
+        if (queuePos != other.queuePos) {
+            return false;
+        }
+        if (seekPos != other.seekPos) {
+            return false;
+        }
+
+        // return true at the end if every field is the same but not same object
+        return true;
     }
 
     @Override
