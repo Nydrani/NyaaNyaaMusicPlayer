@@ -27,6 +27,7 @@ public class NyaaUtils {
     public static final String QUEUE_CHANGED = PACKAGE_NAME + ".queuechanged";
     public static final String META_CHANGED = PACKAGE_NAME + ".metachanged";
     public static final String SERVICE_READY = PACKAGE_NAME + ".serviceready";
+    public static final String SERVICE_EXIT = PACKAGE_NAME + ".serviceexit";
 
     public NyaaUtils() {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");

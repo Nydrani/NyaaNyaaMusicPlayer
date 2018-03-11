@@ -3,6 +3,10 @@ package xyz.lostalishar.nyaanyaamusicplayer.activity;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -11,6 +15,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.afollestad.materialcab.MaterialCab;
+
+import java.lang.ref.WeakReference;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
@@ -25,6 +31,8 @@ public abstract class BaseActivity extends AppCompatActivity implements CabHolde
     private boolean bound = false;
 
     protected MaterialCab cab;
+
+    private ServiceListener serviceListener;
 
 
     //=========================================================================
@@ -42,6 +50,14 @@ public abstract class BaseActivity extends AppCompatActivity implements CabHolde
         if (NyaaUtils.needsPermissions(this)) {
             NyaaUtils.requestMissingPermissions(this);
         }
+
+        // initialise variables for broadcast receiving from the service
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(NyaaUtils.SERVICE_EXIT);
+        serviceListener = new ServiceListener(this);
+
+        // register receiver here since the service can exit during background play
+        registerReceiver(serviceListener, filter);
     }
 
     @Override
@@ -81,6 +97,8 @@ public abstract class BaseActivity extends AppCompatActivity implements CabHolde
     protected void onDestroy() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
         super.onDestroy();
+
+        unregisterReceiver(serviceListener);
     }
 
 
@@ -193,5 +211,41 @@ public abstract class BaseActivity extends AppCompatActivity implements CabHolde
         ft.addToBackStack(null);
 
         dialog.show(ft, null);
+    }
+
+
+    //=========================================================================
+    // Internal classes
+    //=========================================================================
+
+    private static final class ServiceListener extends BroadcastReceiver {
+        private static final String TAG = ServiceListener.class.getSimpleName();
+
+        private WeakReference<BaseActivity> reference;
+
+        public ServiceListener(BaseActivity baseActivity) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
+
+            reference = new WeakReference<>(baseActivity);
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "onReceive");
+
+            final String action = intent.getAction();
+
+            if (action == null) {
+                return;
+            }
+
+            switch (action) {
+                case NyaaUtils.SERVICE_EXIT:
+                    reference.get().bound = false;
+                    break;
+                default:
+                    if (BuildConfig.DEBUG) Log.e(TAG, "Unknown action: " + action);
+            }
+        }
     }
 }

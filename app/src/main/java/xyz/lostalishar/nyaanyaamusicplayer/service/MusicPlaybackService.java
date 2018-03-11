@@ -195,6 +195,7 @@ public class MusicPlaybackService extends Service implements
         if (BuildConfig.DEBUG) Log.d(TAG, "Action: " + action + " called");
 
         if (ACTION_SHUTDOWN.equals(action)) {
+            NyaaUtils.notifyChange(this, NyaaUtils.SERVICE_EXIT);
             stopSelf();
             return START_NOT_STICKY;
         }
