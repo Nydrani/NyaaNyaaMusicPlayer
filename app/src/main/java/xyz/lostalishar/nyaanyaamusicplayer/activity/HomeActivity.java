@@ -68,6 +68,14 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
     }
 
     @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onPostCreate");
+        super.onPostCreate(savedInstanceState);
+
+        loadFragments();
+    }
+
+    @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onRestoreInstanceState");
         super.onRestoreInstanceState(savedInstanceState);
@@ -201,11 +209,8 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
     // Helper functions
     //=========================================================================
 
-    // initialisation code
-    @Override
-    protected void initialise() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "initialise");
-        super.initialise();
+    private void loadFragments() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "loadFragments");
 
         setBaseFragment(libraryFragment);
         setSlidingFragment(musicQueueFragment);

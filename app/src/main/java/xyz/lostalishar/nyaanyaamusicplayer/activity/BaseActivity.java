@@ -48,12 +48,6 @@ public abstract class BaseActivity extends AppCompatActivity implements CabHolde
     protected void onStart() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onStart");
         super.onStart();
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onStart");
-        super.onPostCreate(savedInstanceState);
 
         // check if app has all the necessary permissions
         if (NyaaUtils.needsPermissions(this)) {
