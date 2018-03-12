@@ -199,6 +199,15 @@ public class MiniPlayerFragment extends Fragment {
         }
     }
 
+    public void setAlpha(float alpha) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setAlpha");
+
+        View rootView = getView();
+        if (rootView != null) {
+            rootView.setAlpha(alpha);
+        }
+    }
+
     private void updateMetaUI() {
         if (BuildConfig.DEBUG) Log.d(TAG, "updateMetaUI");
 

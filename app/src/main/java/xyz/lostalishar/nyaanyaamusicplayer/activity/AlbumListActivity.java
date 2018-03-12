@@ -33,11 +33,6 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
 
     private SlidingUpPanelLayout slidingUpPanelLayout;
 
-    private Fragment musicQueueFragment;
-    private Fragment albumListFragment;
-    private MiniPlayerFragment miniPlayerFragment;
-    private Fragment slidingMiniPlayerFragment;
-
 
     //=========================================================================
     // Activity lifecycle
@@ -53,18 +48,12 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // setup fragments
-        long chosenId = MusicPlaybackService.UNKNOWN_ID;
+        // load bundle data
         String chosenName = getString(R.string.app_name);
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            chosenId = extras.getLong("albumId");
             chosenName = extras.getString("albumName");
         }
-        albumListFragment = AlbumListFragment.newInstance(chosenId);
-        musicQueueFragment = MusicQueueFragment.newInstance();
-        miniPlayerFragment = MiniPlayerFragment.newInstance();
-        slidingMiniPlayerFragment = MiniPlayerFragment.newInstance();
 
         // set up actionbar
         ActionBar actionBar = getSupportActionBar();
@@ -72,6 +61,9 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(chosenName);
         }
+
+        // load fragments
+        loadFragments();
     }
 
 
@@ -146,11 +138,12 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
     public void onPanelSlide(View panel, float slideOffset) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onPanelSlide");
 
-        View miniPlayerView = miniPlayerFragment.getView();
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = getMiniPlayerFragment(fm);
+        MiniPlayerFragment miniPlayerFragment = (MiniPlayerFragment) fragment;
 
-        if (miniPlayerView != null) {
-            miniPlayerView.setAlpha(1.0f - slideOffset);
-        }
+        // update transparency
+        miniPlayerFragment.setAlpha(1.0f - slideOffset);
     }
 
 
@@ -191,16 +184,20 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
     // Helper functions
     //=========================================================================
 
-    // initialisation code
-    @Override
-    protected void initialise() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "initialise");
-        super.initialise();
+    private void loadFragments() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "loadFragments");
 
-        setBaseFragment(albumListFragment);
-        setSlidingFragment(musicQueueFragment);
-        setMiniPlayerFragment(miniPlayerFragment);
-        setSlidingMiniPlayerFragment(slidingMiniPlayerFragment);
+        // setup fragments
+        long chosenId = MusicPlaybackService.UNKNOWN_ID;
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            chosenId = extras.getLong("albumId");
+        }
+
+        setBaseFragment(AlbumListFragment.newInstance(chosenId));
+        setSlidingFragment(MusicQueueFragment.newInstance());
+        setMiniPlayerFragment(MiniPlayerFragment.newInstance());
+        setSlidingMiniPlayerFragment(MiniPlayerFragment.newInstance());
     }
 
     /*
@@ -359,6 +356,7 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
         FragmentManager fm = getSupportFragmentManager();
         BaseFragment baseFragment = (BaseFragment) getBaseFragment(fm);
         BaseFragment slidingFragment = (BaseFragment) getSlidingFragment(fm);
+        MiniPlayerFragment miniPlayerFragment = (MiniPlayerFragment) getMiniPlayerFragment(fm);
 
         switch (state) {
             case COLLAPSED:

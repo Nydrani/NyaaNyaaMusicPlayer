@@ -34,11 +34,6 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
 
     private SlidingUpPanelLayout slidingUpPanelLayout;
 
-    private Fragment libraryFragment;
-    private Fragment musicQueueFragment;
-    private MiniPlayerFragment miniPlayerFragment;
-    private Fragment slidingMiniPlayerFragment;
-
     private MediaStoreObserver mediaStoreObserver;
 
 
@@ -56,40 +51,12 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // setup the fragments
-        libraryFragment = LibraryFragment.newInstance();
-        musicQueueFragment = MusicQueueFragment.newInstance();
-        miniPlayerFragment = MiniPlayerFragment.newInstance();
-        slidingMiniPlayerFragment = MiniPlayerFragment.newInstance();
-
         // setup a content observer
         mediaStoreObserver = new MediaStoreObserver(new Handler());
         getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, mediaStoreObserver);
-    }
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onPostCreate");
-        super.onPostCreate(savedInstanceState);
-
+        // load fragments
         loadFragments();
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onRestoreInstanceState");
-        super.onRestoreInstanceState(savedInstanceState);
-
-        libraryFragment = getSupportFragmentManager().getFragment(savedInstanceState, "libraryFragment");
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onSaveInstanceState");
-        super.onSaveInstanceState(outState);
-
-        //Save the fragment's instance
-        getSupportFragmentManager().putFragment(outState, "libraryFragment", libraryFragment);
     }
 
     @Override
@@ -169,11 +136,12 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
     public void onPanelSlide(View panel, float slideOffset) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onPanelSlide");
 
-        View miniPlayerView = miniPlayerFragment.getView();
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = getMiniPlayerFragment(fm);
+        MiniPlayerFragment miniPlayerFragment = (MiniPlayerFragment) fragment;
 
-        if (miniPlayerView != null) {
-            miniPlayerView.setAlpha(1.0f - slideOffset);
-        }
+        // update transparency
+        miniPlayerFragment.setAlpha(1.0f - slideOffset);
     }
 
 
@@ -212,10 +180,11 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
     private void loadFragments() {
         if (BuildConfig.DEBUG) Log.d(TAG, "loadFragments");
 
-        setBaseFragment(libraryFragment);
-        setSlidingFragment(musicQueueFragment);
-        setMiniPlayerFragment(miniPlayerFragment);
-        setSlidingMiniPlayerFragment(slidingMiniPlayerFragment);
+        // setup the fragments
+        setBaseFragment(LibraryFragment.newInstance());
+        setSlidingFragment(MusicQueueFragment.newInstance());
+        setMiniPlayerFragment(MiniPlayerFragment.newInstance());
+        setSlidingMiniPlayerFragment(MiniPlayerFragment.newInstance());
     }
 
     /**
@@ -375,6 +344,7 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
         FragmentManager fm = getSupportFragmentManager();
         LibraryFragment libraryFragment = (LibraryFragment) getBaseFragment(fm);
         BaseFragment slidingFragment = (BaseFragment) getSlidingFragment(fm);
+        MiniPlayerFragment miniPlayerFragment = (MiniPlayerFragment) getMiniPlayerFragment(fm);
 
         switch (state) {
             case COLLAPSED:
