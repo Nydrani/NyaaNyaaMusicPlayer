@@ -23,6 +23,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.LibraryPagerAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.interfaces.CabHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
+import xyz.lostalishar.nyaanyaamusicplayer.util.PreferenceUtils;
 
 /**
  * Fragment containing entire list of music on device
@@ -113,6 +114,30 @@ public class LibraryFragment extends Fragment {
         tabLayout.setupWithViewPager(viewPager);
 
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onViewCreated");
+        super.onViewCreated(view, savedInstanceState);
+
+        viewPager.setCurrentItem(PreferenceUtils.loadCurViewPagerPosition(getActivity()));
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if (state == ViewPager.SCROLL_STATE_IDLE) {
+                    PreferenceUtils.saveCurViewPagerPosition(getActivity(), viewPager.getCurrentItem());
+                }
+            }
+        });
     }
 
     @Override

@@ -25,6 +25,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.MusicAdapter;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.ArtistListLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
+import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 
 /**
@@ -132,8 +133,13 @@ public class ArtistListFragment extends BaseFragment implements LoaderManager.Lo
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateLoader");
 
         Activity activity = getActivity();
+        Bundle bundle = getArguments();
+        long artistId = MusicPlaybackService.UNKNOWN_ID;
+        if (bundle != null) {
+            artistId = bundle.getLong("artistId");
+        }
 
-        return new ArtistListLoader(activity, getArguments().getLong("artistId"));
+        return new ArtistListLoader(activity, artistId);
     }
 
     @Override

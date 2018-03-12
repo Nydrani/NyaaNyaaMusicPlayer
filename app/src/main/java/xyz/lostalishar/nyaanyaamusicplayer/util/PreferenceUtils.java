@@ -16,9 +16,12 @@ public class PreferenceUtils {
     private static final String TAG = PreferenceUtils.class.getSimpleName();
     private static final String SETTINGS_PREFERENCES = "Settings";
     private static final String SERVICE_PREFERENCES = "Service";
+    private static final String STORAGE_PREFERENCES = "Storage";
 
     public static final String SERVICE_QUEUE_PLAYING_POS = "cur_queue_music_pos";
     public static final String SERVICE_QUEUE_PLAYING_SEEKPOS = "cur_queue_music_seekpos";
+
+    public static final String STORAGE_VIEW_PAGER_POSITION = "view_pager_position";
 
     public PreferenceUtils() {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
@@ -26,7 +29,7 @@ public class PreferenceUtils {
 
 
     //=========================================================================
-    // Exposed functions
+    // Exposed functions - Service Preferences
     //=========================================================================
 
     public static void saveCurPlaying(Context context, MusicPlaybackState state) {
@@ -60,4 +63,34 @@ public class PreferenceUtils {
         return state;
     }
 
+
+    //=========================================================================
+    // Exposed functions - Storage Preferences
+    //=========================================================================
+
+    public static void saveCurViewPagerPosition(Context context, int position) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "saveCurViewPagerPosition");
+
+        SharedPreferences.Editor editor = context.getSharedPreferences(STORAGE_PREFERENCES, Context.MODE_PRIVATE)
+                .edit();
+
+        editor.putInt(STORAGE_VIEW_PAGER_POSITION, position);
+
+        editor.apply();
+    }
+
+    public static int loadCurViewPagerPosition(Context context) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "loadCurViewPagerPosition");
+
+        SharedPreferences preferences = context.getSharedPreferences(STORAGE_PREFERENCES, Context.MODE_PRIVATE);
+        int position = 0;
+
+        try {
+            position = preferences.getInt(STORAGE_VIEW_PAGER_POSITION, 0);
+        } catch (ClassCastException e) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "Incorrect type found for preference");
+        }
+
+        return position;
+    }
 }
