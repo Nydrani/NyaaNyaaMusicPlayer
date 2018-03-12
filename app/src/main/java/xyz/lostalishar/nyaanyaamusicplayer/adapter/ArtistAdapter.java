@@ -1,5 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,7 +47,7 @@ public class ArtistAdapter extends BaseAdapter<ArtistViewHolder> {
     // ========================================================================
 
     @Override
-    public ArtistViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public @NonNull ArtistViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateViewHolder");
 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -56,7 +57,7 @@ public class ArtistAdapter extends BaseAdapter<ArtistViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ArtistViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ArtistViewHolder holder, int position) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onBindViewHolder");
 
         Artist artist = getArtistList().get(position);

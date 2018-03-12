@@ -11,8 +11,8 @@ import xyz.lostalishar.nyaanyaamusicplayer.adapter.BaseAdapter;
 
 /**
  * ViewHolder for music list
- * @TODO rewrite this completely to not be a hierarchical structure
  */
+// @TODO rewrite this completely to not be a hierarchical structure
 
 public abstract class BaseMusicViewHolder extends RecyclerView.ViewHolder
         implements View.OnClickListener, View.OnLongClickListener {

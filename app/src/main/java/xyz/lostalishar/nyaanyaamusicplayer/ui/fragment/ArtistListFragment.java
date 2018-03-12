@@ -1,9 +1,10 @@
 package xyz.lostalishar.nyaanyaamusicplayer.ui.fragment;
 
 import android.app.Activity;
-import android.app.LoaderManager;
-import android.content.Loader;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -64,7 +65,7 @@ public class ArtistListFragment extends BaseFragment implements LoaderManager.Lo
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
 
@@ -127,7 +128,7 @@ public class ArtistListFragment extends BaseFragment implements LoaderManager.Lo
     //=========================================================================
 
     @Override
-    public Loader<List<Music>> onCreateLoader(int id, Bundle args) {
+    public @NonNull Loader<List<Music>> onCreateLoader(int id, Bundle args) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateLoader");
 
         Activity activity = getActivity();
@@ -136,7 +137,7 @@ public class ArtistListFragment extends BaseFragment implements LoaderManager.Lo
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Music>> loader, List<Music> data) {
+    public void onLoadFinished(@NonNull Loader<List<Music>> loader, List<Music> data) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadFinished");
 
         cabHolder.closeCab();
@@ -144,7 +145,7 @@ public class ArtistListFragment extends BaseFragment implements LoaderManager.Lo
     }
 
     @Override
-    public void onLoaderReset(Loader<List<Music>> loader) {
+    public void onLoaderReset(@NonNull Loader<List<Music>> loader) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
         cabHolder.closeCab();

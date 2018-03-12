@@ -1,8 +1,7 @@
 package xyz.lostalishar.nyaanyaamusicplayer.loader;
 
-
-import android.content.AsyncTaskLoader;
 import android.content.Context;
+import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;

@@ -1,12 +1,12 @@
 package xyz.lostalishar.nyaanyaamusicplayer.activity;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -80,7 +80,7 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
         if (BuildConfig.DEBUG) Log.d(TAG, "onRestoreInstanceState");
         super.onRestoreInstanceState(savedInstanceState);
 
-        libraryFragment = getFragmentManager().getFragment(savedInstanceState, "libraryFragment");
+        libraryFragment = getSupportFragmentManager().getFragment(savedInstanceState, "libraryFragment");
     }
 
     @Override
@@ -89,7 +89,7 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
         super.onSaveInstanceState(outState);
 
         //Save the fragment's instance
-        getFragmentManager().putFragment(outState, "libraryFragment", libraryFragment);
+        getSupportFragmentManager().putFragment(outState, "libraryFragment", libraryFragment);
     }
 
     @Override
@@ -226,7 +226,7 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
     private void setBaseFragment(Fragment fragment) {
         if (BuildConfig.DEBUG) Log.d(TAG, "setBaseFragment");
 
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         Fragment element = getBaseFragment(fm);
 
         // check for "remove fragment" and null fragment in container
@@ -251,7 +251,7 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
     private void setSlidingFragment(Fragment fragment) {
         if (BuildConfig.DEBUG) Log.d(TAG, "setSlidingFragment");
 
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         Fragment element = getSlidingFragment(fm);
 
         // check for "remove fragment" and null fragment in container
@@ -276,7 +276,7 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
     private void setMiniPlayerFragment(Fragment fragment) {
         if (BuildConfig.DEBUG) Log.d(TAG, "setMiniPlayerFragment");
 
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         Fragment element = getMiniPlayerFragment(fm);
 
         // check for "remove fragment" and null fragment in container
@@ -301,7 +301,7 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
     private void setSlidingMiniPlayerFragment(Fragment fragment) {
         if (BuildConfig.DEBUG) Log.d(TAG, "setSlidingMiniPlayerFragment");
 
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         Fragment element = getSlidingMiniPlayerFragment(fm);
 
         // check for "remove fragment" and null fragment in container
@@ -372,7 +372,7 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
     private void updateUI(SlidingUpPanelLayout.PanelState state) {
         if (BuildConfig.DEBUG) Log.d(TAG, "updateUI");
 
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         LibraryFragment baseFragment = (LibraryFragment)getBaseFragment(fm);
         BaseFragment slidingFragment = (BaseFragment)getSlidingFragment(fm);
         View miniPlayerView = miniPlayerFragment.getView();

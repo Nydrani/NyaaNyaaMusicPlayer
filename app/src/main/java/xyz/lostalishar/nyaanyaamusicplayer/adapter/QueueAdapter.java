@@ -1,5 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,7 +47,7 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
     // ========================================================================
 
     @Override
-    public QueueViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public @NonNull QueueViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreateViewHolder");
 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -56,7 +57,7 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(QueueViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull QueueViewHolder holder, int position) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onBindViewHolder");
 
         Music music = musicList.get(position);

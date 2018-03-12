@@ -1,8 +1,5 @@
 package xyz.lostalishar.nyaanyaamusicplayer.activity;
 
-import android.app.DialogFragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +8,9 @@ import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -206,7 +206,7 @@ public abstract class BaseActivity extends AppCompatActivity implements CabHolde
     protected void setDialogFragment(DialogFragment dialog) {
         if (BuildConfig.DEBUG) Log.d(TAG, "setDialogFragment");
 
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.addToBackStack(null);
 
