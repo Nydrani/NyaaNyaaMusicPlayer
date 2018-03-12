@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -156,14 +157,18 @@ public class LibraryFragment extends Fragment {
     // helper functions
     //=========================================================================
 
-    // @TODO fix this later
-    /*
     public void setChildrenOptionsMenu(boolean hasMenu) {
-        for (LibraryPagerAdapter.PageHolder pageHolder : pageList) {
-            pageHolder.fragment.setHasOptionsMenu(hasMenu);
+        if (BuildConfig.DEBUG) Log.d(TAG, "setChildrenOptionsMenu");
+
+        FragmentManager fm = getChildFragmentManager();
+
+        for (LibraryPagerAdapter.PageHolder page : adapter.holderList) {
+            Fragment fragment = fm.findFragmentByTag(page.tag);
+            if (fragment != null) {
+                fragment.setHasOptionsMenu(hasMenu);
+            }
         }
     }
-    */
 
 
     //=========================================================================

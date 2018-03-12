@@ -190,6 +190,15 @@ public class MiniPlayerFragment extends Fragment {
     // Helper functions
     //=========================================================================
 
+    public void setVisibility(int visibility) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setVisibility");
+
+        View rootView = getView();
+        if (rootView != null) {
+            rootView.setVisibility(visibility);
+        }
+    }
+
     private void updateMetaUI() {
         if (BuildConfig.DEBUG) Log.d(TAG, "updateMetaUI");
 

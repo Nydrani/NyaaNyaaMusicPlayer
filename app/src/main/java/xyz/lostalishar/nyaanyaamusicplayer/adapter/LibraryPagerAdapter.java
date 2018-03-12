@@ -1,10 +1,12 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +24,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicListFragment;
 public class LibraryPagerAdapter extends FragmentPagerAdapter {
     private static final String TAG = LibraryPagerAdapter.class.getSimpleName();
 
-    private final List<PageHolder> holderList;
+    public final List<PageHolder> holderList;
 
     public static final int LIST_FRAGMENT = 0;
     public static final int ALBUM_FRAGMENT = 1;
@@ -58,10 +60,31 @@ public class LibraryPagerAdapter extends FragmentPagerAdapter {
                 break;
             default:
                 if (BuildConfig.DEBUG) Log.e(TAG,
-                        "Can't get LibraryPageFragment with position: " + position);
+                        "Can't create LibraryPageFragment for position: " + position);
         }
 
         return fragment;
+    }
+
+    @Override
+    public @NonNull Object instantiateItem(ViewGroup container, int position) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "instantiateItem");
+        Object object = super.instantiateItem(container, position);
+
+        Fragment fragment = null;
+        // save the appropriate reference depending on position
+        switch (position) {
+            case LIST_FRAGMENT:
+            case ALBUM_FRAGMENT:
+            case ARTIST_FRAGMENT:
+                fragment = (Fragment)object;
+        }
+
+        if (fragment != null) {
+            holderList.get(position).tag = fragment.getTag();
+        }
+
+        return object;
     }
 
     @Override
@@ -103,14 +126,16 @@ public class LibraryPagerAdapter extends FragmentPagerAdapter {
         return pageList;
     }
 
+
     // ========================================================================
     // Internal classes
     // ========================================================================
 
-    private static class PageHolder {
+    public static class PageHolder {
         private static final String TAG = PageHolder.class.getSimpleName();
 
         public String name;
+        public String tag;
 
         public PageHolder() {
             if (BuildConfig.DEBUG) Log.d(TAG, "constructor");

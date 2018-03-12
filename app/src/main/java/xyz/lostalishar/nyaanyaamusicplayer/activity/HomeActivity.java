@@ -36,7 +36,7 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
 
     private Fragment libraryFragment;
     private Fragment musicQueueFragment;
-    private Fragment miniPlayerFragment;
+    private MiniPlayerFragment miniPlayerFragment;
     private Fragment slidingMiniPlayerFragment;
 
     private MediaStoreObserver mediaStoreObserver;
@@ -373,29 +373,22 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
         if (BuildConfig.DEBUG) Log.d(TAG, "updateUI");
 
         FragmentManager fm = getSupportFragmentManager();
-        //LibraryFragment libraryFragment = (LibraryFragment)getBaseFragment(fm);
-        BaseFragment slidingFragment = (BaseFragment)getSlidingFragment(fm);
-        View miniPlayerView = miniPlayerFragment.getView();
+        LibraryFragment libraryFragment = (LibraryFragment) getBaseFragment(fm);
+        BaseFragment slidingFragment = (BaseFragment) getSlidingFragment(fm);
 
-        if (state == SlidingUpPanelLayout.PanelState.COLLAPSED) {
-            slidingFragment.setHasOptionsMenu(false);
+        switch (state) {
+            case COLLAPSED:
+                slidingFragment.setHasOptionsMenu(false);
+                libraryFragment.setChildrenOptionsMenu(true);
+                break;
+            case EXPANDED:
+                slidingFragment.setHasOptionsMenu(true);
+                libraryFragment.setChildrenOptionsMenu(false);
 
-            if (miniPlayerView != null) {
-                miniPlayerView.setVisibility(View.VISIBLE);
-            }
-        } else if (state == SlidingUpPanelLayout.PanelState.EXPANDED) {
-            //libraryFragment.setChildrenOptionsMenu(false);
-
-            if (miniPlayerView != null) {
-                miniPlayerView.setVisibility(View.GONE);
-            }
-        } else {
-            //libraryFragment.setChildrenOptionsMenu(true);
-            slidingFragment.setHasOptionsMenu(true);
-
-            if (miniPlayerView != null) {
-                miniPlayerView.setVisibility(View.VISIBLE);
-            }
+                miniPlayerFragment.setVisibility(View.GONE);
+                break;
+            default:
+                miniPlayerFragment.setVisibility(View.VISIBLE);
         }
     }
 }
