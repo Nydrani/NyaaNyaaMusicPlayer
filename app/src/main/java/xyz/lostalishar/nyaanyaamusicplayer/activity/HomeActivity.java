@@ -373,7 +373,7 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
         if (BuildConfig.DEBUG) Log.d(TAG, "updateUI");
 
         FragmentManager fm = getSupportFragmentManager();
-        LibraryFragment baseFragment = (LibraryFragment)getBaseFragment(fm);
+        //LibraryFragment libraryFragment = (LibraryFragment)getBaseFragment(fm);
         BaseFragment slidingFragment = (BaseFragment)getSlidingFragment(fm);
         View miniPlayerView = miniPlayerFragment.getView();
 
@@ -384,13 +384,13 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
                 miniPlayerView.setVisibility(View.VISIBLE);
             }
         } else if (state == SlidingUpPanelLayout.PanelState.EXPANDED) {
-            baseFragment.setChildrenOptionsMenu(false);
+            //libraryFragment.setChildrenOptionsMenu(false);
 
             if (miniPlayerView != null) {
                 miniPlayerView.setVisibility(View.GONE);
             }
         } else {
-            baseFragment.setChildrenOptionsMenu(true);
+            //libraryFragment.setChildrenOptionsMenu(true);
             slidingFragment.setHasOptionsMenu(true);
 
             if (miniPlayerView != null) {

@@ -16,8 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
@@ -32,7 +30,6 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 public class LibraryFragment extends Fragment {
     private static final String TAG = LibraryFragment.class.getSimpleName();
 
-    public List<LibraryPagerAdapter.PageHolder> pageList;
     private LibraryPagerAdapter adapter;
     private ViewPager viewPager;
     private TabLayout.OnTabSelectedListener tabSelectedListener;
@@ -41,10 +38,6 @@ public class LibraryFragment extends Fragment {
 
     private IntentFilter filter;
     private MetaChangedListener metaChangedListener;
-
-    public static final int LIST_FRAGMENT = 0;
-    public static final int ALBUM_FRAGMENT = 1;
-    public static final int ARTIST_FRAGMENT = 2;
 
     public static LibraryFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -80,8 +73,7 @@ public class LibraryFragment extends Fragment {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
-        pageList = generatePageList();
-        adapter = new LibraryPagerAdapter(getChildFragmentManager(), pageList);
+        adapter = new LibraryPagerAdapter(getChildFragmentManager(), getActivity());
 
         tabSelectedListener = new TabLayout.OnTabSelectedListener() {
             @Override
@@ -164,34 +156,14 @@ public class LibraryFragment extends Fragment {
     // helper functions
     //=========================================================================
 
-    private List<LibraryPagerAdapter.PageHolder> generatePageList() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "generatePageList");
-
-        List<LibraryPagerAdapter.PageHolder> pageList = new ArrayList<>();
-
-        LibraryPagerAdapter.PageHolder page = new LibraryPagerAdapter.PageHolder();
-        page.fragment = MusicListFragment.newInstance();
-        page.name = getString(R.string.fragment_name_music_list);
-        pageList.add(page);
-
-        page = new LibraryPagerAdapter.PageHolder();
-        page.fragment = AlbumFragment.newInstance();
-        page.name = getString(R.string.fragment_name_album);
-        pageList.add(page);
-
-        page = new LibraryPagerAdapter.PageHolder();
-        page.fragment = ArtistFragment.newInstance();
-        page.name = getString(R.string.fragment_name_artist);
-        pageList.add(page);
-
-        return pageList;
-    }
-
+    // @TODO fix this later
+    /*
     public void setChildrenOptionsMenu(boolean hasMenu) {
         for (LibraryPagerAdapter.PageHolder pageHolder : pageList) {
             pageHolder.fragment.setHasOptionsMenu(hasMenu);
         }
     }
+    */
 
 
     //=========================================================================

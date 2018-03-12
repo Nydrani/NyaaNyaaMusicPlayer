@@ -1,13 +1,19 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
+import xyz.lostalishar.nyaanyaamusicplayer.R;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.AlbumFragment;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.ArtistFragment;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicListFragment;
 
 /**
  * FragmentPager adapter used for the swipe tabs in the home screen
@@ -18,11 +24,15 @@ public class LibraryPagerAdapter extends FragmentPagerAdapter {
 
     private final List<PageHolder> holderList;
 
-    public LibraryPagerAdapter(FragmentManager fm, List<PageHolder> holderList) {
+    public static final int LIST_FRAGMENT = 0;
+    public static final int ALBUM_FRAGMENT = 1;
+    public static final int ARTIST_FRAGMENT = 2;
+
+    public LibraryPagerAdapter(FragmentManager fm, Context context) {
         super(fm);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        this.holderList = holderList;
+        this.holderList = generatePageList(context);
     }
 
 
@@ -34,9 +44,24 @@ public class LibraryPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         if (BuildConfig.DEBUG) Log.d(TAG, "getItem");
 
-        PageHolder page = holderList.get(position);
+        Fragment fragment = null;
 
-        return page.fragment;
+        switch (position) {
+            case LIST_FRAGMENT:
+                fragment = MusicListFragment.newInstance();
+                break;
+            case ALBUM_FRAGMENT:
+                fragment = AlbumFragment.newInstance();
+                break;
+            case ARTIST_FRAGMENT:
+                fragment = ArtistFragment.newInstance();
+                break;
+            default:
+                if (BuildConfig.DEBUG) Log.e(TAG,
+                        "Can't get LibraryPageFragment with position: " + position);
+        }
+
+        return fragment;
     }
 
     @Override
@@ -54,14 +79,37 @@ public class LibraryPagerAdapter extends FragmentPagerAdapter {
     }
 
 
+    //=========================================================================
+    // helper functions
+    //=========================================================================
+
+    private List<LibraryPagerAdapter.PageHolder> generatePageList(Context context) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "generatePageList");
+
+        List<PageHolder> pageList = new ArrayList<>();
+
+        PageHolder page = new PageHolder();
+        page.name = context.getString(R.string.fragment_name_music_list);
+        pageList.add(page);
+
+        page = new PageHolder();
+        page.name = context.getString(R.string.fragment_name_album);
+        pageList.add(page);
+
+        page = new PageHolder();
+        page.name = context.getString(R.string.fragment_name_artist);
+        pageList.add(page);
+
+        return pageList;
+    }
+
     // ========================================================================
     // Internal classes
     // ========================================================================
 
-    public static class PageHolder {
+    private static class PageHolder {
         private static final String TAG = PageHolder.class.getSimpleName();
 
-        public Fragment fragment;
         public String name;
 
         public PageHolder() {
