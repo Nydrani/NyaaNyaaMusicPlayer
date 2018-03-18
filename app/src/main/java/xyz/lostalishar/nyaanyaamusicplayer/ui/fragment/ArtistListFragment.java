@@ -91,6 +91,14 @@ public class ArtistListFragment extends BaseFragment implements LoaderManager.Lo
         getLoaderManager().initLoader(0, null, this);
     }
 
+    @Override
+    public void onResume() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
+        super.onResume();
+
+        refreshList();
+    }
+
 
     //=========================================================================
     // Options menu callbacks
@@ -156,6 +164,17 @@ public class ArtistListFragment extends BaseFragment implements LoaderManager.Lo
 
         cabHolder.closeCab();
         adapter.swap(null);
+    }
+
+
+    //=========================================================================
+    // MediaStoreChangedListener implementation
+    //=========================================================================
+
+    public void onMediaStoreChanged() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onMediaStoreChanged");
+
+        refreshList();
     }
 
 

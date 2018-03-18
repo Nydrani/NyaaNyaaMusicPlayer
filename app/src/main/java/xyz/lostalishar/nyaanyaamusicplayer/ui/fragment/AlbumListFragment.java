@@ -87,7 +87,16 @@ public class AlbumListFragment extends BaseFragment implements LoaderManager.Loa
     public void onActivityCreated(Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
+
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public void onResume() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
+        super.onResume();
+
+        refreshList();
     }
 
 
@@ -155,6 +164,17 @@ public class AlbumListFragment extends BaseFragment implements LoaderManager.Loa
 
         cabHolder.closeCab();
         adapter.swap(null);
+    }
+
+
+    //=========================================================================
+    // MediaStoreChangedListener implementation
+    //=========================================================================
+
+    public void onMediaStoreChanged() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onMediaStoreChanged");
+
+        refreshList();
     }
 
 

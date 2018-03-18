@@ -234,6 +234,18 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
 
 
     //=========================================================================
+    // MediaStoreChangedListener implementation
+    //=========================================================================
+
+    public void onMediaStoreChanged() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onMediaStoreChanged");
+
+        // refresh in case an update to the media store changed the queue
+        refreshQueue();
+    }
+
+
+    //=========================================================================
     // Helper functions
     //=========================================================================
 

@@ -1,8 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.activity;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,7 +19,6 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.interfaces.OnViewInflatedListener;
-import xyz.lostalishar.nyaanyaamusicplayer.observer.MediaStoreObserver;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.LibraryFragment;
@@ -33,8 +30,6 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
     private static final String TAG = HomeActivity.class.getSimpleName();
 
     private SlidingUpPanelLayout slidingUpPanelLayout;
-
-    private MediaStoreObserver mediaStoreObserver;
 
 
     //=========================================================================
@@ -51,20 +46,8 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // setup a content observer
-        mediaStoreObserver = new MediaStoreObserver(new Handler());
-        getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, mediaStoreObserver);
-
         // load fragments
         loadFragments();
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
-        super.onDestroy();
-
-        getContentResolver().unregisterContentObserver(mediaStoreObserver);
     }
 
 

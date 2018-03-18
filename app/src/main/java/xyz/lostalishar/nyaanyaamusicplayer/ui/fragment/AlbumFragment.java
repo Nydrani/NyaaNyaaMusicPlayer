@@ -95,6 +95,14 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
         getLoaderManager().initLoader(0, null, this);
     }
 
+    @Override
+    public void onResume() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
+        super.onResume();
+
+        refreshList();
+    }
+
 
     //=========================================================================
     // Options menu callbacks
@@ -152,6 +160,17 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
 
         cabHolder.closeCab();
         adapter.swap(null);
+    }
+
+
+    //=========================================================================
+    // MediaStoreChangedListener implementation
+    //=========================================================================
+
+    public void onMediaStoreChanged() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onMediaStoreChanged");
+
+        refreshList();
     }
 
 

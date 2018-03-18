@@ -24,6 +24,7 @@ import java.util.List;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.MusicAdapter;
+import xyz.lostalishar.nyaanyaamusicplayer.interfaces.OnMediaStoreChangedListener;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicListLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
@@ -32,7 +33,8 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
  * Fragment containing entire list of music on device
  */
 
-public class MusicListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Music>> {
+public class MusicListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Music>>,
+        OnMediaStoreChangedListener {
     private static final String TAG = MusicListFragment.class.getSimpleName();
 
     private TextView emptyView;
@@ -118,6 +120,14 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
         getLoaderManager().initLoader(0, null, this);
     }
 
+    @Override
+    public void onResume() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
+        super.onResume();
+
+        refreshList();
+    }
+
 
     //=========================================================================
     // Options menu callbacks
@@ -178,6 +188,17 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
 
         cabHolder.closeCab();
         adapter.swap(null);
+    }
+
+
+    //=========================================================================
+    // MediaStoreChangedListener implementation
+    //=========================================================================
+
+    public void onMediaStoreChanged() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onMediaStoreChanged");
+
+        refreshList();
     }
 
 

@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
+import xyz.lostalishar.nyaanyaamusicplayer.interfaces.OnMediaStoreChangedListener;
 
 /**
  * ContentObserver on MediaStore to update list if needed
@@ -14,27 +15,31 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 public class MediaStoreObserver extends ContentObserver {
     private static final String TAG = MediaStoreObserver.class.getSimpleName();
 
-    public MediaStoreObserver(Handler handler) {
+    private OnMediaStoreChangedListener listener;
+
+    public MediaStoreObserver(Handler handler, OnMediaStoreChangedListener listener) {
         super(handler);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
+
+        this.listener = listener;
     }
 
 
     //=========================================================================
-    // ContentObserver implementation
+    // ContentObserver overrides
     //=========================================================================
 
     @Override
     public void onChange(boolean selfChange) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onChange");
 
-        onChange(selfChange, null);
+        listener.onMediaStoreChanged();
     }
 
     @Override
     public void onChange(boolean selfChange, Uri uri) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onChange");
 
-        if (BuildConfig.DEBUG) Log.d(TAG, "something changed");
+        onChange(selfChange);
     }
 }

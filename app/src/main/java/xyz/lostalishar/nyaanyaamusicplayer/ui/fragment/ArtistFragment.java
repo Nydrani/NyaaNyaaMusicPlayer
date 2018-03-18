@@ -2,6 +2,8 @@ package xyz.lostalishar.nyaanyaamusicplayer.ui.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -23,14 +25,17 @@ import java.util.List;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.ArtistAdapter;
+import xyz.lostalishar.nyaanyaamusicplayer.interfaces.OnMediaStoreChangedListener;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.ArtistLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Artist;
+import xyz.lostalishar.nyaanyaamusicplayer.observer.MediaStoreObserver;
 
 /**
  * Fragment containing entire list of music on device
  */
 
-public class ArtistFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Artist>> {
+public class ArtistFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Artist>>,
+        OnMediaStoreChangedListener {
     private static final String TAG = ArtistFragment.class.getSimpleName();
 
     private TextView emptyView;
@@ -95,6 +100,14 @@ public class ArtistFragment extends BaseFragment implements LoaderManager.Loader
         getLoaderManager().initLoader(0, null, this);
     }
 
+    @Override
+    public void onResume() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
+        super.onResume();
+
+        refreshList();
+    }
+
 
     //=========================================================================
     // Options menu callbacks
@@ -150,9 +163,19 @@ public class ArtistFragment extends BaseFragment implements LoaderManager.Loader
     public void onLoaderReset(@NonNull Loader<List<Artist>> loader) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
-        // @TODO unsure if need to close cab here
         cabHolder.closeCab();
         adapter.swap(null);
+    }
+
+
+    //=========================================================================
+    // MediaStoreChangedListener implementation
+    //=========================================================================
+
+    public void onMediaStoreChanged() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onMediaStoreChanged");
+
+        refreshList();
     }
 
 
