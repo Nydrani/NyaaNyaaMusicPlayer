@@ -2,6 +2,7 @@ package xyz.lostalishar.nyaanyaamusicplayer.ui.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
@@ -24,7 +25,6 @@ import java.util.List;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.MusicAdapter;
-import xyz.lostalishar.nyaanyaamusicplayer.interfaces.OnMediaStoreChangedListener;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.MusicListLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
@@ -33,8 +33,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
  * Fragment containing entire list of music on device
  */
 
-public class MusicListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Music>>,
-        OnMediaStoreChangedListener {
+public class MusicListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Music>> {
     private static final String TAG = MusicListFragment.class.getSimpleName();
 
     private TextView emptyView;
@@ -59,13 +58,6 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
 
         adapter = new MusicAdapter(new ArrayList<Music>(), cabHolder);
-        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                emptyView.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
-            }
-        });
     }
 
     @Override
@@ -171,7 +163,7 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
 
         Activity activity = getActivity();
 
-        return new MusicListLoader(activity);
+        return new MusicListLoader(activity, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
     }
 
     @Override
@@ -180,6 +172,7 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
 
         cabHolder.closeCab();
         adapter.swap(data);
+        updateEmptyView();
     }
 
     @Override
@@ -187,24 +180,19 @@ public class MusicListFragment extends BaseFragment implements LoaderManager.Loa
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
         cabHolder.closeCab();
-        adapter.swap(null);
-    }
-
-
-    //=========================================================================
-    // MediaStoreChangedListener implementation
-    //=========================================================================
-
-    public void onMediaStoreChanged() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onMediaStoreChanged");
-
-        refreshList();
+        adapter.swap(new ArrayList<Music>());
     }
 
 
     //=========================================================================
     // Helper functions
     //=========================================================================
+
+    private void updateEmptyView() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updateEmptyView");
+
+        emptyView.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+    }
 
     private void refreshList() {
         if (BuildConfig.DEBUG) Log.d(TAG, "refreshList");

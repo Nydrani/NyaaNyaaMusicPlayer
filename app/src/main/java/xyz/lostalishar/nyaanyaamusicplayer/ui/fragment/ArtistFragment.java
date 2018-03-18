@@ -2,7 +2,6 @@ package xyz.lostalishar.nyaanyaamusicplayer.ui.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
@@ -25,17 +24,14 @@ import java.util.List;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.adapter.ArtistAdapter;
-import xyz.lostalishar.nyaanyaamusicplayer.interfaces.OnMediaStoreChangedListener;
 import xyz.lostalishar.nyaanyaamusicplayer.loader.ArtistLoader;
 import xyz.lostalishar.nyaanyaamusicplayer.model.Artist;
-import xyz.lostalishar.nyaanyaamusicplayer.observer.MediaStoreObserver;
 
 /**
  * Fragment containing entire list of music on device
  */
 
-public class ArtistFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Artist>>,
-        OnMediaStoreChangedListener {
+public class ArtistFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Artist>> {
     private static final String TAG = ArtistFragment.class.getSimpleName();
 
     private TextView emptyView;
@@ -59,13 +55,6 @@ public class ArtistFragment extends BaseFragment implements LoaderManager.Loader
         super.onCreate(savedInstanceState);
 
         adapter = new ArtistAdapter(new ArrayList<Artist>(), cabHolder);
-        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                emptyView.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
-            }
-        });
     }
 
     @Override
@@ -148,7 +137,7 @@ public class ArtistFragment extends BaseFragment implements LoaderManager.Loader
 
         Activity activity = getActivity();
 
-        return new ArtistLoader(activity);
+        return new ArtistLoader(activity, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
     }
 
     @Override
@@ -157,6 +146,7 @@ public class ArtistFragment extends BaseFragment implements LoaderManager.Loader
 
         cabHolder.closeCab();
         adapter.swap(data);
+        updateEmptyView();
     }
 
     @Override
@@ -164,24 +154,19 @@ public class ArtistFragment extends BaseFragment implements LoaderManager.Loader
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
         cabHolder.closeCab();
-        adapter.swap(null);
-    }
-
-
-    //=========================================================================
-    // MediaStoreChangedListener implementation
-    //=========================================================================
-
-    public void onMediaStoreChanged() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onMediaStoreChanged");
-
-        refreshList();
+        adapter.swap(new ArrayList<Artist>());
     }
 
 
     //=========================================================================
     // Helper functions
     //=========================================================================
+
+    private void updateEmptyView() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updateEmptyView");
+
+        emptyView.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+    }
 
     private void refreshList() {
         if (BuildConfig.DEBUG) Log.d(TAG, "refreshList");

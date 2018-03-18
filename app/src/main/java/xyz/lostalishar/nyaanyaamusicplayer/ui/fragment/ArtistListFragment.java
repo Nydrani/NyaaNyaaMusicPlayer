@@ -2,6 +2,7 @@ package xyz.lostalishar.nyaanyaamusicplayer.ui.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
@@ -16,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +37,9 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 public class ArtistListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<Music>> {
     private static final String TAG = ArtistListFragment.class.getSimpleName();
 
+    private TextView emptyView;
+
     public MusicAdapter adapter;
-    private RecyclerView.LayoutManager layout;
 
     public static ArtistListFragment newInstance(long albumId) {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -59,10 +62,7 @@ public class ArtistListFragment extends BaseFragment implements LoaderManager.Lo
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
-        Activity activity = getActivity();
         adapter = new MusicAdapter(new ArrayList<Music>(), cabHolder);
-
-        layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
     }
 
     @Override
@@ -73,8 +73,14 @@ public class ArtistListFragment extends BaseFragment implements LoaderManager.Lo
         Activity activity = getActivity();
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(activity,
                 DividerItemDecoration.VERTICAL);
+        RecyclerView.LayoutManager layout = new LinearLayoutManager(activity,
+                LinearLayoutManager.VERTICAL, false);
+
         View rootView = inflater.inflate(R.layout.list_base, container, false);
         RecyclerView recyclerView = rootView.findViewById(R.id.list_base_view);
+        emptyView = rootView.findViewById(R.id.empty_view);
+
+        emptyView.setText(R.string.no_music_found);
 
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(adapter);
@@ -147,7 +153,7 @@ public class ArtistListFragment extends BaseFragment implements LoaderManager.Lo
             artistId = bundle.getLong("artistId");
         }
 
-        return new ArtistListLoader(activity, artistId);
+        return new ArtistListLoader(activity, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, artistId);
     }
 
     @Override
@@ -156,6 +162,7 @@ public class ArtistListFragment extends BaseFragment implements LoaderManager.Lo
 
         cabHolder.closeCab();
         adapter.swap(data);
+        updateEmptyView();
     }
 
     @Override
@@ -163,24 +170,19 @@ public class ArtistListFragment extends BaseFragment implements LoaderManager.Lo
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
         cabHolder.closeCab();
-        adapter.swap(null);
-    }
-
-
-    //=========================================================================
-    // MediaStoreChangedListener implementation
-    //=========================================================================
-
-    public void onMediaStoreChanged() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onMediaStoreChanged");
-
-        refreshList();
+        adapter.swap(new ArrayList<Music>());
     }
 
 
     //=========================================================================
     // Helper functions
     //=========================================================================
+
+    private void updateEmptyView() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updateEmptyView");
+
+        emptyView.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+    }
 
     private void refreshList() {
         if (BuildConfig.DEBUG) Log.d(TAG, "refreshList");

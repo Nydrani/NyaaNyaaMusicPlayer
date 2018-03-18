@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
@@ -92,13 +93,6 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
         List<Music> queueList = new ArrayList<>();
 
         adapter = new QueueAdapter(queueList, cabHolder);
-        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                emptyView.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
-            }
-        });
 
         Activity activity = getActivity();
         layout = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
@@ -213,7 +207,7 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
 
         Activity activity = getActivity();
 
-        return new MusicQueueLoader(activity);
+        return new MusicQueueLoader(activity, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
     }
 
     @Override
@@ -222,6 +216,7 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
 
         cabHolder.closeCab();
         adapter.swap(data);
+        updateEmptyView();
     }
 
     @Override
@@ -229,25 +224,19 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
         cabHolder.closeCab();
-        adapter.swap(null);
-    }
-
-
-    //=========================================================================
-    // MediaStoreChangedListener implementation
-    //=========================================================================
-
-    public void onMediaStoreChanged() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onMediaStoreChanged");
-
-        // refresh in case an update to the media store changed the queue
-        refreshQueue();
+        adapter.swap(new ArrayList<Music>());
     }
 
 
     //=========================================================================
     // Helper functions
     //=========================================================================
+
+    private void updateEmptyView() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updateEmptyView");
+
+        emptyView.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+    }
 
     private void refreshQueue() {
         if (BuildConfig.DEBUG) Log.d(TAG, "refreshQueue");

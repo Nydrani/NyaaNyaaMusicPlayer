@@ -17,13 +17,13 @@ import xyz.lostalishar.nyaanyaamusicplayer.model.Artist;
  * Loads a list of Artist classes from the MediaStore cursor in the background
  */
 
-public class ArtistLoader extends CachedAsyncTaskLoader<List<Artist>> {
+public class ArtistLoader extends MediaObservingLoader<List<Artist>> {
     private static final String TAG = ArtistLoader.class.getSimpleName();
 
     private List<Artist> artistList;
 
-    public ArtistLoader(Context context) {
-        super(context);
+    public ArtistLoader(Context context, Uri uri) {
+        super(context, uri);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         artistList = new ArrayList<>();

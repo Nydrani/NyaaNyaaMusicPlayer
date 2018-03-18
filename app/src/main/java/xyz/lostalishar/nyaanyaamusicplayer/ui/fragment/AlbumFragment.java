@@ -2,6 +2,7 @@ package xyz.lostalishar.nyaanyaamusicplayer.ui.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -143,7 +144,7 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
 
         Activity activity = getActivity();
 
-        return new AlbumLoader(activity);
+        return new AlbumLoader(activity, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
     }
 
     @Override
@@ -152,6 +153,7 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
 
         cabHolder.closeCab();
         adapter.swap(data);
+        updateEmptyView();
     }
 
     @Override
@@ -159,24 +161,19 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
         cabHolder.closeCab();
-        adapter.swap(null);
-    }
-
-
-    //=========================================================================
-    // MediaStoreChangedListener implementation
-    //=========================================================================
-
-    public void onMediaStoreChanged() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onMediaStoreChanged");
-
-        refreshList();
+        adapter.swap(new ArrayList<Album>());
     }
 
 
     //=========================================================================
     // Helper functions
     //=========================================================================
+
+    private void updateEmptyView() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updateEmptyView");
+
+        emptyView.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+    }
 
     private void refreshList() {
         if (BuildConfig.DEBUG) Log.d(TAG, "refreshList");

@@ -19,13 +19,13 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
  * Loads a list of Music classes from the MediaStore cursor in the background into the queue
  */
 
-public class MusicQueueLoader extends CachedAsyncTaskLoader<List<Music>> {
+public class MusicQueueLoader extends MediaObservingLoader<List<Music>> {
     private static final String TAG = MusicQueueLoader.class.getSimpleName();
 
     private List<Music> musicList;
 
-    public MusicQueueLoader(Context context) {
-        super(context);
+    public MusicQueueLoader(Context context, Uri uri) {
+        super(context, uri);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         musicList = new ArrayList<>();

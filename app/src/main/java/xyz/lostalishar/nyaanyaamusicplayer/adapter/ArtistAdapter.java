@@ -1,6 +1,7 @@
 package xyz.lostalishar.nyaanyaamusicplayer.adapter;
 
 import android.support.annotation.NonNull;
+import android.support.v7.util.DiffUtil;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -141,13 +142,62 @@ public class ArtistAdapter extends BaseAdapter<ArtistViewHolder> {
     // Useful cursor functions
     // ========================================================================
 
-    public void swap(List<Artist> newList){
+    public void swap(@NonNull List<Artist> newList){
         if (BuildConfig.DEBUG) Log.d(TAG, "swap");
 
+        DiffUtil.DiffResult result = DiffUtil.calculateDiff(new MusicListDiffCallback(artistList, newList));
+
         artistList.clear();
-        if (newList != null) {
-            artistList.addAll(newList);
+        artistList.addAll(newList);
+
+        result.dispatchUpdatesTo(this);
+    }
+
+
+    // ========================================================================
+    // Internal classes
+    // ========================================================================
+
+    private static class MusicListDiffCallback extends DiffUtil.Callback {
+        private static final String TAG = MusicListDiffCallback.class.getSimpleName();
+
+        private List<Artist> oldList;
+        private List<Artist> newList;
+
+        private MusicListDiffCallback(List<Artist> oldList, List<Artist> newList) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
+
+            this.oldList = oldList;
+            this.newList = newList;
         }
-        notifyDataSetChanged();
+
+
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "areContentsTheSame");
+
+            return oldList.get(oldItemPosition).equals(newList.get(newItemPosition));
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "areItemsTheSame");
+
+            return oldList.get(oldItemPosition).equals(newList.get(newItemPosition));
+        }
+
+        @Override
+        public int getOldListSize() {
+            if (BuildConfig.DEBUG) Log.d(TAG, "getOldListSize");
+
+            return oldList.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            if (BuildConfig.DEBUG) Log.d(TAG, "getNewListSize");
+
+            return newList.size();
+        }
     }
 }

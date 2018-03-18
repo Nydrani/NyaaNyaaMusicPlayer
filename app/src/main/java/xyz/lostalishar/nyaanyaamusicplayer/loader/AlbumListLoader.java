@@ -19,8 +19,8 @@ public class AlbumListLoader extends MusicListLoader {
 
     private long albumId = MusicPlaybackService.UNKNOWN_ID;
 
-    public AlbumListLoader(Context context, long albumId) {
-        super(context);
+    public AlbumListLoader(Context context, Uri uri, long albumId) {
+        super(context, uri);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         this.albumId = albumId;

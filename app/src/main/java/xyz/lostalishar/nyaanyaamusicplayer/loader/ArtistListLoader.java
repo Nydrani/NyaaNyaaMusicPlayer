@@ -19,8 +19,8 @@ public class ArtistListLoader extends MusicListLoader {
 
     private long artistId = MusicPlaybackService.UNKNOWN_ID;
 
-    public ArtistListLoader(Context context, long artistId) {
-        super(context);
+    public ArtistListLoader(Context context, Uri uri, long artistId) {
+        super(context, uri);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         this.artistId = artistId;

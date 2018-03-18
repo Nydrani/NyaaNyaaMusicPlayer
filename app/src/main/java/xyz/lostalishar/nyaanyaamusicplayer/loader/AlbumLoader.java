@@ -17,13 +17,13 @@ import xyz.lostalishar.nyaanyaamusicplayer.model.Album;
  * Loads a list of Album classes from the MediaStore cursor in the background
  */
 
-public class AlbumLoader extends CachedAsyncTaskLoader<List<Album>> {
+public class AlbumLoader extends MediaObservingLoader<List<Album>> {
     private static final String TAG = AlbumLoader.class.getSimpleName();
 
     private List<Album> albumList;
 
-    public AlbumLoader(Context context) {
-        super(context);
+    public AlbumLoader(Context context, Uri uri) {
+        super(context, uri);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
         albumList = new ArrayList<>();
