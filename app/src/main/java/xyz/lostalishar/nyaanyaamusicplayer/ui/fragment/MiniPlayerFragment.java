@@ -11,13 +11,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
@@ -143,7 +143,7 @@ public class MiniPlayerFragment extends Fragment {
                 if (MusicUtils.isPlaying()) {
                     MusicUtils.pause();
                 } else if (state.getQueuePos() == MusicPlaybackService.UNKNOWN_POS) {
-                    Toast.makeText(v.getContext(), R.string.toast_choose_track, Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, R.string.snackbar_choose_track, Snackbar.LENGTH_SHORT).show();
                 } else {
                     MusicUtils.resume();
                 }

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.DividerItemDecoration;
@@ -20,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -275,9 +275,14 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
         int numCleared = MusicUtils.dequeue(musicIdArray, null);
         if (BuildConfig.DEBUG) Log.d(TAG, "Number dequeued: " + numCleared);
 
-        String toastFormat = getResources().getString(R.string.toast_clear_x_tracks);
+        String toastFormat = getResources().getString(R.string.snackbar_clear_x_tracks);
         String toastMessage = String.format(toastFormat, numCleared);
-        Toast.makeText(getActivity(), toastMessage, Toast.LENGTH_SHORT).show();
+
+        // getView() can be null if this is called before onCreateView()
+        View view = getView();
+        if (view != null) {
+            Snackbar.make(view, toastMessage, Snackbar.LENGTH_SHORT).show();
+        }
     }
 
 

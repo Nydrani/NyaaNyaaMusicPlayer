@@ -57,18 +57,18 @@ public abstract class BaseFragment extends Fragment implements OnMediaStoreChang
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onActivityCreated");
-        super.onActivityCreated(savedInstanceState);
+    public void onResume() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
+        super.onResume();
 
         getActivity().getContentResolver().registerContentObserver(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                false, mediaStoreObserver);
+                true, mediaStoreObserver);
     }
 
     @Override
-    public void onDestroy() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
-        super.onDestroy();
+    public void onPause() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onPause");
+        super.onPause();
 
         getActivity().getContentResolver().unregisterContentObserver(mediaStoreObserver);
     }
