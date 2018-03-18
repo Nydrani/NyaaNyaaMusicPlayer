@@ -46,9 +46,9 @@
     <string name="no_artists_found">No artists found</string>
     <string name="empty_queue">The music queue is empty</string>
 
+    <string name="settings_title">Settings</string>
 
-    <string name="menu_dots">&#8942;</string>
-    
+
     <plurals name="num_albums">
         <item quantity="one">%1$d album</item>
         <item quantity="other">%1$d albums</item>

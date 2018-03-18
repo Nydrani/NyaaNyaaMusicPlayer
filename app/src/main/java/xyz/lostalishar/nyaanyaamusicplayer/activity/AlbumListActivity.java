@@ -1,7 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.activity;
 
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -9,11 +8,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -21,7 +17,6 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.interfaces.OnViewInflatedListener;
 import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
-import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.AlbumListFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MiniPlayerFragment;
@@ -86,15 +81,6 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
     //=========================================================================
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateOptionsMenu");
-
-        MenuInflater mi = getMenuInflater();
-        mi.inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onOptionsItemSelected");
 
@@ -103,14 +89,6 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
         switch (id) {
             case android.R.id.home:
                 super.onBackPressed();
-                return true;
-            case R.id.actionbar_about:
-                setDialogFragment(AboutDialogFragment.newInstance());
-                return true;
-            case R.id.actionbar_settings:
-                Toast.makeText(this, R.string.app_name, Toast.LENGTH_LONG).show();
-                Snackbar.make(findViewById(android.R.id.content), R.string.app_name, Snackbar.LENGTH_SHORT)
-                        .show();
                 return true;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);

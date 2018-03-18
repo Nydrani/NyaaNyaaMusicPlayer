@@ -1,7 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.activity;
 
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -12,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -24,6 +22,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.LibraryFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MiniPlayerFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicQueueFragment;
+import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
 public class HomeActivity extends BaseActivity implements OnViewInflatedListener,
         MiniPlayerFragment.OnMiniPlayerTouchedListener, SlidingUpPanelLayout.PanelSlideListener {
@@ -89,9 +88,7 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
                 setDialogFragment(AboutDialogFragment.newInstance());
                 return true;
             case R.id.actionbar_settings:
-                Toast.makeText(this, R.string.app_name, Toast.LENGTH_LONG).show();
-                Snackbar.make(findViewById(android.R.id.content), R.string.app_name, Snackbar.LENGTH_SHORT)
-                        .show();
+                NyaaUtils.openSettings(this);
                 return true;
             default:
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);

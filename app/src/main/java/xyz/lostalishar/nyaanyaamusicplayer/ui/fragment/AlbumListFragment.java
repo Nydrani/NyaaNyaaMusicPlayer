@@ -133,6 +133,7 @@ public class AlbumListFragment extends BaseFragment implements LoaderManager.Loa
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);
                 break;
         }
+
         return super.onOptionsItemSelected(item);
     }
 

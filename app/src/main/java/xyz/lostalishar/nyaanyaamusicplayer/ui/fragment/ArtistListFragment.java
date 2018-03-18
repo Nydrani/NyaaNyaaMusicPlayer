@@ -134,6 +134,7 @@ public class ArtistListFragment extends BaseFragment implements LoaderManager.Lo
                 if (BuildConfig.DEBUG) Log.w(TAG, "Unknown menu item id: " + id);
                 break;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
