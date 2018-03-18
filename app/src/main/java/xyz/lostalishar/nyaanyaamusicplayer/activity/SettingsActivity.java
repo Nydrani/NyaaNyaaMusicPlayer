@@ -12,6 +12,7 @@ import android.view.MenuItem;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.SettingsFragment;
 
 public class SettingsActivity extends AppCompatActivity {
     private static final String TAG = SettingsActivity.class.getSimpleName();
@@ -105,7 +106,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void loadFragments() {
         if (BuildConfig.DEBUG) Log.d(TAG, "loadFragments");
 
-        //setBaseFragment(SettingsFragment.newInstance());
+        setBaseFragment(SettingsFragment.newInstance());
     }
 
     /*

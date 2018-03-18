@@ -46,6 +46,7 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.0'
     implementation 'com.android.support:support-v13:27.1.0'
     implementation 'com.android.support:design:27.1.0'
+    implementation 'com.android.support:preference-v7:27.1.0'
     implementation 'com.sothree.slidinguppanel:library:3.3.1'
     implementation 'com.afollestad:material-cab:0.1.12'
     testImplementation 'junit:junit:4.12'
