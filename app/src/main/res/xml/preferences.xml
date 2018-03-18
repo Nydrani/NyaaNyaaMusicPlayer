@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@+id/preference_container">
+
+    <ListPreference
+        android:key="@string/preference_screen_rotation_key"
+        android:title="@string/preference_screen_rotation_title"
+        android:entries="@array/preference_rotation_entries"
+        android:entryValues="@array/preference_rotation_entry_values"
+        android:defaultValue="1"
+        android:dialogTitle="@string/preference_screen_rotation_title" />
+
+    <PreferenceCategory
+        android:title="@string/preference_advanced_category">
+
+        <PreferenceScreen
+            android:key="@string/preference_advanced_key"
+            android:title="@string/preference_advanced_title"
+            android:summary="@string/preference_advanced_summary">
+
+            <PreferenceCategory
+                android:title="@string/preference_advanced_category">
+
+                <Preference
+                    android:key="preference_with_icon3"
+                    android:title="Preference with iconlaaaa"
+                    android:summary="This preference has an icon"
+                    android:icon="@android:drawable/ic_menu_camera" />
+
+            </PreferenceCategory>
+
+        </PreferenceScreen>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/preference_about_category">
+
+        <Preference
+            android:key="@string/preference_about_version_key"
+            android:title="@string/preference_about_version_title">
+
+            <intent android:action="android.intent.action.VIEW"
+                android:data="@string/preference_about_version_link"/>
+
+        </Preference>
+
+        <SwitchPreference
+            android:key="@string/preference_about_anonymous_data_key"
+            android:title="@string/preference_about_anonymous_data_title" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

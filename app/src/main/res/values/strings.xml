@@ -21,8 +21,6 @@
     <string name="snackbar_choose_track">Choose a track first</string>
 
 
-    <string name="dialog_about_message">https://github.com/Nydrani/NyaaNyaaMusicPlayer</string>
-
     <string name="service_musicplayback_notification_title">Music</string>
     <string name="service_musicplayback_notification_message">Unknown</string>
     <string name="service_musicplayback_notification_pause_message">Pause</string>
@@ -46,7 +44,26 @@
     <string name="no_artists_found">No artists found</string>
     <string name="empty_queue">The music queue is empty</string>
 
-    <string name="settings_title">Settings</string>
+    <string name="preference_title">Settings</string>
+    <string name="preference_about_category">About</string>
+    <string name="preference_about_version_key">about_key</string>
+    <string name="preference_about_version_title">App Version</string>
+    <string name="preference_about_version_link">https://github.com/Nydrani/NyaaNyaaMusicPlayer</string>
+
+    <string name="preference_advanced_category">Advanced</string>
+    <string name="preference_advanced_key">advanced_settings</string>
+    <string name="preference_advanced_title">Advanced Settings</string>
+    <string name="preference_advanced_summary">Settings for advanced users</string>
+
+    <string name="preference_screen_rotation_key">screen_rotation</string>
+    <string name="preference_screen_rotation_title">Screen rotation</string>
+
+    <string name="preference_about_anonymous_data_key">anonymous_data</string>
+    <string name="preference_about_anonymous_data_title">Report anonymous usage data</string>
+
+    <string name="preference_rotation_auto">Auto</string>
+    <string name="preference_rotation_portrait">Portrait</string>
+    <string name="preference_rotation_landscape">Landscape</string>
 
 
     <plurals name="num_albums">

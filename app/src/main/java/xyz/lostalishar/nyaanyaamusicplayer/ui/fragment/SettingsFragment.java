@@ -2,8 +2,12 @@ package xyz.lostalishar.nyaanyaamusicplayer.ui.fragment;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v14.preference.SwitchPreference;
+import android.support.v4.app.Fragment;
+import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
@@ -17,7 +21,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = SettingsFragment.class.getSimpleName();
 
-    private static final String KEY_PREF_DANK = "dank";
+    private static int KEY_PREF_ABOUT_VERSION_KEY = R.string.preference_about_version_key;
+    private static int KEY_PREF_SCREEN_ROTATION_KEY = R.string.preference_screen_rotation_key;
+    private static int KEY_PREF_ANONYMOUS_DATA_KEY = R.string.preference_about_anonymous_data_key;
+
+
 
     public static SettingsFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -34,6 +42,22 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     public void onCreate(Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onPause");
+        super.onPause();
+
+        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
 
 
@@ -45,7 +69,23 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreatePreferences");
 
-        setPreferencesFromResource(R.xml.settings_layout, rootKey);
+        setPreferencesFromResource(R.xml.preferences, rootKey);
+
+        // init the preference
+        Preference pref = findPreference(getString(KEY_PREF_ABOUT_VERSION_KEY));
+        if (pref != null) {
+            pref.setSummary(BuildConfig.VERSION_NAME);
+        }
+
+        onSharedPreferenceChanged(PreferenceManager.getDefaultSharedPreferences(getActivity()),
+                getString(KEY_PREF_SCREEN_ROTATION_KEY));
+    }
+
+    @Override
+    public Fragment getCallbackFragment() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getCallbackFragment");
+
+        return this;
     }
 
 
@@ -58,11 +98,23 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                                           String key) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onSharedPreferenceChanged");
 
+        // might need null check
+        Preference pref = findPreference(key);
+        if (pref == null) {
+            return;
+        }
 
-        if (key.equals(KEY_PREF_DANK)) {
-            Preference connectionPref = findPreference(key);
-            // Set summary to be the user-description for the selected value
-            connectionPref.setSummary(sharedPreferences.getString(key, ""));
+        if (key.equals(getString(KEY_PREF_SCREEN_ROTATION_KEY))) {
+            ListPreference listPreference = (ListPreference) pref;
+            listPreference.setSummary(listPreference.getEntry());
+        } else if (key.equals(getString(KEY_PREF_ANONYMOUS_DATA_KEY))) {
+            SwitchPreference switchPreference = (SwitchPreference) pref;
+
+            if (switchPreference.isChecked()) {
+                switchPreference.setSummary(switchPreference.getSwitchTextOn());
+            } else {
+                switchPreference.setSummary(switchPreference.getSwitchTextOff());
+            }
         }
     }
 }

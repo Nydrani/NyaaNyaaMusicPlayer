@@ -6,6 +6,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceScreen;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -14,7 +16,8 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.SettingsFragment;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity implements
+        PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
     private static final String TAG = SettingsActivity.class.getSimpleName();
 
 
@@ -35,7 +38,7 @@ public class SettingsActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle(R.string.settings_title);
+            actionBar.setTitle(R.string.preference_title);
         }
 
         // load fragments
@@ -65,6 +68,27 @@ public class SettingsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+    //=========================================================================
+    // OnPreferenceStartScreenCallback implementation
+    //=========================================================================
+
+    @Override
+    public boolean onPreferenceStartScreen(PreferenceFragmentCompat preferenceFragmentCompat,
+                                           PreferenceScreen preferenceScreen) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onPreferenceStartScreen");
+
+        String key = preferenceScreen.getKey();
+
+        Bundle args = new Bundle();
+        args.putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT, key);
+
+        Fragment fragment = SettingsFragment.newInstance();
+        fragment.setArguments(args);
+        replaceBaseFragment(fragment, key);
+
+        return true;
+    }
 
     //=========================================================================
     // Helper functions
@@ -98,6 +122,30 @@ public class SettingsActivity extends AppCompatActivity {
         } else {
             ft.replace(R.id.activity_base_content, fragment);
         }
+        ft.commit();
+    }
+
+    /*
+     * Replaces the fragment in the FrameLayout container and adds to back stack
+     */
+    private void replaceBaseFragment(Fragment fragment, String key) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "setBaseFragment");
+
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment element = getBaseFragment(fm);
+
+        // check for "remove fragment" and null fragment in container
+        if (fragment == null && element == null) {
+            return;
+        }
+
+        FragmentTransaction ft = fm.beginTransaction();
+        if (fragment == null) {
+            ft.remove(element);
+        } else {
+            ft.replace(R.id.activity_base_content, fragment, key);
+        }
+        ft.addToBackStack(key);
         ft.commit();
     }
 

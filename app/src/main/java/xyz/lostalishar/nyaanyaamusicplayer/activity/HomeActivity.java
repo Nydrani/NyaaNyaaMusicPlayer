@@ -17,7 +17,6 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.interfaces.OnViewInflatedListener;
-import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.AboutDialogFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.LibraryFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MiniPlayerFragment;
@@ -84,9 +83,6 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.actionbar_about:
-                setDialogFragment(AboutDialogFragment.newInstance());
-                return true;
             case R.id.actionbar_settings:
                 NyaaUtils.openSettings(this);
                 return true;

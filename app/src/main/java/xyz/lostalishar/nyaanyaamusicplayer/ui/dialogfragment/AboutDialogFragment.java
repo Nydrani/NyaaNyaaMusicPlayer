@@ -38,7 +38,7 @@ public class AboutDialogFragment extends DialogFragment {
         final Activity activity = getActivity();
         assert activity != null;
 
-        SpannableString string = new SpannableString(getText(R.string.dialog_about_message));
+        SpannableString string = new SpannableString(getText(R.string.preference_about_version_link));
 
         TextView view = new TextView(activity);
         view.setText(string);

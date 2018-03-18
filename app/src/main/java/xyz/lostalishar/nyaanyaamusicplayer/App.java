@@ -18,6 +18,6 @@ public class App extends Application {
         super.onCreate();
 
         // set default values only once on application start
-        PreferenceManager.setDefaultValues(getApplicationContext(), R.xml.settings_layout, false);
+        PreferenceManager.setDefaultValues(getApplicationContext(), R.xml.preferences, false);
     }
 }
