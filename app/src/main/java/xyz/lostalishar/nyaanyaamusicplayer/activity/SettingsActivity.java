@@ -42,39 +42,6 @@ public class SettingsActivity extends AppCompatActivity {
         loadFragments();
     }
 
-    @Override
-    protected void onStart() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onStart");
-        super.onStart();
-
-    }
-
-    @Override
-    protected void onResume() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onPause");
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onStop");
-        super.onStop();
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
-        super.onDestroy();
-
-    }
-
 
     //=========================================================================
     // Options menu callbacks
