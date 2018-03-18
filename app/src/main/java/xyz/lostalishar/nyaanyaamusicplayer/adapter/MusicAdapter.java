@@ -44,6 +44,15 @@ public class MusicAdapter extends BaseAdapter<MusicListViewHolder> {
     // ========================================================================
 
     @Override
+    public @NonNull MusicListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateViewHolder");
+
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View v = inflater.inflate(R.layout.list_layout_music, parent, false);
+
+        return new MusicListViewHolder(v, this);
+    }
+    @Override
     public void onBindViewHolder(@NonNull MusicListViewHolder holder, int position) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onBindViewHolder");
 
@@ -79,21 +88,6 @@ public class MusicAdapter extends BaseAdapter<MusicListViewHolder> {
         if (BuildConfig.DEBUG) Log.d(TAG, "getMusicList");
 
         return musicList;
-    }
-
-
-    // ========================================================================
-    // RecyclerView.Adapter overrides
-    // ========================================================================
-
-    @Override
-    public @NonNull MusicListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateViewHolder");
-
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View v = inflater.inflate(R.layout.list_layout_music, parent, false);
-
-        return new MusicListViewHolder(v, this);
     }
 
 
