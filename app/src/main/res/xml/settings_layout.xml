@@ -32,13 +32,6 @@
             android:title="Switch preference"
             android:summary="This is a switch" />
 
-        <DropDownPreference
-            android:key="dropdown_preference"
-            android:title="title_dropdown_preference"
-            android:summary="summary_dropdown_preference"
-            android:entries="@array/entries_list_preference"
-            android:entryValues="@array/entryvalues_list_preference" />
-
     </PreferenceCategory>
 
     <PreferenceCategory
