@@ -7,15 +7,21 @@
         <item name="colorPrimaryDark">@color/colorLightPrimaryDark</item>
         <item name="colorAccent">@color/colorLightAccent</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="buttonStyle">@style/Widget.AppCompat.Button.Borderless</item>
+        <item name="imageButtonStyle">@style/Widget.AppCompat.Button.Borderless</item>
+        <item name="trackBackground">@color/grey</item>
     </style>
 
     <!-- Dark application theme. -->
     <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorDarkPrimary</item>
-        <item name="colorPrimaryDark">@color/colorDarkPrimaryDark</item>
-        <item name="colorAccent">@color/colorDarkAccent</item>
+        <item name="colorPrimary">@color/colorLightPrimary</item>
+        <item name="colorPrimaryDark">@color/colorLightPrimaryDark</item>
+        <item name="colorAccent">@color/colorLightAccent</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="buttonStyle">@style/Widget.AppCompat.Button.Borderless</item>
+        <item name="imageButtonStyle">@style/Widget.AppCompat.Button.Borderless</item>
+        <item name="trackBackground">@color/darkGrey</item>
     </style>
 
 

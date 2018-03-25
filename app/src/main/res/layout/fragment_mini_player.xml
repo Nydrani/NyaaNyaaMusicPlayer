@@ -3,6 +3,7 @@
     android:id="@+id/fragment_mini_player_container"
     android:layout_width="match_parent"
     android:layout_height="@dimen/mini_player_height"
+    android:background="?android:attr/colorBackground"
     android:orientation="horizontal">
 
     <LinearLayout
@@ -11,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@color/white"
         android:gravity="center">
 
         <TextView
@@ -41,35 +41,39 @@
         android:id="@id/player_buttons_container"
         android:layout_alignParentEnd="true"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@null">
 
         <View
             android:layout_width="1px"
             android:layout_height="match_parent"
             android:background="@color/dividerColor" />
 
-        <TextView
+        <ImageButton
             android:id="@+id/prev_button"
+            android:contentDescription="@string/content_description_button"
             android:layout_width="@dimen/mini_player_button_width"
             android:layout_height="match_parent"
-            android:background="@color/buttonLight"
             android:gravity="center"
-            android:text="@string/fragment_player_bar_prev" />
+            android:padding="@dimen/button_padding"
+            android:src="@android:drawable/ic_media_previous" />
 
-        <TextView
+        <ImageButton
             android:id="@+id/play_pause_button"
+            android:contentDescription="@string/content_description_button"
             android:layout_width="@dimen/mini_player_button_width"
             android:layout_height="match_parent"
-            android:background="@color/buttonPrimary"
-            android:gravity="center" />
-
-        <TextView
-            android:id="@+id/next_button"
-            android:layout_width="@dimen/mini_player_button_width"
-            android:layout_height="match_parent"
-            android:background="@color/buttonLight"
             android:gravity="center"
-            android:text="@string/fragment_player_bar_next"/>
+            android:padding="@dimen/button_padding" />
+
+        <ImageButton
+            android:id="@+id/next_button"
+            android:contentDescription="@string/content_description_button"
+            android:layout_width="@dimen/mini_player_button_width"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="@dimen/button_padding"
+            android:src="@android:drawable/ic_media_next" />
 
     </LinearLayout>
 

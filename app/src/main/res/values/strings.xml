@@ -66,6 +66,7 @@
     <string name="preference_about_anonymous_data_key">anonymous_data</string>
     <string name="preference_about_anonymous_data_title">Report anonymous usage data</string>
 
+    <string name="content_description_button">Image for button</string>
 
 
     <plurals name="num_albums">

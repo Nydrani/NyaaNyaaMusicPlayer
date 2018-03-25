@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.SettingsFragment;
+import xyz.lostalishar.nyaanyaamusicplayer.util.ThemeUtils;
 
 public class SettingsActivity extends AppCompatActivity implements
         PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
@@ -28,6 +29,7 @@ public class SettingsActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
+        setTheme(ThemeUtils.getTheme(this));
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_layout_settings);

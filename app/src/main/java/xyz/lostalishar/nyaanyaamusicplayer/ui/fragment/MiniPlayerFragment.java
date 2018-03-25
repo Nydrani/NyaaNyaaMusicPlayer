@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
@@ -45,7 +46,7 @@ public class MiniPlayerFragment extends Fragment {
 
     private TextView musicTitleView;
     private TextView musicArtistView;
-    private TextView playPauseButton;
+    private ImageButton playPauseButton;
 
     public static MiniPlayerFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -98,8 +99,8 @@ public class MiniPlayerFragment extends Fragment {
         musicTitleView = rootView.findViewById(R.id.mini_player_title);
         musicArtistView = rootView.findViewById(R.id.mini_player_artist);
 
-        TextView prev = rootView.findViewById(R.id.prev_button);
-        TextView next = rootView.findViewById(R.id.next_button);
+        ImageButton prev = rootView.findViewById(R.id.prev_button);
+        ImageButton next = rootView.findViewById(R.id.next_button);
         playPauseButton = rootView.findViewById(R.id.play_pause_button);
 
         rootView.setOnClickListener(new View.OnClickListener() {
@@ -219,9 +220,9 @@ public class MiniPlayerFragment extends Fragment {
         if (BuildConfig.DEBUG) Log.d(TAG, "updatePlayPauseButton");
 
         if (MusicUtils.isPlaying()) {
-            playPauseButton.setText(R.string.fragment_player_bar_pause);
+            playPauseButton.setImageResource(android.R.drawable.ic_media_pause);
         } else {
-            playPauseButton.setText(R.string.fragment_player_bar_play);
+            playPauseButton.setImageResource(android.R.drawable.ic_media_play);
         }
     }
 

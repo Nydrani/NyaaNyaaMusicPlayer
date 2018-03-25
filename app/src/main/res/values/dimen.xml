@@ -6,4 +6,5 @@
     <dimen name="horizontal_padding">10dp</dimen>
     <dimen name="vertical_padding">10dp</dimen>
     <dimen name="fast_scroll_width">50dp</dimen>
+    <dimen name="button_padding">10dp</dimen>
 </resources>
