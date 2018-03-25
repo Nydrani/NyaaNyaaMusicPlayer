@@ -12,6 +12,8 @@ import android.util.Log;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
+import xyz.lostalishar.nyaanyaamusicplayer.util.PreferenceUtils;
+
 
 /**
  * SettingsFragment for attaching to the activity
@@ -21,9 +23,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = SettingsFragment.class.getSimpleName();
 
-    private static int KEY_PREF_ABOUT_VERSION_KEY = R.string.preference_about_version_key;
-    private static int KEY_PREF_SCREEN_ROTATION_KEY = R.string.preference_screen_rotation_key;
-    private static int KEY_PREF_ANONYMOUS_DATA_KEY = R.string.preference_about_anonymous_data_key;
 
 
 
@@ -72,13 +71,15 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
         // init the preference
-        Preference pref = findPreference(getString(KEY_PREF_ABOUT_VERSION_KEY));
+        Preference pref = findPreference(getString(PreferenceUtils.KEY_PREF_ABOUT_VERSION_KEY));
         if (pref != null) {
             pref.setSummary(BuildConfig.VERSION_NAME);
         }
 
         onSharedPreferenceChanged(PreferenceManager.getDefaultSharedPreferences(getActivity()),
-                getString(KEY_PREF_SCREEN_ROTATION_KEY));
+                getString(PreferenceUtils.KEY_PREF_SCREEN_ROTATION_KEY));
+        onSharedPreferenceChanged(PreferenceManager.getDefaultSharedPreferences(getActivity()),
+                getString(PreferenceUtils.KEY_PREF_THEME_KEY));
     }
 
     @Override
@@ -104,10 +105,38 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             return;
         }
 
-        if (key.equals(getString(KEY_PREF_SCREEN_ROTATION_KEY))) {
+        if (key.equals(getString(PreferenceUtils.KEY_PREF_SCREEN_ROTATION_KEY))) {
             ListPreference listPreference = (ListPreference) pref;
             listPreference.setSummary(listPreference.getEntry());
-        } else if (key.equals(getString(KEY_PREF_ANONYMOUS_DATA_KEY))) {
+
+            // set the screen orientation
+            String value = listPreference.getValue();
+            Log.v(TAG, "orientation value: " + value);
+
+            //getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            //getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            //getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+        } else if (key.equals(getString(PreferenceUtils.KEY_PREF_THEME_KEY))) {
+            ListPreference listPreference = (ListPreference) pref;
+            listPreference.setSummary(listPreference.getEntry());
+
+            // set the theme
+            String value = listPreference.getValue();
+            Log.v(TAG, "theme value: " + value);
+
+            int index = listPreference.findIndexOfValue(value);
+            switch (index) {
+                case 1:
+                    // switch to light theme
+                    break;
+                case 2:
+                    // switch to dark theme
+                    break;
+                default:
+                    Log.w(TAG, "index: " + index + " not handled!");
+            }
+
+        } else if (key.equals(getString(PreferenceUtils.KEY_PREF_ANONYMOUS_DATA_KEY))) {
             SwitchPreference switchPreference = (SwitchPreference) pref;
 
             if (switchPreference.isChecked()) {

@@ -23,6 +23,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.interfaces.CabHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
+import xyz.lostalishar.nyaanyaamusicplayer.util.ThemeUtils;
 
 public abstract class BaseActivity extends AppCompatActivity implements CabHolder {
     private static final String TAG = BaseActivity.class.getSimpleName();
@@ -42,6 +43,7 @@ public abstract class BaseActivity extends AppCompatActivity implements CabHolde
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
+        setTheme(ThemeUtils.getTheme(this));
         super.onCreate(savedInstanceState);
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -77,6 +79,9 @@ public abstract class BaseActivity extends AppCompatActivity implements CabHolde
     protected void onResume() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onResume");
         super.onResume();
+
+        // set theme if changed
+        //recreate();
     }
 
     @Override

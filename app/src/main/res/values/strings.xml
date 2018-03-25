@@ -58,12 +58,21 @@
     <string name="preference_screen_rotation_key">screen_rotation</string>
     <string name="preference_screen_rotation_title">Screen rotation</string>
 
+    <string name="preference_screen_rotation_auto">Auto</string>
+    <string name="preference_screen_rotation_portrait">Portrait</string>
+    <string name="preference_screen_rotation_landscape">Landscape</string>
+
+    <string name="preference_theme_key">theme</string>
+    <string name="preference_theme_title">Theme</string>
+
+    <string name="preference_theme_light">Light</string>
+    <string name="preference_theme_dark">Dark</string>
+    <string name="preference_theme_light_value">1</string>
+    <string name="preference_theme_dark_value">2</string>
+
     <string name="preference_about_anonymous_data_key">anonymous_data</string>
     <string name="preference_about_anonymous_data_title">Report anonymous usage data</string>
 
-    <string name="preference_rotation_auto">Auto</string>
-    <string name="preference_rotation_portrait">Portrait</string>
-    <string name="preference_rotation_landscape">Landscape</string>
 
 
     <plurals name="num_albums">
