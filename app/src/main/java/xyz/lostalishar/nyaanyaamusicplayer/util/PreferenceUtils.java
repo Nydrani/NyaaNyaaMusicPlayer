@@ -118,4 +118,19 @@ public class PreferenceUtils {
 
         return styleRes;
     }
+
+    public static Boolean loadUsageDataPref(Context context) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "loadUsageDataPref");
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        Boolean enabled = false;
+
+        try {
+            enabled = preferences.getBoolean(context.getString(KEY_PREF_ANONYMOUS_DATA_KEY), false);
+        } catch (ClassCastException e) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "Incorrect type found for preference");
+        }
+
+        return enabled;
+    }
 }

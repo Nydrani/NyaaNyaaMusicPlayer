@@ -16,3 +16,6 @@ gradle.properties
 
 # Keystore info
 keystore.properties
+
+# Fabric
+fabric.properties
