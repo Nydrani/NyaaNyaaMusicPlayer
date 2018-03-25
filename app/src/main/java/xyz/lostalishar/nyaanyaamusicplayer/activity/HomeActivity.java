@@ -12,10 +12,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.afollestad.materialcab.MaterialCab;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
+import xyz.lostalishar.nyaanyaamusicplayer.interfaces.CabHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.interfaces.OnViewInflatedListener;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.LibraryFragment;
@@ -23,9 +25,12 @@ import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MiniPlayerFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicQueueFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
-public class HomeActivity extends BaseActivity implements OnViewInflatedListener,
-        MiniPlayerFragment.OnMiniPlayerTouchedListener, SlidingUpPanelLayout.PanelSlideListener {
+public class HomeActivity extends MusicActivity implements OnViewInflatedListener,
+        MiniPlayerFragment.OnMiniPlayerTouchedListener, SlidingUpPanelLayout.PanelSlideListener,
+        CabHolder {
     private static final String TAG = HomeActivity.class.getSimpleName();
+
+    private MaterialCab cab;
 
     private SlidingUpPanelLayout slidingUpPanelLayout;
 
@@ -57,8 +62,38 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
     public void onBackPressed() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onBackPressed");
 
-        if (!handleBackPressed()) {
+        if (cab != null && cab.isActive()) {
+            cab.finish();
+        } else if (!handleBackPressed()) {
             super.onBackPressed();
+        }
+    }
+
+
+    //=========================================================================
+    // CabHolder callback
+    //=========================================================================
+
+    @Override
+    public MaterialCab openCab(MaterialCab.Callback callback) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "openCab");
+
+        if (cab != null && cab.isActive()) {
+            cab.finish();
+        }
+
+        cab = new MaterialCab(this, R.id.cab_stub)
+                .start(callback);
+
+        return cab;
+    }
+
+    @Override
+    public void closeCab() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "closeCab");
+
+        if (cab != null && cab.isActive()) {
+            cab.finish();
         }
     }
 
@@ -294,13 +329,12 @@ public class HomeActivity extends BaseActivity implements OnViewInflatedListener
     private boolean handleBackPressed() {
         if (BuildConfig.DEBUG) Log.d(TAG, "handleBackPressed");
 
-        if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+        if (slidingUpPanelLayout.getPanelState() != SlidingUpPanelLayout.PanelState.COLLAPSED) {
             collapsePanel();
             return true;
         }
         return false;
     }
-
 
     private void collapsePanel() {
         if (BuildConfig.DEBUG) Log.d(TAG, "collapsePanel");
