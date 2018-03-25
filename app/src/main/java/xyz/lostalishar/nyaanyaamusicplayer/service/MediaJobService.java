@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
+import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 
 /**
  * Job service for media playback service startup
@@ -37,8 +38,7 @@ public class MediaJobService extends JobService {
         if (BuildConfig.DEBUG) Log.d(TAG, "onStopJob");
 
         // forcefully kill service if somehow the jobFinished had not been called
-        Intent musicPlaybackService = new Intent(this, MusicPlaybackService.class);
-        stopService(musicPlaybackService);
+        MusicUtils.stopService(this);
 
         return true;
     }

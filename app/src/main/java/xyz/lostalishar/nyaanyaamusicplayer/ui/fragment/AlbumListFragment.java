@@ -62,7 +62,7 @@ public class AlbumListFragment extends BaseFragment implements LoaderManager.Loa
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
-        adapter = new MusicAdapter(new ArrayList<Music>(), cabHolder);
+        adapter = new MusicAdapter(new ArrayList<>(), cabHolder);
     }
 
     @Override
@@ -170,7 +170,7 @@ public class AlbumListFragment extends BaseFragment implements LoaderManager.Loa
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
         cabHolder.closeCab();
-        adapter.swap(new ArrayList<Music>());
+        adapter.swap(new ArrayList<>());
     }
 
 

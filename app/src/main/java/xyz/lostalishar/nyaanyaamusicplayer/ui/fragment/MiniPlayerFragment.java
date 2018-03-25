@@ -103,51 +103,37 @@ public class MiniPlayerFragment extends Fragment {
         ImageButton next = rootView.findViewById(R.id.next_button);
         playPauseButton = rootView.findViewById(R.id.play_pause_button);
 
-        rootView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                miniPlayerTouchedListener.onMiniPlayerTouched(v);
+        rootView.setOnClickListener((v) -> miniPlayerTouchedListener.onMiniPlayerTouched(v));
+
+        prev.setOnClickListener((v) -> {
+            boolean wasPlaying = MusicUtils.isPlaying();
+            MusicUtils.previous();
+            if (wasPlaying) {
+                MusicUtils.start();
             }
         });
 
-        prev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean wasPlaying = MusicUtils.isPlaying();
-                MusicUtils.previous();
-                if (wasPlaying) {
-                    MusicUtils.start();
-                }
+        next.setOnClickListener((v) -> {
+            boolean wasPlaying = MusicUtils.isPlaying();
+            MusicUtils.next();
+            if (wasPlaying) {
+                MusicUtils.start();
             }
         });
 
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean wasPlaying = MusicUtils.isPlaying();
-                MusicUtils.next();
-                if (wasPlaying) {
-                    MusicUtils.start();
-                }
+        playPauseButton.setOnClickListener((v) -> {
+            MusicPlaybackState state = MusicUtils.getState();
+            // do nothing on unknown state
+            if (state == null) {
+                return;
             }
-        });
 
-        playPauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MusicPlaybackState state = MusicUtils.getState();
-                // do nothing on unknown state
-                if (state == null) {
-                    return;
-                }
-
-                if (MusicUtils.isPlaying()) {
-                    MusicUtils.pause();
-                } else if (state.getQueuePos() == MusicPlaybackService.UNKNOWN_POS) {
-                    Snackbar.make(v, R.string.snackbar_choose_track, Snackbar.LENGTH_SHORT).show();
-                } else {
-                    MusicUtils.resume();
-                }
+            if (MusicUtils.isPlaying()) {
+                MusicUtils.pause();
+            } else if (state.getQueuePos() == MusicPlaybackService.UNKNOWN_POS) {
+                Snackbar.make(v, R.string.snackbar_choose_track, Snackbar.LENGTH_SHORT).show();
+            } else {
+                MusicUtils.resume();
             }
         });
 

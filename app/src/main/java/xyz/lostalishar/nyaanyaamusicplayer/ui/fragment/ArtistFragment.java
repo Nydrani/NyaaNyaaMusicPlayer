@@ -54,7 +54,7 @@ public class ArtistFragment extends BaseFragment implements LoaderManager.Loader
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
-        adapter = new ArtistAdapter(new ArrayList<Artist>(), cabHolder);
+        adapter = new ArtistAdapter(new ArrayList<>(), cabHolder);
     }
 
     @Override
@@ -155,7 +155,7 @@ public class ArtistFragment extends BaseFragment implements LoaderManager.Loader
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
         cabHolder.closeCab();
-        adapter.swap(new ArrayList<Artist>());
+        adapter.swap(new ArrayList<>());
     }
 
 

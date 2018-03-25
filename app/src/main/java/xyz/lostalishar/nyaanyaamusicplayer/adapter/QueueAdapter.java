@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 
 import com.afollestad.materialcab.MaterialCab;
 
@@ -69,26 +68,23 @@ public class QueueAdapter extends BaseAdapter<QueueViewHolder> {
 
         holder.queueTitle.setText(music.getName());
         holder.queueDescription.setText(music.getArtistName());
-        holder.popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.popupmenu_select:
-                        toggleCab(boundView, boundPosition);
-                        return true;
-                    case R.id.popupmenu_remove:
-                        MusicUtils.dequeue(new long[] {
-                                musicList.get(boundPosition).getId()
-                        }, null);
-                        return true;
-                    default:
-                        if (BuildConfig.DEBUG) {
-                            Log.d(TAG, "Unknown MenuItem choice: " + item.getTitle().toString());
-                        }
-                }
-
-                return false;
+        holder.popupMenu.setOnMenuItemClickListener((item) -> {
+            switch (item.getItemId()) {
+                case R.id.popupmenu_select:
+                    toggleCab(boundView, boundPosition);
+                    return true;
+                case R.id.popupmenu_remove:
+                    MusicUtils.dequeue(new long[] {
+                            musicList.get(boundPosition).getId()
+                    }, null);
+                    return true;
+                default:
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "Unknown MenuItem choice: " + item.getTitle().toString());
+                    }
             }
+
+            return false;
         });
 
         // store id

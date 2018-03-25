@@ -54,7 +54,7 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
-        adapter = new AlbumAdapter(new ArrayList<Album>(), cabHolder);
+        adapter = new AlbumAdapter(new ArrayList<>(), cabHolder);
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
@@ -162,7 +162,7 @@ public class AlbumFragment extends BaseFragment implements LoaderManager.LoaderC
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
         cabHolder.closeCab();
-        adapter.swap(new ArrayList<Album>());
+        adapter.swap(new ArrayList<>());
     }
 
 

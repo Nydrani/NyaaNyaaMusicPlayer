@@ -1,7 +1,7 @@
 package xyz.lostalishar.nyaanyaamusicplayer.interfaces;
 
 /**
- * Interface that calls back when the mediastore for audio has updated
+ * Interface that calls back when the media store for audio has updated
  */
 
 public interface OnMediaStoreChangedListener {

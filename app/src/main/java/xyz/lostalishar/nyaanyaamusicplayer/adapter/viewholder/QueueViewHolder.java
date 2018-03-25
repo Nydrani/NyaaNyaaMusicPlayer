@@ -39,12 +39,7 @@ public class QueueViewHolder extends BaseMusicViewHolder {
         popupMenu.inflate(R.menu.popup_queue);
 
         // set the onclick to show menu
-        queueMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popupMenu.show();
-            }
-        });
+        queueMenu.setOnClickListener((v) -> popupMenu.show());
 
         // instantiate music data holder
         queueDataHolder = new QueueDataHolder();

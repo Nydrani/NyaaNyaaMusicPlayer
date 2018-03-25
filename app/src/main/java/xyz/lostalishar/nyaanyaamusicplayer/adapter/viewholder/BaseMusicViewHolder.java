@@ -24,7 +24,7 @@ public abstract class BaseMusicViewHolder extends RecyclerView.ViewHolder
         super(view);
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");
 
-        this.adapter = new WeakReference<BaseAdapter<? extends BaseMusicViewHolder>>(adapter);
+        this.adapter = new WeakReference<>(adapter);
 
         // onclick for each item
         // @TODO fix this up soon lmao

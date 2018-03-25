@@ -225,7 +225,7 @@ public class MusicQueueFragment extends BaseFragment implements LoaderManager.Lo
         if (BuildConfig.DEBUG) Log.d(TAG, "onLoadReset");
 
         cabHolder.closeCab();
-        adapter.swap(new ArrayList<Music>());
+        adapter.swap(new ArrayList<>());
     }
 
 

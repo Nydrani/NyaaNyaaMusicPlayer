@@ -14,8 +14,8 @@ import xyz.lostalishar.nyaanyaamusicplayer.R;
 public class ThemeUtils {
     private static final String TAG = ThemeUtils.class.getSimpleName();
 
-    public static final int PREFERENCE_THEME_LIGHT = R.string.preference_theme_light_value;
-    public static final int PREFERENCE_THEME_DARK = R.string.preference_theme_dark_value;
+    private static final int PREFERENCE_THEME_LIGHT = R.string.preference_theme_light_value;
+    private static final int PREFERENCE_THEME_DARK = R.string.preference_theme_dark_value;
 
     public ThemeUtils() {
         if (BuildConfig.DEBUG) Log.d(TAG, "constructor");

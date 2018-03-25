@@ -476,12 +476,7 @@ public class MusicPlaybackService extends Service implements
 
         // @TODO for now update queue database in here (change to use message handling later)
         //updatePlaybackQueue(true, track);
-        databaseHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                savePlaybackQueue();
-            }
-        });
+        databaseHandler.post(this::savePlaybackQueue);
 
         return addedCount;
     }
@@ -529,12 +524,7 @@ public class MusicPlaybackService extends Service implements
 
         // @TODO for now update queue database in here (change to use message handling later)
         // updatePlaybackQueue(false, track);
-        databaseHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                savePlaybackQueue();
-            }
-        });
+        databaseHandler.post(this::savePlaybackQueue);
 
         return removedCount;
     }
