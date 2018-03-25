@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="preference_rotation_entries">
-        <item>@string/preference_screen_rotation_auto</item>
-        <item>@string/preference_screen_rotation_portrait</item>
-        <item>@string/preference_screen_rotation_landscape</item>
-    </string-array>
-    <string-array name="preference_rotation_entry_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
-
     <string-array name="preference_theme_entries">
         <item>@string/preference_theme_light</item>
         <item>@string/preference_theme_dark</item>

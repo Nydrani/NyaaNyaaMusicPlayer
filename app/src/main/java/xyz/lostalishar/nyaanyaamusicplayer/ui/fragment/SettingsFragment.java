@@ -77,8 +77,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         }
 
         onSharedPreferenceChanged(PreferenceManager.getDefaultSharedPreferences(getActivity()),
-                getString(PreferenceUtils.KEY_PREF_SCREEN_ROTATION_KEY));
-        onSharedPreferenceChanged(PreferenceManager.getDefaultSharedPreferences(getActivity()),
                 getString(PreferenceUtils.KEY_PREF_THEME_KEY));
     }
 
@@ -105,18 +103,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             return;
         }
 
-        if (key.equals(getString(PreferenceUtils.KEY_PREF_SCREEN_ROTATION_KEY))) {
-            ListPreference listPreference = (ListPreference) pref;
-            listPreference.setSummary(listPreference.getEntry());
-
-            // set the screen orientation
-            String value = listPreference.getValue();
-            Log.v(TAG, "orientation value: " + value);
-
-            //getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-            //getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            //getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-        } else if (key.equals(getString(PreferenceUtils.KEY_PREF_THEME_KEY))) {
+        if (key.equals(getString(PreferenceUtils.KEY_PREF_THEME_KEY))) {
             ListPreference listPreference = (ListPreference) pref;
             listPreference.setSummary(listPreference.getEntry());
 

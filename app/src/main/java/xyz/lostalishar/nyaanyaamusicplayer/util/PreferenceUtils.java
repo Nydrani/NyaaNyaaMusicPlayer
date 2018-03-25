@@ -3,7 +3,6 @@ package xyz.lostalishar.nyaanyaamusicplayer.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.annotation.StyleRes;
 import android.util.Log;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
@@ -22,7 +21,6 @@ public class PreferenceUtils {
     private static final String STORAGE_PREFERENCES = "Storage";
 
     public static int KEY_PREF_ABOUT_VERSION_KEY = R.string.preference_about_version_key;
-    public static int KEY_PREF_SCREEN_ROTATION_KEY = R.string.preference_screen_rotation_key;
     public static int KEY_PREF_THEME_KEY = R.string.preference_theme_key;
     public static int KEY_PREF_ANONYMOUS_DATA_KEY = R.string.preference_about_anonymous_data_key;
 
