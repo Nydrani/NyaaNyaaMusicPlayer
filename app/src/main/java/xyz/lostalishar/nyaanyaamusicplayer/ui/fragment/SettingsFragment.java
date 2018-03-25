@@ -111,10 +111,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         } else if (key.equals(getString(PreferenceUtils.KEY_PREF_ANONYMOUS_DATA_KEY))) {
             SwitchPreference switchPreference = (SwitchPreference) pref;
 
+            // @TODO data collection ayyyy
             if (switchPreference.isChecked()) {
-                switchPreference.setSummary(switchPreference.getSwitchTextOn());
             } else {
-                switchPreference.setSummary(switchPreference.getSwitchTextOff());
             }
         }
     }

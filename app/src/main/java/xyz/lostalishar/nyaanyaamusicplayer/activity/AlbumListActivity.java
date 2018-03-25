@@ -63,7 +63,9 @@ public class AlbumListActivity extends BaseActivity implements OnViewInflatedLis
         }
 
         // load fragments
-        loadFragments();
+        if (savedInstanceState == null) {
+            loadFragments();
+        }
     }
 
 

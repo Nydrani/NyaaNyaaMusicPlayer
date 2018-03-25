@@ -63,7 +63,9 @@ public class ArtistListActivity extends MusicActivity implements OnViewInflatedL
         }
 
         // load fragments
-        loadFragments();
+        if (savedInstanceState == null) {
+            loadFragments();
+        }
     }
 
 

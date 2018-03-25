@@ -48,6 +48,8 @@ public class MiniPlayerFragment extends Fragment {
     private TextView musicArtistView;
     private ImageButton playPauseButton;
 
+    private static final String ALPHA = "alpha_state";
+
     public static MiniPlayerFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
 
@@ -149,6 +151,10 @@ public class MiniPlayerFragment extends Fragment {
         if (viewInflatedListener != null) {
             viewInflatedListener.onViewInflated(view);
         }
+
+        if (savedInstanceState != null) {
+            view.setAlpha(savedInstanceState.getFloat(ALPHA));
+        }
     }
 
     @Override
@@ -161,6 +167,14 @@ public class MiniPlayerFragment extends Fragment {
 
         // update ui on resume
         updateMetaUI();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onSaveInstanceState");
+        super.onSaveInstanceState(outState);
+
+        outState.putFloat(ALPHA, getView().getAlpha());
     }
 
     @Override

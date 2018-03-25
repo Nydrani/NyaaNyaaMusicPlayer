@@ -41,7 +41,9 @@ public class SettingsActivity extends BaseActivity implements
         }
 
         // load fragments
-        loadFragments();
+        if (savedInstanceState == null) {
+            loadFragments();
+        }
     }
 
 

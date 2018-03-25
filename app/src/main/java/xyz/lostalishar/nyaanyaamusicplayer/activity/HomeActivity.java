@@ -50,9 +50,19 @@ public class HomeActivity extends MusicActivity implements OnViewInflatedListene
         setSupportActionBar(toolbar);
 
         // load fragments
-        loadFragments();
+        if (savedInstanceState == null) {
+            loadFragments();
+        }
     }
 
+    @Override
+    protected void onDestroy() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
+        super.onDestroy();
+
+        // collapse the panel on rotate
+        collapsePanel();
+    }
 
     //=========================================================================
     // Other activity callbacks
