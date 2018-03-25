@@ -48,7 +48,8 @@
 
         <SwitchPreference
             android:key="@string/preference_about_anonymous_data_key"
-            android:title="@string/preference_about_anonymous_data_title" />
+            android:title="@string/preference_about_anonymous_data_title"
+            android:defaultValue="true" />
 
     </PreferenceCategory>
 

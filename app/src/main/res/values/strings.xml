@@ -64,7 +64,7 @@
     <string name="preference_theme_dark_value">2</string>
 
     <string name="preference_about_anonymous_data_key">anonymous_data</string>
-    <string name="preference_about_anonymous_data_title">Report anonymous usage data</string>
+    <string name="preference_about_anonymous_data_title">Report crashes &amp; usage data</string>
 
     <string name="content_description_button">Image for button</string>
 
