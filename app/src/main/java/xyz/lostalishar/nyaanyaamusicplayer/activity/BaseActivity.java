@@ -31,6 +31,9 @@ public abstract class BaseActivity extends AppCompatActivity implements CabHolde
     // flag for service binding
     private boolean bound = false;
 
+    // variable for theme caching
+    private int theme;
+
     protected MaterialCab cab;
 
     private ServiceListener serviceListener;
@@ -43,7 +46,8 @@ public abstract class BaseActivity extends AppCompatActivity implements CabHolde
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
-        setTheme(ThemeUtils.getTheme(this));
+        theme = ThemeUtils.getTheme(this);
+        setTheme(theme);
         super.onCreate(savedInstanceState);
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -81,7 +85,9 @@ public abstract class BaseActivity extends AppCompatActivity implements CabHolde
         super.onResume();
 
         // set theme if changed
-        //recreate();
+        if (theme != ThemeUtils.getTheme(this)) {
+            recreate();
+        }
     }
 
     @Override

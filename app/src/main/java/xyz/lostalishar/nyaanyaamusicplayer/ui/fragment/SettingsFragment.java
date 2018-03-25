@@ -13,7 +13,7 @@ import android.util.Log;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.util.PreferenceUtils;
-
+import xyz.lostalishar.nyaanyaamusicplayer.util.ThemeUtils;
 
 /**
  * SettingsFragment for attaching to the activity
@@ -22,9 +22,6 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.PreferenceUtils;
 public class SettingsFragment extends PreferenceFragmentCompat implements
         SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = SettingsFragment.class.getSimpleName();
-
-
-
 
     public static SettingsFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -71,13 +68,16 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
         // init the preference
+        // @TODO prob better to move all this to private function
         Preference pref = findPreference(getString(PreferenceUtils.KEY_PREF_ABOUT_VERSION_KEY));
         if (pref != null) {
             pref.setSummary(BuildConfig.VERSION_NAME);
         }
-
-        onSharedPreferenceChanged(PreferenceManager.getDefaultSharedPreferences(getActivity()),
-                getString(PreferenceUtils.KEY_PREF_THEME_KEY));
+        pref = findPreference(getString(PreferenceUtils.KEY_PREF_THEME_KEY));
+        if (pref != null) {
+            ListPreference listPreference = (ListPreference) pref;
+            pref.setSummary(listPreference.getEntry());
+        }
     }
 
     @Override
@@ -107,21 +107,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             ListPreference listPreference = (ListPreference) pref;
             listPreference.setSummary(listPreference.getEntry());
 
-            // set the theme
-            String value = listPreference.getValue();
-            Log.v(TAG, "theme value: " + value);
-
-            int index = listPreference.findIndexOfValue(value);
-            switch (index) {
-                case 1:
-                    // switch to light theme
-                    break;
-                case 2:
-                    // switch to dark theme
-                    break;
-                default:
-                    Log.w(TAG, "index: " + index + " not handled!");
-            }
+            getActivity().recreate();
 
         } else if (key.equals(getString(PreferenceUtils.KEY_PREF_ANONYMOUS_DATA_KEY))) {
             SwitchPreference switchPreference = (SwitchPreference) pref;
