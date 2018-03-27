@@ -1,16 +1,15 @@
 package xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
+
+import java.util.Random;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
@@ -22,34 +21,46 @@ import xyz.lostalishar.nyaanyaamusicplayer.R;
 public class AboutDialogFragment extends DialogFragment {
     private static final String TAG = AboutDialogFragment.class.getSimpleName();
 
+    private Random random;
+
     public static AboutDialogFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
 
         return new AboutDialogFragment();
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
+
+        super.onCreate(savedInstanceState);
+
+        random = new Random();
+    }
 
     @Override
-    public @NonNull
-    Dialog onCreateDialog(Bundle onSavedInstance) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateDialog");
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreateView");
 
-        // this should be called after onAttach but die if it doesn't
-        final Activity activity = getActivity();
-        assert activity != null;
+        View rootView = inflater.inflate(R.layout.dialog_fragment_about, container, false);
 
-        SpannableString string = new SpannableString(getText(R.string.preference_about_version_link));
+        TextView message = rootView.findViewById(R.id.about_message);
+        message.setText("DANK MEMEMEMEMEEMEMEM");
+        message.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int num = random.nextInt(3);
+                if (num % 3 == 0) {
+                    view.setBackgroundColor(getResources().getColor(R.color.green));
+                } else if (num % 3 == 1) {
+                    view.setBackgroundColor(getResources().getColor(R.color.blue));
+                } else if (num % 3 == 2) {
+                    view.setBackgroundColor(getResources().getColor(R.color.red));
+                }
+            }
+        });
 
-        TextView view = new TextView(activity);
-        view.setText(string);
-        view.setMovementMethod(LinkMovementMethod.getInstance());
-        Linkify.addLinks(view, Linkify.WEB_URLS);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setIcon(getResources().getDrawable(R.mipmap.ic_launcher, null));
-        builder.setTitle(R.string.app_name);
-        builder.setView(view);
-
-        return builder.create();
+        return rootView;
     }
 }

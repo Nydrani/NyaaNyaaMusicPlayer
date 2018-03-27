@@ -3,14 +3,20 @@ package xyz.lostalishar.nyaanyaamusicplayer.ui.fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v14.preference.SwitchPreference;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+
+import io.fabric.sdk.android.Fabric;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
+import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.RestartDialogFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.util.PreferenceUtils;
 
 /**
@@ -20,6 +26,9 @@ import xyz.lostalishar.nyaanyaamusicplayer.util.PreferenceUtils;
 public class SettingsFragment extends PreferenceFragmentCompat implements
         SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = SettingsFragment.class.getSimpleName();
+
+    private static final String RESTART_DIALOG_TAG = "restart_dialog_tag";
+
 
     public static SettingsFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -110,10 +119,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
         } else if (key.equals(getString(PreferenceUtils.KEY_PREF_ANONYMOUS_DATA_KEY))) {
             SwitchPreference switchPreference = (SwitchPreference) pref;
+            // tbh this button doesn't actually need to do anything unless
+            // i want to enable fabric now, since there's no way to disable it midway
 
-            // @TODO data collection ayyyy
             if (switchPreference.isChecked()) {
+                DialogFragment dialog = RestartDialogFragment.newInstance();
+                dialog.show(getFragmentManager(), RESTART_DIALOG_TAG);
             } else {
+                Fabric.with(getActivity(), new Crashlytics(), new Answers());
             }
         }
     }

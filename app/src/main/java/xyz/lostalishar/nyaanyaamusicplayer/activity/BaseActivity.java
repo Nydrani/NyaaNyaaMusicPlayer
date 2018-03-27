@@ -1,9 +1,6 @@
 package xyz.lostalishar.nyaanyaamusicplayer.activity;
 
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -38,21 +35,5 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (theme != ThemeUtils.getTheme(this)) {
             recreate();
         }
-    }
-
-
-    //=========================================================================
-    // Helper functions
-    //=========================================================================
-
-    // Displays a dialog fragment on top of activity
-    protected void setDialogFragment(DialogFragment dialog) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "setDialogFragment");
-
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.addToBackStack(null);
-
-        dialog.show(ft, null);
     }
 }

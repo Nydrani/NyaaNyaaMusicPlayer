@@ -8,6 +8,8 @@
     <color name="colorDarkAccent">#7c4dff</color>
     <color name="white">#ffffff</color>
     <color name="red">#f44336</color>
+    <color name="green">#2e7d32</color>
+    <color name="blue">#0d47a1</color>
     <color name="grey">#e0e0e0</color>
     <color name="darkGrey">#424242</color>
     <color name="buttonLight">#90caf9</color>

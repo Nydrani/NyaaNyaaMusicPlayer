@@ -68,6 +68,11 @@
 
     <string name="content_description_button">Image for button</string>
 
+    <string name="dialog_restart_title">Notice</string>
+    <string name="dialog_restart_message">Disabling crash reporting requires an app restart. Do you want to restart now?</string>
+    <string name="dialog_restart_positive">Restart</string>
+    <string name="dialog_restart_negative">Later</string>
+
 
     <plurals name="num_albums">
         <item quantity="one">%1$d album</item>

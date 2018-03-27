@@ -14,7 +14,10 @@ import java.util.List;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.activity.AlbumListActivity;
 import xyz.lostalishar.nyaanyaamusicplayer.activity.ArtistListActivity;
+import xyz.lostalishar.nyaanyaamusicplayer.activity.HomeActivity;
 import xyz.lostalishar.nyaanyaamusicplayer.activity.SettingsActivity;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 /**
  * Utilities for general use
@@ -115,6 +118,22 @@ public class NyaaUtils {
 
         Intent intent = new Intent(activity, SettingsActivity.class);
         activity.startActivity(intent);
+    }
+
+    /**
+     * Restart the entire application
+     */
+    public static void triggerRebirth(Context context) {
+        Intent intent = new Intent(context, HomeActivity.class);
+        intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+
+        if (context instanceof Activity) {
+            ((Activity) context).finish();
+        }
+
+        // Kill application
+        Runtime.getRuntime().exit(0);
     }
 
 
