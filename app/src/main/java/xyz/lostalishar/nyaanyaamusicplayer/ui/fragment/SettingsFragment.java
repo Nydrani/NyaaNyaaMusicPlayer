@@ -123,10 +123,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             // i want to enable fabric now, since there's no way to disable it midway
 
             if (switchPreference.isChecked()) {
+                Fabric.with(getActivity(), new Crashlytics(), new Answers());
+            } else {
                 DialogFragment dialog = RestartDialogFragment.newInstance();
                 dialog.show(getFragmentManager(), RESTART_DIALOG_TAG);
-            } else {
-                Fabric.with(getActivity(), new Crashlytics(), new Answers());
             }
         }
     }

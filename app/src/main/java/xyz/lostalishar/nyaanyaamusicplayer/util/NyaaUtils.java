@@ -17,8 +17,6 @@ import xyz.lostalishar.nyaanyaamusicplayer.activity.ArtistListActivity;
 import xyz.lostalishar.nyaanyaamusicplayer.activity.HomeActivity;
 import xyz.lostalishar.nyaanyaamusicplayer.activity.SettingsActivity;
 
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-
 /**
  * Utilities for general use
  */
@@ -125,7 +123,7 @@ public class NyaaUtils {
      */
     public static void triggerRebirth(Context context) {
         Intent intent = new Intent(context, HomeActivity.class);
-        intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
 
         if (context instanceof Activity) {
