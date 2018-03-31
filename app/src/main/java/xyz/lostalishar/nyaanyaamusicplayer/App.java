@@ -23,12 +23,12 @@ public class App extends Application {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         super.onCreate();
 
+        // set default values only once on application start
+        PreferenceManager.setDefaultValues(getApplicationContext(), R.xml.preferences, false);
+
         // load fabric
         if (PreferenceUtils.loadUsageDataPref(this)) {
             Fabric.with(this, new Crashlytics(), new Answers());
         }
-
-        // set default values only once on application start
-        PreferenceManager.setDefaultValues(getApplicationContext(), R.xml.preferences, false);
     }
 }

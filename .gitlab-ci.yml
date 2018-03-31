@@ -43,7 +43,7 @@ build:
 unitTests:
   stage: test
   script:
-    - ./gradlew test
+    - ./gradlew testDebugUnitTest
 
 # functionalTests:
 #   stage: test
