@@ -7,6 +7,7 @@
     <color name="colorDarkPrimaryDark">#afb42b</color>
     <color name="colorDarkAccent">#7c4dff</color>
     <color name="white">#ffffff</color>
+    <color name="lightGrey">#bdbdbd</color>
     <color name="red">#f44336</color>
     <color name="green">#2e7d32</color>
     <color name="blue">#0d47a1</color>
