@@ -87,6 +87,12 @@ public class MusicPlayer implements
         return mediaPlayer.getCurrentPosition();
     }
 
+    public int getDuration() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getDuration");
+
+        return mediaPlayer.getDuration();
+    }
+
     public boolean isPlaying() throws IllegalStateException {
         if (BuildConfig.DEBUG) Log.d(TAG, "isPlaying");
 

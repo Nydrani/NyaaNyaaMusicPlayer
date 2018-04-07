@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -18,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
@@ -48,7 +50,9 @@ public class MiniPlayerFragment extends Fragment {
     private TextView musicArtistView;
     private ImageButton playPauseButton;
 
-    private static final String ALPHA = "alpha_state";
+    private ProgressBar progressBar;
+
+    private Handler handler;
 
     public static MiniPlayerFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -90,6 +94,24 @@ public class MiniPlayerFragment extends Fragment {
         filter.addAction(NyaaUtils.META_CHANGED);
         filter.addAction(NyaaUtils.SERVICE_READY);
         metaChangedListener = new MetaChangedListener(this);
+
+        handler = new Handler();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (MusicUtils.isPlaying()) {
+                    progressBar.setProgress(MusicUtils.getCurrentPosition());
+                    progressBar.setMax(MusicUtils.getDuration());
+                }
+                handler.postDelayed(this, 250);
+            }
+        });
     }
 
     @Override
@@ -104,6 +126,13 @@ public class MiniPlayerFragment extends Fragment {
         ImageButton prev = rootView.findViewById(R.id.prev_button);
         ImageButton next = rootView.findViewById(R.id.next_button);
         playPauseButton = rootView.findViewById(R.id.play_pause_button);
+
+        progressBar = rootView.findViewById(R.id.mini_player_progress);
+        // update progress bar
+        if (MusicUtils.isPlaying()) {
+            progressBar.setProgress(MusicUtils.getCurrentPosition());
+            progressBar.setMax(MusicUtils.getDuration());
+        }
 
         rootView.setOnClickListener((v) -> miniPlayerTouchedListener.onMiniPlayerTouched(v));
 
@@ -151,10 +180,6 @@ public class MiniPlayerFragment extends Fragment {
         if (viewInflatedListener != null) {
             viewInflatedListener.onViewInflated(view);
         }
-
-        if (savedInstanceState != null) {
-            view.setAlpha(savedInstanceState.getFloat(ALPHA));
-        }
     }
 
     @Override
@@ -167,14 +192,6 @@ public class MiniPlayerFragment extends Fragment {
 
         // update ui on resume
         updateMetaUI();
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onSaveInstanceState");
-        super.onSaveInstanceState(outState);
-
-        outState.putFloat(ALPHA, getView().getAlpha());
     }
 
     @Override
@@ -197,15 +214,6 @@ public class MiniPlayerFragment extends Fragment {
         View rootView = getView();
         if (rootView != null) {
             rootView.setVisibility(visibility);
-        }
-    }
-
-    public void setAlpha(float alpha) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "setAlpha");
-
-        View rootView = getView();
-        if (rootView != null) {
-            rootView.setAlpha(alpha);
         }
     }
 

@@ -173,6 +173,38 @@ public class MusicUtils {
         }
     }
 
+    public static int getDuration() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getDuration");
+
+        if (musicService == null) {
+            return MusicPlaybackService.UNKNOWN_POS;
+        }
+
+        try {
+            return musicService.getDuration();
+        } catch (RemoteException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
+        }
+
+        return MusicPlaybackService.UNKNOWN_POS;
+    }
+
+    public static int getCurrentPosition() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentPosition");
+
+        if (musicService == null) {
+            return MusicPlaybackService.UNKNOWN_POS;
+        }
+
+        try {
+            return musicService.getCurrentPosition();
+        } catch (RemoteException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
+        }
+
+        return MusicPlaybackService.UNKNOWN_POS;
+    }
+
     public static void reset() {
         if (BuildConfig.DEBUG) Log.d(TAG, "reset");
 

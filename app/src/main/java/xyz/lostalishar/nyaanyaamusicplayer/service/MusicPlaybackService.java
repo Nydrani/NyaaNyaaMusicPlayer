@@ -428,7 +428,8 @@ public class MusicPlaybackService extends Service implements
             audioManager.abandonAudioFocusRequest(audioFocusRequest);
         } else {
             audioManager.abandonAudioFocus(this);
-        }    }
+        }
+    }
 
     public List<MusicPlaybackTrack> getQueue() {
         if (BuildConfig.DEBUG) Log.d(TAG, "getQueue");
@@ -559,11 +560,16 @@ public class MusicPlaybackService extends Service implements
         musicPlayer.setVolume(leftVolume, rightVolume);
     }
 
-    // @TODO make private since not exposed function
     public int getCurrentPosition() {
         if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentPosition");
 
         return musicPlayer.getCurrentPosition();
+    }
+
+    public int getDuration() {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getDuration");
+
+        return musicPlayer.getDuration();
     }
 
     public MusicPlaybackTrack getCurrentPlaying() {
@@ -1311,6 +1317,30 @@ public class MusicPlaybackService extends Service implements
             if (service != null) {
                 service.previous();
             }
+        }
+
+        @Override
+        public int getDuration() throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "getDuration");
+
+            MusicPlaybackService service = serviceReference.get();
+            if (service != null) {
+                return service.getDuration();
+            }
+
+            return UNKNOWN_POS;
+        }
+
+        @Override
+        public int getCurrentPosition() throws RemoteException {
+            if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentPosition");
+
+            MusicPlaybackService service = serviceReference.get();
+            if (service != null) {
+                return service.getCurrentPosition();
+            }
+
+            return UNKNOWN_POS;
         }
 
         @Override
