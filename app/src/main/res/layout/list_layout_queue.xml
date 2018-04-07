@@ -37,7 +37,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignTop="@id/queue_container"
         android:layout_alignBottom="@id/queue_container"
-        android:src="@drawable/ic_more_overflow_24dp"
+        android:src="@drawable/ic_more_overflow"
         android:tint="@color/darkGrey"
         android:background="?android:attr/selectableItemBackgroundBorderless" />
 
