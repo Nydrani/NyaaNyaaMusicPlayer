@@ -10,6 +10,7 @@ import android.util.Log;
 
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
+import xyz.lostalishar.nyaanyaamusicplayer.util.MusicUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
 /**
@@ -41,8 +42,10 @@ public class RestartDialogFragment extends DialogFragment {
         // builder.setIcon(R.mipmap.ic_launcher);
         builder.setTitle(R.string.dialog_restart_title);
         builder.setMessage(R.string.dialog_restart_message);
-        builder.setPositiveButton(R.string.dialog_restart_positive,
-                (dialogInterface, i) -> NyaaUtils.triggerRebirth(getActivity()));
+        builder.setPositiveButton(R.string.dialog_restart_positive, (dialogInterface, i) -> {
+            MusicUtils.pause();
+            NyaaUtils.triggerRebirth(getActivity());
+        });
         builder.setNegativeButton(R.string.dialog_restart_negative, null);
 
         return builder.create();

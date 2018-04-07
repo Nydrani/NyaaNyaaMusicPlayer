@@ -127,7 +127,7 @@ public class NyaaUtils {
         context.startActivity(intent);
 
         if (context instanceof Activity) {
-            ((Activity) context).finish();
+            ((Activity) context).finishAffinity();
         }
 
         // Kill application
