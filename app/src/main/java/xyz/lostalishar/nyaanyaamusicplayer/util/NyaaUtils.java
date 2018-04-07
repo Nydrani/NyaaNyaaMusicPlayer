@@ -15,6 +15,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.activity.AlbumListActivity;
 import xyz.lostalishar.nyaanyaamusicplayer.activity.ArtistListActivity;
 import xyz.lostalishar.nyaanyaamusicplayer.activity.HomeActivity;
+import xyz.lostalishar.nyaanyaamusicplayer.activity.QueueActivity;
 import xyz.lostalishar.nyaanyaamusicplayer.activity.SettingsActivity;
 
 /**
@@ -105,6 +106,16 @@ public class NyaaUtils {
         Intent intent = new Intent(activity, ArtistListActivity.class);
         intent.putExtra("artistId", artistId);
         intent.putExtra("artistName", artistName);
+        activity.startActivity(intent);
+    }
+
+    /**
+     * Start up the QueueActivity
+     */
+    public static void openQueue(Activity activity) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "openQueue");
+
+        Intent intent = new Intent(activity, QueueActivity.class);
         activity.startActivity(intent);
     }
 

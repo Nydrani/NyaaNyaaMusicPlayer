@@ -13,6 +13,7 @@
     <color name="blue">#0d47a1</color>
     <color name="grey">#e0e0e0</color>
     <color name="darkGrey">#424242</color>
+    <color name="black">#000000</color>
     <color name="buttonLight">#90caf9</color>
     <color name="buttonPrimary">#b388ff</color>
     <color name="dividerColor">#bdbdbd</color>

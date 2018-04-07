@@ -1,79 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_mini_player_container"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/mini_player_height"
-    android:background="?android:attr/windowBackground"
-    android:orientation="horizontal">
+    android:layout_height="@dimen/mini_player_height">
 
-    <LinearLayout
-        android:id="@+id/player_details_container"
-        android:layout_toStartOf="@+id/player_buttons_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center">
-
-        <TextView
-            android:id="@+id/mini_player_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
-
-        <View
-            android:layout_width="@dimen/mini_player_divider"
-            android:layout_height="1px"
-            android:background="@color/dividerColor" />
-
-        <TextView
-            android:id="@+id/mini_player_artist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@id/player_buttons_container"
-        android:layout_alignParentEnd="true"
+    <TextView
+        android:id="@+id/mini_player_title"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/mini_player_description_divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/mini_player_button_divider" />
 
-        <View
-            android:layout_width="1px"
-            android:layout_height="match_parent"
-            android:background="@color/dividerColor" />
+    <View
+        android:id="@+id/mini_player_description_divider"
+        android:layout_width="@dimen/mini_player_divider"
+        android:layout_height="1px"
+        android:background="@color/dividerColor"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/mini_player_button_divider"
+        app:layout_constraintTop_toBottomOf="@id/mini_player_title"
+        app:layout_constraintBottom_toTopOf="@id/mini_player_artist" />
 
-        <ImageButton
-            android:id="@+id/prev_button"
-            android:contentDescription="@string/content_description_button"
-            android:layout_width="@dimen/mini_player_button_width"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:padding="@dimen/button_padding"
-            android:src="@android:drawable/ic_media_previous" />
+    <TextView
+        android:id="@+id/mini_player_artist"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mini_player_description_divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/mini_player_button_divider" />
 
-        <ImageButton
-            android:id="@+id/play_pause_button"
-            android:contentDescription="@string/content_description_button"
-            android:layout_width="@dimen/mini_player_button_width"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:padding="@dimen/button_padding" />
+    <View
+        android:id="@+id/mini_player_button_divider"
+        android:layout_width="1px"
+        android:layout_height="0dp"
+        android:background="@color/dividerColor"
+        app:layout_constraintEnd_toStartOf="@+id/prev_button"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <ImageButton
-            android:id="@+id/next_button"
-            android:contentDescription="@string/content_description_button"
-            android:layout_width="@dimen/mini_player_button_width"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:padding="@dimen/button_padding"
-            android:src="@android:drawable/ic_media_next" />
+    <ImageButton
+        android:id="@+id/prev_button"
+        android:layout_width="@dimen/mini_player_button_width"
+        android:layout_height="@dimen/mini_player_button_height"
+        android:contentDescription="@string/content_description_button"
+        android:gravity="center"
+        android:padding="@dimen/button_padding"
+        android:src="@android:drawable/ic_media_previous"
+        app:layout_constraintEnd_toStartOf="@+id/play_pause_button"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    </LinearLayout>
+    <ImageButton
+        android:id="@+id/play_pause_button"
+        android:layout_width="@dimen/mini_player_button_width"
+        android:layout_height="@dimen/mini_player_button_height"
+        android:contentDescription="@string/content_description_button"
+        android:gravity="center"
+        android:padding="@dimen/button_padding"
+        app:layout_constraintStart_toEndOf="@+id/prev_button"
+        app:layout_constraintEnd_toStartOf="@+id/next_button" />
 
-</RelativeLayout>
+    <ImageButton
+        android:id="@+id/next_button"
+        android:layout_width="@dimen/mini_player_button_width"
+        android:layout_height="@dimen/mini_player_button_height"
+        android:contentDescription="@string/content_description_button"
+        android:gravity="center"
+        android:padding="@dimen/button_padding"
+        android:src="@android:drawable/ic_media_next"
+        app:layout_constraintStart_toEndOf="@+id/play_pause_button"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</android.support.constraint.ConstraintLayout>
