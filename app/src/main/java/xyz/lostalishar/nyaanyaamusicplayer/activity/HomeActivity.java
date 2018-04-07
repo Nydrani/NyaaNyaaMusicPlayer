@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,6 +24,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.BaseFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.LibraryFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MiniPlayerFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicQueueFragment;
+import xyz.lostalishar.nyaanyaamusicplayer.util.MiscUtils;
 import xyz.lostalishar.nyaanyaamusicplayer.util.NyaaUtils;
 
 public class HomeActivity extends MusicActivity implements OnViewInflatedListener,
@@ -148,6 +150,11 @@ public class HomeActivity extends MusicActivity implements OnViewInflatedListene
     public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState,
                                     SlidingUpPanelLayout.PanelState newState) {
         if (BuildConfig.DEBUG) Log.d(TAG, "onPanelStateChanged");
+
+        if (newState == SlidingUpPanelLayout.PanelState.ANCHORED) {
+            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            return;
+        }
 
         updateUI(newState);
         closeCab();
