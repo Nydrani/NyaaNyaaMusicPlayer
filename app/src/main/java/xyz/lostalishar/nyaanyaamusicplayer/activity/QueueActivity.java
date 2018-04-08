@@ -16,8 +16,6 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.interfaces.CabHolder;
 import xyz.lostalishar.nyaanyaamusicplayer.interfaces.OnViewInflatedListener;
-import xyz.lostalishar.nyaanyaamusicplayer.service.MusicPlaybackService;
-import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.ArtistListFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MiniPlayerFragment;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.fragment.MusicQueueFragment;
 
@@ -45,6 +43,7 @@ public class QueueActivity extends MusicActivity implements OnViewInflatedListen
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(R.string.queue_name);
         }
 
         // load fragments

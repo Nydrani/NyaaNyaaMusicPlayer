@@ -13,6 +13,8 @@
 
     <string name="actionbar_remove">Remove</string>
 
+    <string name="queue_name">Queue</string>
+
     <string name="popupmenu_remove">Remove</string>
     <string name="popupmenu_select">Select</string>
 
@@ -27,7 +29,6 @@
     <string name="service_musicplayback_notification_play_message">Play</string>
 
     <string name="fragment_name_music_list">Music</string>
-    <string name="fragment_name_queue">Queue</string>
     <string name="fragment_name_album">Album</string>
     <string name="fragment_name_artist">Artist</string>
 
