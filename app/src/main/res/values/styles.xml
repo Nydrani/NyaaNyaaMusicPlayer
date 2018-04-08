@@ -10,6 +10,7 @@
         <item name="buttonStyle">@style/Widget.AppCompat.Button.Borderless</item>
         <item name="imageButtonStyle">@style/Widget.AppCompat.Button.Borderless</item>
         <item name="trackBackground">@color/grey</item>
+        <item name="drawableTint">@color/grey</item>
     </style>
 
     <!-- Dark application theme. -->
@@ -22,6 +23,7 @@
         <item name="buttonStyle">@style/Widget.AppCompat.Button.Borderless</item>
         <item name="imageButtonStyle">@style/Widget.AppCompat.Button.Borderless</item>
         <item name="trackBackground">@color/darkGrey</item>
+        <item name="drawableTint">@color/white</item>
     </style>
 
 </resources>

@@ -14,7 +14,7 @@
             android:id="@+id/fragment_library_tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="4dp"
+            android:elevation="8dp"
             android:background="?attr/colorPrimary"
             app:tabTextColor="@color/lightGrey"
             app:tabSelectedTextColor="@color/white" />

@@ -11,6 +11,8 @@ interface INyaaNyaaMusicService {
     void reset();
     void next();
     void previous();
+    int getCurrentPosition();
+    int getDuration();
     MusicPlaybackState getState();
     List<MusicPlaybackTrack> getQueue();
     MusicPlaybackTrack getCurrentPlaying();

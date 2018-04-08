@@ -81,10 +81,16 @@ public class MusicPlayer implements
         mediaPlayer.setVolume(leftVolume, rightVolume);
     }
 
-    public int getCurrentPosition() {
+    public int getCurrentPosition() throws IllegalStateException {
         if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentPosition");
 
         return mediaPlayer.getCurrentPosition();
+    }
+
+    public int getDuration() throws IllegalStateException {
+        if (BuildConfig.DEBUG) Log.d(TAG, "getDuration");
+
+        return mediaPlayer.getDuration();
     }
 
     public boolean isPlaying() throws IllegalStateException {

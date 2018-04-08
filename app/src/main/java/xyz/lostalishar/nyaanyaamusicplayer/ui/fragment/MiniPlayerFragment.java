@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -18,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
@@ -48,7 +50,10 @@ public class MiniPlayerFragment extends Fragment {
     private TextView musicArtistView;
     private ImageButton playPauseButton;
 
-    private static final String ALPHA = "alpha_state";
+    private ProgressBar progressBar;
+
+    private Handler handler;
+    private Runnable updater;
 
     public static MiniPlayerFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -90,6 +95,18 @@ public class MiniPlayerFragment extends Fragment {
         filter.addAction(NyaaUtils.META_CHANGED);
         filter.addAction(NyaaUtils.SERVICE_READY);
         metaChangedListener = new MetaChangedListener(this);
+
+        handler = new Handler();
+        updater = () -> {
+            updateProgressBar(MusicUtils.getCurrentPosition());
+            handler.postDelayed(updater, 250);
+        };
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
     }
 
     @Override
@@ -101,9 +118,14 @@ public class MiniPlayerFragment extends Fragment {
         musicTitleView = rootView.findViewById(R.id.mini_player_title);
         musicArtistView = rootView.findViewById(R.id.mini_player_artist);
 
-        ImageButton prev = rootView.findViewById(R.id.prev_button);
-        ImageButton next = rootView.findViewById(R.id.next_button);
+        View prev = rootView.findViewById(R.id.prev_button);
+        View next = rootView.findViewById(R.id.next_button);
+        View up = rootView.findViewById(R.id.up_button);
+
         playPauseButton = rootView.findViewById(R.id.play_pause_button);
+
+        progressBar = rootView.findViewById(R.id.mini_player_progress);
+
 
         rootView.setOnClickListener((v) -> miniPlayerTouchedListener.onMiniPlayerTouched(v));
 
@@ -123,6 +145,8 @@ public class MiniPlayerFragment extends Fragment {
             }
         });
 
+        up.setOnClickListener((v) -> miniPlayerTouchedListener.onMiniPlayerTouched(v));
+
         playPauseButton.setOnClickListener((v) -> {
             MusicPlaybackState state = MusicUtils.getState();
             // do nothing on unknown state
@@ -132,10 +156,12 @@ public class MiniPlayerFragment extends Fragment {
 
             if (MusicUtils.isPlaying()) {
                 MusicUtils.pause();
+                handler.removeCallbacks(updater);
             } else if (state.getQueuePos() == MusicPlaybackService.UNKNOWN_POS) {
                 Snackbar.make(v, R.string.snackbar_choose_track, Snackbar.LENGTH_SHORT).show();
             } else {
                 MusicUtils.resume();
+                handler.post(updater);
             }
         });
 
@@ -151,10 +177,6 @@ public class MiniPlayerFragment extends Fragment {
         if (viewInflatedListener != null) {
             viewInflatedListener.onViewInflated(view);
         }
-
-        if (savedInstanceState != null) {
-            view.setAlpha(savedInstanceState.getFloat(ALPHA));
-        }
     }
 
     @Override
@@ -167,14 +189,11 @@ public class MiniPlayerFragment extends Fragment {
 
         // update ui on resume
         updateMetaUI();
-    }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onSaveInstanceState");
-        super.onSaveInstanceState(outState);
-
-        outState.putFloat(ALPHA, getView().getAlpha());
+        // updater
+        if (MusicUtils.isPlaying()) {
+            handler.post(updater);
+        }
     }
 
     @Override
@@ -184,6 +203,9 @@ public class MiniPlayerFragment extends Fragment {
 
         Activity activity = getActivity();
         activity.unregisterReceiver(metaChangedListener);
+
+        // stop updater
+        handler.removeCallbacks(updater);
     }
 
 
@@ -200,13 +222,16 @@ public class MiniPlayerFragment extends Fragment {
         }
     }
 
-    public void setAlpha(float alpha) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "setAlpha");
+    private void updateProgressBar(int progress) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updateProgressBar");
 
-        View rootView = getView();
-        if (rootView != null) {
-            rootView.setAlpha(alpha);
-        }
+        progressBar.setProgress(progress);
+    }
+
+    private void updateProgressBarMax(int max) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updateProgressBarMax");
+
+        progressBar.setMax(max);
     }
 
     private void updateMetaUI() {
@@ -314,6 +339,8 @@ public class MiniPlayerFragment extends Fragment {
             switch (action) {
                 case NyaaUtils.META_CHANGED:
                 case NyaaUtils.SERVICE_READY:
+                    reference.get().updateProgressBarMax(MusicUtils.getDuration());
+                    reference.get().updateProgressBar(MusicUtils.getCurrentPosition());
                     reference.get().updateMetaUI();
                     break;
                 default:
