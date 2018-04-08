@@ -563,13 +563,25 @@ public class MusicPlaybackService extends Service implements
     public int getCurrentPosition() {
         if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentPosition");
 
-        return musicPlayer.getCurrentPosition();
+        try {
+            return musicPlayer.getCurrentPosition();
+        } catch (IllegalStateException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Called getCurrentPosition in illegal state");
+        }
+
+        return 0;
     }
 
     public int getDuration() {
         if (BuildConfig.DEBUG) Log.d(TAG, "getDuration");
 
-        return musicPlayer.getDuration();
+        try {
+            return musicPlayer.getDuration();
+        } catch (IllegalStateException e) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Called getDuration in illegal state");
+        }
+
+        return 0;
     }
 
     public MusicPlaybackTrack getCurrentPlaying() {

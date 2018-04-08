@@ -53,6 +53,7 @@ public class MiniPlayerFragment extends Fragment {
     private ProgressBar progressBar;
 
     private Handler handler;
+    private Runnable updater;
 
     public static MiniPlayerFragment newInstance() {
         if (BuildConfig.DEBUG) Log.d(TAG, "newInstance");
@@ -96,22 +97,16 @@ public class MiniPlayerFragment extends Fragment {
         metaChangedListener = new MetaChangedListener(this);
 
         handler = new Handler();
+        updater = () -> {
+            updateProgressBar(MusicUtils.getCurrentPosition());
+            handler.postDelayed(updater, 250);
+        };
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (MusicUtils.isPlaying()) {
-                    progressBar.setProgress(MusicUtils.getCurrentPosition());
-                    progressBar.setMax(MusicUtils.getDuration());
-                }
-                handler.postDelayed(this, 250);
-            }
-        });
     }
 
     @Override
@@ -123,16 +118,14 @@ public class MiniPlayerFragment extends Fragment {
         musicTitleView = rootView.findViewById(R.id.mini_player_title);
         musicArtistView = rootView.findViewById(R.id.mini_player_artist);
 
-        ImageButton prev = rootView.findViewById(R.id.prev_button);
-        ImageButton next = rootView.findViewById(R.id.next_button);
+        View prev = rootView.findViewById(R.id.prev_button);
+        View next = rootView.findViewById(R.id.next_button);
+        View up = rootView.findViewById(R.id.up_button);
+
         playPauseButton = rootView.findViewById(R.id.play_pause_button);
 
         progressBar = rootView.findViewById(R.id.mini_player_progress);
-        // update progress bar
-        if (MusicUtils.isPlaying()) {
-            progressBar.setProgress(MusicUtils.getCurrentPosition());
-            progressBar.setMax(MusicUtils.getDuration());
-        }
+
 
         rootView.setOnClickListener((v) -> miniPlayerTouchedListener.onMiniPlayerTouched(v));
 
@@ -152,6 +145,8 @@ public class MiniPlayerFragment extends Fragment {
             }
         });
 
+        up.setOnClickListener((v) -> miniPlayerTouchedListener.onMiniPlayerTouched(v));
+
         playPauseButton.setOnClickListener((v) -> {
             MusicPlaybackState state = MusicUtils.getState();
             // do nothing on unknown state
@@ -161,10 +156,12 @@ public class MiniPlayerFragment extends Fragment {
 
             if (MusicUtils.isPlaying()) {
                 MusicUtils.pause();
+                handler.removeCallbacks(updater);
             } else if (state.getQueuePos() == MusicPlaybackService.UNKNOWN_POS) {
                 Snackbar.make(v, R.string.snackbar_choose_track, Snackbar.LENGTH_SHORT).show();
             } else {
                 MusicUtils.resume();
+                handler.post(updater);
             }
         });
 
@@ -192,6 +189,11 @@ public class MiniPlayerFragment extends Fragment {
 
         // update ui on resume
         updateMetaUI();
+
+        // updater
+        if (MusicUtils.isPlaying()) {
+            handler.post(updater);
+        }
     }
 
     @Override
@@ -201,6 +203,9 @@ public class MiniPlayerFragment extends Fragment {
 
         Activity activity = getActivity();
         activity.unregisterReceiver(metaChangedListener);
+
+        // stop updater
+        handler.removeCallbacks(updater);
     }
 
 
@@ -215,6 +220,18 @@ public class MiniPlayerFragment extends Fragment {
         if (rootView != null) {
             rootView.setVisibility(visibility);
         }
+    }
+
+    private void updateProgressBar(int progress) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updateProgressBar");
+
+        progressBar.setProgress(progress);
+    }
+
+    private void updateProgressBarMax(int max) {
+        if (BuildConfig.DEBUG) Log.d(TAG, "updateProgressBarMax");
+
+        progressBar.setMax(max);
     }
 
     private void updateMetaUI() {
@@ -322,6 +339,8 @@ public class MiniPlayerFragment extends Fragment {
             switch (action) {
                 case NyaaUtils.META_CHANGED:
                 case NyaaUtils.SERVICE_READY:
+                    reference.get().updateProgressBarMax(MusicUtils.getDuration());
+                    reference.get().updateProgressBar(MusicUtils.getCurrentPosition());
                     reference.get().updateMetaUI();
                     break;
                 default:

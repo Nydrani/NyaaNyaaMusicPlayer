@@ -177,7 +177,7 @@ public class MusicUtils {
         if (BuildConfig.DEBUG) Log.d(TAG, "getDuration");
 
         if (musicService == null) {
-            return MusicPlaybackService.UNKNOWN_POS;
+            return 0;
         }
 
         try {
@@ -186,14 +186,14 @@ public class MusicUtils {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
         }
 
-        return MusicPlaybackService.UNKNOWN_POS;
+        return 0;
     }
 
     public static int getCurrentPosition() {
         if (BuildConfig.DEBUG) Log.d(TAG, "getCurrentPosition");
 
         if (musicService == null) {
-            return MusicPlaybackService.UNKNOWN_POS;
+            return 0;
         }
 
         try {
@@ -202,7 +202,7 @@ public class MusicUtils {
             if (BuildConfig.DEBUG) Log.e(TAG, "Music service reference lost");
         }
 
-        return MusicPlaybackService.UNKNOWN_POS;
+        return 0;
     }
 
     public static void reset() {

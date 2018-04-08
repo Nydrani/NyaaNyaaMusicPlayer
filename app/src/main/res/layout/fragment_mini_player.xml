@@ -15,23 +15,36 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageButton
+        android:id="@+id/up_button"
+        android:layout_width="@dimen/mini_player_button_width"
+        android:layout_height="0dp"
+        android:contentDescription="@string/content_description_button"
+        android:gravity="center"
+        android:padding="@dimen/button_padding"
+        android:src="@drawable/ic_arrow_up"
+        android:tint="?attr/drawableTint"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mini_player_progress"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
     <TextView
         android:id="@+id/mini_player_title"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        app:layout_constraintTop_toBottomOf="@id/mini_player_progress"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintBottom_toTopOf="@id/mini_player_description_divider"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/mini_player_button_divider" />
+        app:layout_constraintEnd_toStartOf="@id/mini_player_button_divider"
+        app:layout_constraintStart_toEndOf="@id/up_button"
+        app:layout_constraintTop_toBottomOf="@id/mini_player_progress" />
 
     <View
         android:id="@+id/mini_player_description_divider"
         android:layout_width="@dimen/mini_player_divider"
         android:layout_height="1px"
         android:background="@color/dividerColor"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/up_button"
         app:layout_constraintEnd_toStartOf="@id/mini_player_button_divider"
         app:layout_constraintTop_toBottomOf="@id/mini_player_title"
         app:layout_constraintBottom_toTopOf="@id/mini_player_artist" />
@@ -41,10 +54,10 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mini_player_description_divider"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/up_button"
         app:layout_constraintEnd_toStartOf="@id/mini_player_button_divider" />
 
     <View
@@ -53,6 +66,7 @@
         android:layout_height="0dp"
         android:background="@color/dividerColor"
         app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintEnd_toStartOf="@+id/prev_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mini_player_progress"
@@ -67,9 +81,7 @@
         android:padding="@dimen/button_padding"
         android:src="@android:drawable/ic_media_previous"
         app:layout_constraintEnd_toStartOf="@+id/play_pause_button"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/mini_player_button_divider"
         app:layout_constraintTop_toBottomOf="@id/mini_player_progress"
         app:layout_constraintBottom_toBottomOf="parent" />
 
