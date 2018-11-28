@@ -46,7 +46,8 @@
     <string name="empty_queue">The music queue is empty</string>
 
     <string name="preference_title">Settings</string>
-    <string name="preference_about_category">About</string>
+    <string name="preference_about_category_key">about_category_key</string>
+    <string name="preference_about_category_title">About</string>
     <string name="preference_about_version_key">about_key</string>
     <string name="preference_about_version_title">App Version</string>
     <string name="preference_about_version_link">https://github.com/Nydrani/NyaaNyaaMusicPlayer</string>

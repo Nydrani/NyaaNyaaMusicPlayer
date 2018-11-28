@@ -7,13 +7,10 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceCategory;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
-
-import io.fabric.sdk.android.Fabric;
 import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.ui.dialogfragment.RestartDialogFragment;
@@ -85,6 +82,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             ListPreference listPreference = (ListPreference) pref;
             pref.setSummary(listPreference.getEntry());
         }
+
+        // @TODO remove analytics preference for now
+        PreferenceCategory category = (PreferenceCategory) findPreference(getString(PreferenceUtils.KEY_PREF_ABOUT_CATEGORY_KEY));
+        Preference analytics = findPreference(getString(PreferenceUtils.KEY_PREF_ANONYMOUS_DATA_KEY));
+        if (analytics != null) {
+            category.removePreference(analytics);
+        }
+
     }
 
     @Override
@@ -123,7 +128,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             // i want to enable fabric now, since there's no way to disable it midway
 
             if (switchPreference.isChecked()) {
-                Fabric.with(getActivity(), new Crashlytics(), new Answers());
+                // disable fabric for now
+                // Fabric.with(getActivity(), new Crashlytics(), new Answers());
             } else {
                 DialogFragment dialog = RestartDialogFragment.newInstance();
                 dialog.show(getFragmentManager(), RESTART_DIALOG_TAG);

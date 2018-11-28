@@ -20,6 +20,7 @@ public class PreferenceUtils {
     private static final String STORAGE_PREFERENCES = "Storage";
 
     public static int KEY_PREF_ABOUT_VERSION_KEY = R.string.preference_about_version_key;
+    public static int KEY_PREF_ABOUT_CATEGORY_KEY = R.string.preference_about_category_key;
     public static int KEY_PREF_THEME_KEY = R.string.preference_theme_key;
     public static int KEY_PREF_ANONYMOUS_DATA_KEY = R.string.preference_about_anonymous_data_key;
 

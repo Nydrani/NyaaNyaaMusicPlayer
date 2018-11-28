@@ -4,10 +4,6 @@ import android.app.Application;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
-
-import io.fabric.sdk.android.Fabric;
 import xyz.lostalishar.nyaanyaamusicplayer.util.PreferenceUtils;
 
 public class App extends Application {
@@ -28,7 +24,8 @@ public class App extends Application {
 
         // load fabric
         if (PreferenceUtils.loadUsageDataPref(this)) {
-            Fabric.with(this, new Crashlytics(), new Answers());
+            // disable fabric for now
+            // Fabric.with(this, new Crashlytics(), new Answers());
         }
     }
 }

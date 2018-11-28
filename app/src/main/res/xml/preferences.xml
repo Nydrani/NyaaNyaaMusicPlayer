@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:title="@+id/preference_container">
+    android:title="@string/preference_title">
 
     <ListPreference
         android:key="@string/preference_theme_key"
@@ -35,7 +35,8 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/preference_about_category">
+        android:key="@string/preference_about_category_key"
+        android:title="@string/preference_about_category_title">
 
         <Preference
             android:key="@string/preference_about_version_key"
