@@ -50,7 +50,6 @@ public class HomeActivity extends MusicActivity implements OnViewInflatedListene
         viewPager = findViewById(R.id.activity_view_pager);
         TabLayout tabLayout = findViewById(R.id.tab_layout);
 
-        viewPager.setAdapter(new LibraryPagerAdapter(getSupportFragmentManager(), this));
         viewPager.setCurrentItem(PreferenceUtils.loadCurViewPagerPosition(this));
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -103,6 +102,13 @@ public class HomeActivity extends MusicActivity implements OnViewInflatedListene
         super.onSaveInstanceState(outState);
 
         outState.putInt("currentPos", viewPager.getCurrentItem());
+    }
+
+    @Override
+    protected void initialise() {
+        super.initialise();
+
+        viewPager.setAdapter(new LibraryPagerAdapter(getSupportFragmentManager(), this));
     }
 
     //=========================================================================
