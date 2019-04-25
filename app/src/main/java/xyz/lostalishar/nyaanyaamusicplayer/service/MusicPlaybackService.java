@@ -738,6 +738,8 @@ public class MusicPlaybackService extends Service implements
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_ID,
                     NOTIFICATION_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+            notificationChannel.setSound(null, null);
+            notificationChannel.enableVibration(false);
             notificationManager.createNotificationChannel(notificationChannel);
         }
     }
