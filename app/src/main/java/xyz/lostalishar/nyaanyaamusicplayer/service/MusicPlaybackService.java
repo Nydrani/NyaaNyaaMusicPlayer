@@ -257,11 +257,6 @@ public class MusicPlaybackService extends Service implements
             audioManager.abandonAudioFocus(this);
         }
 
-        // delete notification channel on oreo
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            notificationManager.deleteNotificationChannel(NOTIFICATION_ID);
-        }
-
         // release media session
         mediaSession.release();
 
@@ -749,6 +744,7 @@ public class MusicPlaybackService extends Service implements
                     NOTIFICATION_NAME, NotificationManager.IMPORTANCE_DEFAULT);
             notificationChannel.setSound(null, null);
             notificationChannel.enableVibration(false);
+            notificationChannel.setDescription("Notification for the music player remote control");
             notificationManager.createNotificationChannel(notificationChannel);
         }
     }
