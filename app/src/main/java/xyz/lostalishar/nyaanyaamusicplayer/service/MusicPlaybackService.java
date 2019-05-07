@@ -13,8 +13,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.drawable.Icon;
+import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
+import android.media.MediaMetadata;
 import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
@@ -42,6 +44,7 @@ import xyz.lostalishar.nyaanyaamusicplayer.BuildConfig;
 import xyz.lostalishar.nyaanyaamusicplayer.R;
 import xyz.lostalishar.nyaanyaamusicplayer.activity.HomeActivity;
 import xyz.lostalishar.nyaanyaamusicplayer.media.MusicPlayer;
+import xyz.lostalishar.nyaanyaamusicplayer.model.Music;
 import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackState;
 import xyz.lostalishar.nyaanyaamusicplayer.model.MusicPlaybackTrack;
 import xyz.lostalishar.nyaanyaamusicplayer.provider.MusicDatabaseProvider;
@@ -131,7 +134,13 @@ public class MusicPlaybackService extends Service implements
         audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
         // we need audio focus request for oreo+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN).build();
+            audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                    .setOnAudioFocusChangeListener(this)
+                    .setAudioAttributes(new AudioAttributes.Builder()
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                            .build())
+                    .build();
         }
 
         // restore playback queue
@@ -851,6 +860,19 @@ public class MusicPlaybackService extends Service implements
         switch (state) {
             case PlaybackState.STATE_PLAYING:
             case PlaybackState.STATE_PAUSED:
+                if (getCurrentPlaying() == null || getCurrentPlaying().getId() == UNKNOWN_ID) {
+                    break;
+                }
+
+                Music music = Music.fromId(this, getCurrentPlaying().getId());
+                if (music != null) {
+                    MediaMetadata.Builder metadataBuilder = new MediaMetadata.Builder();
+                    metadataBuilder.putString(MediaMetadata.METADATA_KEY_TITLE, music.getName());
+                    metadataBuilder.putLong(MediaMetadata.METADATA_KEY_DURATION, music.getDuration());
+                    metadataBuilder.putString(MediaMetadata.METADATA_KEY_ALBUM, music.getAlbumName());
+                    metadataBuilder.putString(MediaMetadata.METADATA_KEY_ARTIST, music.getArtistName());
+                    mediaSession.setMetadata(metadataBuilder.build());
+                }
                 stateBuilder.setState(state, musicPlayer.getCurrentPosition(),
                         1.0f);
                 break;
@@ -1182,7 +1204,7 @@ public class MusicPlaybackService extends Service implements
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                 if (BuildConfig.DEBUG) Log.d(TAG, "AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
 
-                setVolume(0.4f, 0.4f);
+                setVolume(0.2f, 0.2f);
                 break;
             default:
                 if (BuildConfig.DEBUG) Log.wtf(TAG, "VERY BAD HAPPENED (AUDIOFOCUS)");

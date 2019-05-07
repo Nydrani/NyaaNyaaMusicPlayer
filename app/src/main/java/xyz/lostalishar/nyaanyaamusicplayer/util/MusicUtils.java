@@ -35,6 +35,10 @@ public class MusicUtils {
         if (BuildConfig.DEBUG) Log.d(TAG, "startService");
 
         Intent intent = new Intent(context, MusicPlaybackService.class);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            return context.startForegroundService(intent);
+        }
+
         return context.startService(intent);
     }
 

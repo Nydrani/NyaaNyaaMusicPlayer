@@ -27,7 +27,12 @@ public class MediaJobService extends JobService {
         musicPlaybackService.putExtra("KEYCODE", keyCode);
 
         // start service and finish the job
-        startService(musicPlaybackService);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            startForegroundService(musicPlaybackService);
+        } else {
+            startService(musicPlaybackService);
+        }
+
         jobFinished(params, false);
 
         return true;
