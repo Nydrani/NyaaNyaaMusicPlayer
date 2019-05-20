@@ -12,7 +12,7 @@ def getVersionCode() {
 }
 
 def getVersionName() {
-    def output = new ByteArrayOutputStream();
+    def output = new ByteArrayOutputStream()
     exec {
         commandLine 'git', 'describe', '--dirty'
         standardOutput = output

@@ -7,7 +7,6 @@ local.properties
 .gradle
 build
 captures
-gradle.properties
 
 # IntelliJ idea
 .idea
